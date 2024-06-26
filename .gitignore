@@ -21,4 +21,21 @@ db.sqlite3
 
 # Dependency directories
 venv/
-node_modules/
+
+.DS_Store
+
+# React project files
+/node_modules
+/build
+/.pnp
+.pnp.js
+
+# Testing files
+/coverage
+
+# Dependency directories
+/.cache
+/.parcel-cache
+/.yarn
+/.yarn-integrity
+/yarn-error.log
