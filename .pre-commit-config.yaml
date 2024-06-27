@@ -45,7 +45,7 @@ repos:
     hooks:
       - id: eslint
         name: eslint-local
-        entry: npm run lint
+        entry: ./docker-npm.sh run lint
         language: system
         types: [file]
         files: \.(js|jsx|ts|tsx)$
@@ -58,7 +58,7 @@ repos:
         pass_filenames: true
       - id: tsc
         name: tsc-local
-        entry: npm run tsc
+        entry: ./docker-npm.sh run tsc
         language: system
         types: [file]
         files: \.(ts|tsx)$
@@ -78,7 +78,7 @@ repos:
     #     pass_filenames: false
       - id: frontend-api
         name: frontend-api-local
-        entry: npm run openapi-ts
+        entry: ./docker-npm.sh run openapi-ts
         language: system
         files: backend/schema\.yml$
         pass_filenames: false
