@@ -33,9 +33,9 @@
     @apply text-[3.2em] leading-[1.1];
   }
 
-  button {
+  /* button {
     @apply rounded-lg border border-transparent px-[1.2em] py-[0.6em] text-base font-medium font-inherit bg-[#1a1a1a] cursor-pointer transition-[border-color] duration-250;
-  }
+  } */
   button:hover {
     @apply border-[#646cff];
   }

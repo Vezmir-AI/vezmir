@@ -79,11 +79,11 @@ WSGI_APPLICATION = "vesmir_app.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": "vesmir",
         "USER": "postgres",
         "PASSWORD": "bite",
-        "HOST": "127.0.0.1",
+        "HOST": "db",
         "PORT": "5432",
     }
 }

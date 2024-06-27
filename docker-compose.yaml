@@ -1,0 +1,40 @@
+services:
+  django:
+    build: ./backend
+    container_name: dev-django
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env
+    volumes:
+      - ./backend/:/code
+    depends_on:
+      - db
+  react:
+    build: ./app
+    container_name: dev-react
+    ports:
+      - 3000:3000
+    env_file:
+      - ./.env
+    tty: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    depends_on:
+      - django
+  db:
+    image: postgres:16.1-alpine
+    container_name: dev-db
+    ports:
+      - 5432:5432
+    env_file: ./.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  node_modules:
+  postgres_data:
