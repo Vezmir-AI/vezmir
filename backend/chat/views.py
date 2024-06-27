@@ -1,11 +1,12 @@
 from django.http import StreamingHttpResponse
-from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from utils.chatbot import get_chatgpt_response
+
 from .models import ChatConversation
 from .serializers import ChatConversationSerializer
-from utils.chatbot import get_chatgpt_response
+
 
 @api_view(["POST"])
 def init_conversation(request):
@@ -14,7 +15,10 @@ def init_conversation(request):
         user="Test User",
         messages=[{"role": "user", "content": "bonjour"}],
     )
-    return Response({"conversation_id": conversation.id}, status=status.HTTP_201_CREATED)
+    return Response(
+        {"conversation_id": conversation.id}, status=status.HTTP_201_CREATED
+    )
+
 
 @api_view(["GET"])
 def get_conversation(request, conversation_id):
@@ -28,12 +32,12 @@ def get_conversation(request, conversation_id):
 def add_message(request, conversation_id):
     print(request.data)
     message = {"user": "user", "content": request.data["message"]}
-    model = request.data["model"]
+    # model = request.data["model"]
     conversation = ChatConversation.objects.get(id=conversation_id)
     conversation.messages.append(message)
     conversation.save()
     # response = get_chatgpt_response(message["message"], model)
-    response = 'bite'
+    response = "bite"
     conversation.messages.append({"role": "assistant", "content": response})
     return Response({"response": response}, status=status.HTTP_200_OK)
 
