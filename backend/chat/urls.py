@@ -8,4 +8,5 @@ urlpatterns = [
     path("get_conversation/<int:conversation_id>/", views.get_conversation),
     path("add_message/<int:conversation_id>/", views.add_message),
     path("talk/<int:conversation_id>/", views.talk),
+    path("fake_talk/<int:conversation_id>/", views.fake_talk),
 ]
