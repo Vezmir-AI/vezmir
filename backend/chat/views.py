@@ -2,7 +2,7 @@ from django.http import StreamingHttpResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from utils.chatbot import get_chatgpt_response
+from utils.chatbot import get_chatgpt_response, get_fakegpt_response
 
 from .models import ChatConversation
 from .serializers import ChatConversationSerializer
@@ -50,3 +50,11 @@ def talk(request, conversation_id):
     conversation.messages.append(request.data["message"])
     print(conversation.messages)
     return StreamingHttpResponse(get_chatgpt_response(conversation.messages))
+
+
+@api_view(["POST"])
+def fake_talk(request, conversation_id):
+    conversation = ChatConversation.objects.get(id=conversation_id)
+    conversation.messages.append(request.data["message"])
+    print(conversation.messages)
+    return StreamingHttpResponse(get_fakegpt_response(conversation.messages))
