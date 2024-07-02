@@ -1,2 +1,3 @@
 #!/bin/bash
-docker-compose run --rm -T react npm "$@"
+# run the command in the container dev-nuxt
+docker exec -t dev-nuxt npm $@
