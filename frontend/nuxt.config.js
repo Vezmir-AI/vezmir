@@ -1,11 +1,11 @@
-// https://v3.nuxtjs.org/api/configuration/nuxt.config
+import { defineNuxtConfig } from 'nuxt'
+
 export default defineNuxtConfig({
   ssr: false,
-  
   nitro: { compressPublicAssets: true },
 
   modules: [
-    ['@nuxtjs/tailwindcss']
+    ['@nuxtjs/tailwindcss','@nuxt/eslint',]
   ],
 
   app: {

@@ -7,11 +7,25 @@
   "scripts": {
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "nuxt preview"
+    "preview": "nuxt preview",
+    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "lint:eslint": "eslint .",
+    "lint:prettier": "prettier . --check",
+    "lint:fix": "eslint . --fix && prettier --write --list-different ."
   },
   "dependencies": {
     "@nuxtjs/tailwindcss": "latest",
     "@vueuse/core": "latest",
+    "eslint-config-prettier": "^9.1.0",
     "nuxt": "latest"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.6.0",
+    "@nuxt/eslint": "^0.3.13",
+    "@nuxt/eslint-config": "^0.3.13",
+    "eslint": "^9.6.0",
+    "eslint-plugin-vue": "^9.27.0",
+    "globals": "^15.8.0",
+    "prettier": "3.3.2"
   }
 }
