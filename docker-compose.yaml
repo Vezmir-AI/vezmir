@@ -11,18 +11,15 @@ services:
       - ./backend/:/code
     depends_on:
       - db
-  react:
-    build: ./app
-    container_name: dev-react
+  vue:
+    build: ./frontend
+    container_name: dev-nuxt
     ports:
       - 3000:3000
     env_file:
       - ./.env
-    tty: true
-    environment:
-      - CHOKIDAR_USEPOLLING=true
     volumes:
-      - ./app:/app
+      - ./frontend:/app
       - /app/node_modules
     depends_on:
       - django
