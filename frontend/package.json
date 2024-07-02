@@ -1,0 +1,17 @@
+{
+  "name": "template",
+  "author": "Tina Wang",
+  "repository": "https://github.com/tinawng/nuxt-tailwind-static-template",
+  "version": "3.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview"
+  },
+  "dependencies": {
+    "@nuxtjs/tailwindcss": "latest",
+    "@vueuse/core": "latest",
+    "nuxt": "latest"
+  }
+}
