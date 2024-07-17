@@ -1,15 +1,21 @@
-FROM node:18.14.2
+# Use the official Node.js image as the base image
+FROM node:16-alpine
 
+# Set the working directory inside the container
 WORKDIR /app
 
-COPY package.json /app/package.json
-# COPY package-lock.json /app/package-lock.json
+# Copy package.json and package-lock.json to the working directory
+COPY package.json ./
+# COPY package-lock.json ./
 
+# Install dependencies
 RUN npm install
-RUN npm install --save nuxt
 
-COPY . /app
+# Copy the rest of the application code to the working directory
+COPY . ./
 
-EXPOSE 3000
+# Expose port 3000 to the host
+EXPOSE 3090
 
-CMD ["npm", "run", "dev"]
+# Start the React app in development mode
+CMD ["npm", "start"]
