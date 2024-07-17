@@ -15,7 +15,7 @@ RUN npm install
 COPY . ./
 
 # Expose port 3000 to the host
-EXPOSE 3090
+EXPOSE 3000
 
 # Start the React app in development mode
 CMD ["npm", "start"]
