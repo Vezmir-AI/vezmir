@@ -16,6 +16,5 @@ COPY . ./
 
 # Expose port 3000 to the host
 EXPOSE 3000
-
-# Start the React app in development mode
-CMD ["npm", "start"]
+ENV HOST=0.0.0.0
+CMD ["npm", "run", "start"]
