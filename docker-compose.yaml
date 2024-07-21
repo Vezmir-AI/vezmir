@@ -11,9 +11,9 @@ services:
       - ./backend/:/code
     depends_on:
       - db
-  vue:
+  react:
     build: ./frontend
-    container_name: dev-nuxt
+    container_name: dev-react
     ports:
       - 3000:3000
     env_file:
@@ -24,7 +24,7 @@ services:
     depends_on:
       - django
   db:
-    image: postgres:16.1-alpine
+    image: postgres:latest
     container_name: dev-db
     ports:
       - 5432:5432
