@@ -40,3 +40,81 @@
 .read-the-docs {
   color: #888;
 }
+
+@font-face {
+  font-display: swap;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 400;
+  src: url("$fonts/Inter-Regular.woff2") format("woff2");
+  size-adjust: 94%;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Inter;
+  font-style: italic;
+  font-weight: 400;
+  src: url("$fonts/Inter-Italic.woff2") format("woff2");
+  size-adjust: 94%;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  src: url("$fonts/Inter-SemiBold.woff2") format("woff2");
+  size-adjust: 94%;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Inter;
+  font-style: italic;
+  font-weight: 500;
+  src: url("$fonts/Inter-SemiBoldItalic.woff2") format("woff2");
+  size-adjust: 94%;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  src: url("$fonts/Inter-Bold.woff2") format("woff2");
+  size-adjust: 94%;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Inter;
+  font-style: italic;
+  font-weight: 600;
+  src: url("$fonts/Inter-BoldItalic.woff2") format("woff2");
+  size-adjust: 94%;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Roboto Mono;
+  font-style: normal;
+  font-weight: 400;
+  src: url("$fonts/roboto-mono-latin-400-normal.woff2") format("woff2")
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Roboto Mono;
+  font-style: normal;
+  font-weight: 700;
+  src: url("$fonts/roboto-mono-latin-700-normal.woff2") format("woff2")
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Roboto Mono;
+  font-style: italic;
+  font-weight: 400;
+  src: url("$fonts/roboto-mono-latin-400-italic.woff2") format("woff2")
+}
