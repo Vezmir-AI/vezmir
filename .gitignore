@@ -25,7 +25,8 @@ venv/
 .DS_Store
 
 # React project files
-/node_modules
+node_modules
+dist
 /build
 /.pnp
 .pnp.js
