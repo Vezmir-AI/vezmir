@@ -1,48 +1,145 @@
 from django.http import StreamingHttpResponse
-from rest_framework import viewsets
-from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework import status, generics
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import ChatConversation
-from .serializers import ChatConversationSerializer
-from utils.chatbot import get_chatgpt_response
+from rest_framework.permissions import IsAuthenticated
 
-@api_view(["POST"])
-def init_conversation(request):
-    conversation = ChatConversation.objects.create(
-        name="Test Conversation",
-        user="Test User",
-        messages=[{"role": "user", "content": "bonjour"}],
-    )
-    return Response({"conversation_id": conversation.id}, status=status.HTTP_201_CREATED)
-
-@api_view(["GET"])
-def get_conversation(request, conversation_id):
-    # use the serializer to convert the model to json
-    conversation = ChatConversation.objects.get(id=conversation_id)
-    serializer = ChatConversationSerializer(conversation)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+from chat.models import ChatConversation, ChatMessage, AIModel, AIModelProvider
+from chat.serializers import (
+    ChatConversationSerializer,
+    ChatMessageSerializer,
+    AIModelSerializer,
+    AIModelProviderSerializer,
+)
+from utils.permissions import IsOwner
+from utils.chatbots import get_api_response
 
 
-@api_view(["PUT"])
-def add_message(request, conversation_id):
-    print(request.data)
-    message = {"user": "user", "content": request.data["message"]}
-    model = request.data["model"]
-    conversation = ChatConversation.objects.get(id=conversation_id)
-    conversation.messages.append(message)
-    conversation.save()
-    # response = get_chatgpt_response(message["message"], model)
-    response = 'bite'
-    conversation.messages.append({"role": "assistant", "content": response})
-    return Response({"response": response}, status=status.HTTP_200_OK)
+# class to get all the models
+# TODO: fetch per provider
+class AIModelView(generics.ListAPIView):
+    queryset = AIModel.objects.all()
+    serializer_class = AIModelSerializer
 
 
-@api_view(["POST"])
-def talk(request, conversation_id):
-    # print(request.data)
+# class to get all the model providers
+class AIModelProviderView(generics.ListAPIView):
+    queryset = AIModelProvider.objects.all()
+    serializer_class = AIModelProviderSerializer
 
-    conversation = ChatConversation.objects.get(id=conversation_id)
-    conversation.messages.append(request.data["message"])
-    print(conversation.messages)
-    return StreamingHttpResponse(get_chatgpt_response(conversation.messages))
+
+class UserConversationView(generics.ListCreateAPIView):
+    queryset = ChatConversation.objects.all()
+    serializer_class = ChatConversationSerializer
+    permission_classes = (IsAuthenticated, IsOwner)
+
+    # get all conversations for the user, last modified first
+    def get_queryset(self):
+        return ChatConversation.objects.filter(user=self.request.user).order_by(
+            "-date_updated"
+        )
+
+    # create a new conversation
+    def create(self, request):
+        data = request.data
+        data["user"] = request.user.id
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=self.request.user)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
+
+
+class ChatMessageView(APIView):
+    permission_classes = (IsAuthenticated, IsOwner)
+
+    # get all the messages in a conversation, in chronological order
+    def get(self, request, conv_id):
+        try:
+            conversation = ChatConversation.objects.get(id=conv_id, user=request.user)
+        except ChatConversation.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        messages = ChatMessage.objects.filter(chat_conversation=conversation).order_by(
+            "date_created"
+        )
+        serializer = ChatMessageSerializer(messages, many=True)
+        return Response(serializer.data)
+
+    # create a new message in a conversation
+    def post(self, request, conv_id):
+        # verify that the conversation exists
+        try:
+            conversation = ChatConversation.objects.get(
+                id=conv_id, user=request.user.id
+            )
+        except ChatConversation.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # creates the user message
+        serializer = ChatMessageSerializer(
+            data={
+                "user": request.user.id,
+                "chat_conversation": conv_id,
+                "content": request.data.get("content"),
+                "role": "user",
+            }
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        # query model name and its provider
+        model_name = request.data.get("model_name")
+        model = AIModel.objects.get(name=model_name)
+        model_provider = model.provider
+
+        # get the whole conversation to pass to the model
+        # TODO: Use self.get? or a serializer?
+        conv_messages = ChatMessage.objects.filter(
+            chat_conversation=conversation
+        ).order_by("date_created")
+
+        def stream_and_save():
+            full_response = ""
+            for chunk in get_api_response(
+                model=model,
+                model_provider=model_provider,
+                messages=conv_messages.values(),
+            ):
+                full_response += chunk
+                # this allows to send the response to the client as it is being generated
+                yield chunk
+
+            # Save the complete response to the database
+            ai_message_serializer = ChatMessageSerializer(
+                data={
+                    "user": request.user.id,
+                    "chat_conversation": conv_id,
+                    "content": full_response,
+                    "role": "assistant",
+                    "model": model.name,
+                }
+            )
+            ai_message_serializer.is_valid(
+                raise_exception=True
+            )  # TODO: handle API problems, like stop generation (e.g. data.completed=False)
+            ai_message_serializer.save()
+
+        response = StreamingHttpResponse(stream_and_save(), content_type="text/plain")
+        # do not remove this, it is used by nginx to stream the response
+        # https://discovergen.ai/article/creating-a-streaming-chat-application-with-django/
+        response["X-Accel-Buffering"] = "no"
+        response["Cache-Control"] = "no-cache"
+        return response
+
+    # delete a conversation
+    def delete(self, request, conv_id):
+        try:
+            conversation = ChatConversation.objects.get(id=conv_id, user=request.user)
+        except ChatConversation.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        conversation.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
