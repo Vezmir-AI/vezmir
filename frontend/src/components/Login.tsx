@@ -13,7 +13,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await api.post('/api/user/balance/', { username, password });
+      const response = await api.post('/api/auth/login/', { username, password });
       const { access, refresh } = response.data;
       login(access, refresh);
       navigate('/dashboard');

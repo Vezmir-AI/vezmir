@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const refreshAccessToken = async () => {
     try {
-      const response = await api.post('/api/login/refresh/', { refresh: refreshToken });
+      const response = await api.post('/api/auth/login/refresh/', { refresh: refreshToken });
       const newAccessToken = response.data.access;
       setAccessToken(newAccessToken);
       localStorage.setItem('accessToken', newAccessToken);
