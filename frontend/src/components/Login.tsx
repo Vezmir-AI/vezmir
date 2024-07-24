@@ -47,6 +47,7 @@ const Login: React.FC = () => {
             <input
               type="text"
               id="email"
+              value={username}
               autoComplete="email"
               aria-label={useLocalize('com_auth_email')}
               onChange={(e) => setUsername(e.target.value)}
@@ -64,6 +65,7 @@ const Login: React.FC = () => {
             <input
               type="password"
               id="password"
+              value={password}
               autoComplete="current-password"
               aria-label={useLocalize('com_auth_password')}
               onChange={(e) => setPassword(e.target.value)}
