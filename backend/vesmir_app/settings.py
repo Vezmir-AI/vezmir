@@ -32,6 +32,16 @@ CORS_ORIGIN_ALLOW_ALL = True
 AUTH_USER_MODEL = "users.User"
 
 # Application definition
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            "description": "DO NOT FORGET TO ADD 'Bearer' BEFORE THE TOKEN"
+      }
+   }
+}
 
 INSTALLED_APPS = [
     "django.contrib.admin",
