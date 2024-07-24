@@ -318,6 +318,7 @@ export default {
     com_auth_password_confirm: 'Confirm password',
     com_auth_password_not_match: 'Passwords do not match',
     com_auth_continue: 'Continue',
+    com_auth_register: 'Register',
     com_auth_create_account: 'Create your account',
     com_auth_error_create:
       'There was an error attempting to register your account. Please try again.',
