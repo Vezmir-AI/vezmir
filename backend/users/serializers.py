@@ -6,7 +6,8 @@ from .models import User
 from django.contrib.auth.models import update_last_login
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
