@@ -6,6 +6,7 @@ import { useLocalize } from '../hooks';
 import { useContext } from 'react';
 import { ThemeContext, isDark } from '../UI/Theme/ThemeContext';
 import ThemeSelector from '../UI/Theme/ThemeSelector';
+import { GoogleLogin } from '@react-oauth/google';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -25,6 +26,13 @@ const Login: React.FC = () => {
       console.error('Login failed', error);
       //   console.log(error.response.data);
     }
+  };
+
+  const responseMessage = (response) => {
+    console.log(response);
+  };
+  const errorMessage = (error) => {
+    console.log(error);
   };
 
   return (
@@ -93,6 +101,17 @@ const Login: React.FC = () => {
             {useLocalize('com_auth_login')}
           </button>
         </form>
+        <div className="relative mt-6 flex w-full items-center justify-center border border-t border-gray-300 uppercase dark:border-gray-600">
+              <div className="absolute bg-white px-3 text-xs text-black dark:bg-gray-900 dark:text-white">
+                {useLocalize('com_auth_or')}
+          </div>
+        </div>
+        <div className="mt-4 w-full">
+          <GoogleLogin
+            onSuccess={responseMessage}
+            onError={errorMessage}
+          />
+        </div>
         <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
           {' '}
           {useLocalize('com_auth_no_account')}{' '}
