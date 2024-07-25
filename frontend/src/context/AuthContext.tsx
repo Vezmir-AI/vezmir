@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = async () => {
     const refresh_token = localStorage.getItem('refreshToken');
     if (refresh_token) {
-        await api.post('/api/auth/logout/', { refresh: refresh_token });
+        await api.post('/auth/logout/', { refresh: refresh_token });
     }
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const refreshAccessToken = async () => {
     try {
-      const response = await api.post('/api/login/refresh/', { refresh: refreshToken });
+      const response = await api.post('/auth/login/refresh/', { refresh: refreshToken });
       const newAccessToken = response.data.access;
       setAccessToken(newAccessToken);
       localStorage.setItem('accessToken', newAccessToken);
