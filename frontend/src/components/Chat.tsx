@@ -80,56 +80,52 @@ const ChatComponent: React.FC = () => {
 
     try {
       const payload = { content: inputMessage, model_name: selectedModel };
-      setMessages([...messages, { role: 'user', content: inputMessage }]);
+      setMessages(prevMessages => [...prevMessages, { role: 'user', content: inputMessage }]);
       setInputMessage('');
       setIsStreaming(true);
-
-      const url = chatId
-        ? `http://localhost:8000/api/chat/conversations/${chatId}/`
-        : 'http://localhost:8000/api/chat/conversations/';
-
-      const xhr = new XMLHttpRequest();
-      const accessToken = localStorage.getItem('accessToken');
-      xhr.open('POST', url, true);
-      xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`);
-
-      xhr.setRequestHeader('Content-Type', 'application/json');
-
       let assistantMessage = '';
-      setMessages(prevMessages => [
-        ...prevMessages,
-        { role: 'assistant', content: assistantMessage }
-      ]);
+      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage }]);
 
-      xhr.onprogress = () => {
-        const chunk = xhr.responseText.slice(assistantMessage.length);
+      let url = chatId
+        ? `/chat/conversations/${chatId}/`
+        : '/chat/conversations/';
+
+      const response = await api.post(url, payload, true);
+
+      if (!response) {
+        throw new Error('Response body is null');
+      }
+      const reader = response.getReader();
+      const decoder = new TextDecoder('utf-8');
+
+
+      const processText = async ({ done, value }: ReadableStreamReadResult<Uint8Array>): Promise<void> => {
+        if (done) {
+          setIsStreaming(false);
+          if (!chatId) {
+            // If it's a new conversation, navigate to the new chat URL
+            const fullResponse = JSON.parse(assistantMessage);
+            navigate(`/chat/${fullResponse.id}`);
+          }
+          return;
+        }
+
+        const chunk = decoder.decode(value, { stream: true });
         assistantMessage += chunk;
         setMessages(prevMessages => [
           ...prevMessages.slice(0, -1),
           { role: 'assistant', content: assistantMessage }
         ]);
+
+        // Read the next chunk
+        return reader.read().then(processText);
+
       };
 
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          if (!chatId) {
-            const response = JSON.parse(xhr.responseText);
-            navigate(`/chat/${response.id}`);
-          }
-        } else {
-          console.error('Error sending message:', xhr.statusText);
-        }
-        setIsStreaming(false);
-      };
+      reader.read().then(processText);
 
-      xhr.onerror = () => {
-        console.error('Error sending message:', xhr.statusText);
-        setIsStreaming(false);
-      };
-
-      xhr.send(JSON.stringify(payload));
     } catch (error) {
-      console.error('Error sending message here:', error);
+      console.error('Error sending message:', error);
       setIsStreaming(false);
     }
   };
