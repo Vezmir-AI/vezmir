@@ -300,6 +300,8 @@ export default {
     com_auth_no_account: 'Don\'t have an account?',
     com_auth_sign_up: 'Sign up',
     com_auth_sign_in: 'Sign in',
+    com_auth_or: 'Or',
+    com_auth_or_sign_up_with: 'Sign up with',
     com_auth_google_login: 'Continue with Google',
     com_auth_facebook_login: 'Continue with Facebook',
     com_auth_github_login: 'Continue with Github',
