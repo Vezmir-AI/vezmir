@@ -7,8 +7,8 @@ const api = {
       ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
     };
   },
-  post: async function (url: string, body: any) {
-    return this._fetch(url, body, 'POST');
+  post: async function (url: string, body: any, stream: boolean = false) {
+    return this._fetch(url, body, 'POST', false, stream);
   },
   get: async function (url: string) {
     return this._fetch(url, null, 'GET');
@@ -19,12 +19,12 @@ const api = {
   delete: async function (url: string) {
     return this._fetch(url, null, 'DELETE');
   },
-  _fetch: async function (url: string, options: any, method: string, _retry: boolean = true): Promise<any> {
+  _fetch: async function (url: string, options: any, method: string, _retry: boolean = true, stream: boolean = false): Promise<any> {
     const fetchUrl = this.baseURL + url;
     const response = await fetch(fetchUrl, {
       method,
       headers: this.getHeaders(),
-      body: JSON.stringify(options),
+      body: options ? JSON.stringify(options) : undefined,
     });
     if (response.status === 401) {
       const errorData = await response.json();
@@ -38,7 +38,9 @@ const api = {
         return response.json();
       }
     }
-
+    if (stream) {
+      return response.body;
+    }
     return response.json();
   },
   _refreshToken: async function() {
