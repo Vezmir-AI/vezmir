@@ -18,16 +18,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsAuthenticated(true);
   };
 
-  const logout = () => {
+  const logout = async () => {
     const refresh_token = localStorage.getItem('refreshToken');
     if (refresh_token) {
-        api.post('/api/auth/logout/', { refresh: refresh_token });
+        await api.post('/auth/logout/', { refresh: refresh_token });
     }
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     setIsAuthenticated(false);
   };
-
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, login, logout }}>

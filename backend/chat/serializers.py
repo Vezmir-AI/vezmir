@@ -35,3 +35,13 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             "model_name",
             "user",
         )
+
+# serializer for chat conversation, having a list of chat messages
+# each chat message is a dict {"role": role, "content": content}
+class FormattedMessageSerializer(serializers.Serializer):
+    role = serializers.CharField(max_length=100, required=True)
+    content = serializers.CharField(max_length=10000, required=True)
+
+    class Meta:
+        model = ChatMessage
+        fields = ("role", "content")
