@@ -12,7 +12,7 @@ class AbstractAPI(ABC):
     @classmethod
     @abstractmethod
     def get_response(
-        cls, messages: list[dict], model_name: str, system_prompt: str
+        cls, messages: list[dict], model_name: str
     ) -> str:
         pass
 
@@ -22,33 +22,32 @@ class OpenAIAPI(AbstractAPI):
 
     @classmethod
     def get_response(
-        cls, messages: list[dict], model_name: str, system_prompt: str
+        cls, messages: list[dict], model_name: str
     ) -> str:
+        # adds "be concise" to the last message
+        messages[-1]["content"] = messages[-1]["content"] + "\n\nBe concise."
         response = cls.OpenAI.chat.completions.create(
             model=model_name,
             messages=messages,
-            system=system_prompt,
             stream=True,
         )
         for chunk in response:
-            yield chunk.choices[0].delta.content
+            content = chunk.choices[0].delta.content
+            if content is not None:
+                yield content
 
 
 class SampleAPI(AbstractAPI):
     @classmethod
     def get_response(
-        cls, messages: list[dict], model_name: str, system_prompt: str
+        cls, messages: list[dict], model_name: str
     ) -> str:
         import time
 
         response = (
             "_This is a sample response._ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy "
             "eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et "
-            "accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est "
-            "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy "
-            "eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et "
-            "accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est "
-            "Lorem ipsum dolor sit amet."
+            "accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
         )
         for word in response.split():
             time.sleep(0.1)

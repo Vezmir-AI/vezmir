@@ -26,7 +26,6 @@ const api = {
       headers: this.getHeaders(),
       body: JSON.stringify(options),
     });
-
     if (response.status === 401) {
       const errorData = await response.json();
       if (errorData.code === 'token_not_valid') {

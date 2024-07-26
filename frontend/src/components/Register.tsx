@@ -50,7 +50,7 @@ const Register: React.FC = () => {
     }
 
     try {
-      const response = await api.post('/api/auth/register/', { username, password });
+      const response = await api.post('/auth/register/', { username, password });
       const { access, refresh } = response.data;
       login(access, refresh);
       navigate('/dashboard');
