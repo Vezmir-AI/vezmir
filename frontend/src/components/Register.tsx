@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import api from '../api';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLocalize } from '../hooks';
 import { useContext } from 'react';
 import { ThemeContext, isDark } from '../UI/Theme/ThemeContext';
 import ThemeSelector from '../UI/Theme/ThemeSelector';
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -51,7 +51,7 @@ const Register: React.FC = () => {
 
     try {
       const response = await api.post('/auth/register/', { username, password });
-      const { access, refresh } = response.data;
+      const { access, refresh } = response;
       login(access, refresh);
       navigate('/dashboard');
     } catch (error) {
@@ -91,12 +91,12 @@ const Register: React.FC = () => {
     setPasswordsMatch(newPassword === confirmPassword);
   };
 
-  const responseMessage = async (response) => {
+  const responseMessage = async (response: CredentialResponse) => {
     console.log(response);
     try {
       // Send the Google credential to your backend
       const backendResponse = await api.post('/api/auth/google/', { credential: response.credential });
-      const { access, refresh } = backendResponse.data;
+      const { access, refresh } = backendResponse;
       login(access, refresh);
       navigate('/dashboard');
     } catch (error) {
@@ -105,8 +105,8 @@ const Register: React.FC = () => {
     }
   };
 
-  const errorMessage = (error) => {
-    console.log(error);
+  const errorMessage = () => {
+    console.error('Error occurred during Google register');
   };
 
   return (

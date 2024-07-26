@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import api from '../api';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLocalize } from '../hooks';
 import { useContext } from 'react';
 import { ThemeContext, isDark } from '../UI/Theme/ThemeContext';
 import ThemeSelector from '../UI/Theme/ThemeSelector';
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -19,7 +19,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     try {
       const response = await api.post('/auth/login/', { username, password });
-      const { access, refresh } = response.data;
+      const { access, refresh } = response;
       login(access, refresh);
       navigate('/dashboard');
     } catch (error) {
@@ -28,11 +28,11 @@ const Login: React.FC = () => {
     }
   };
 
-  const responseMessage = (response) => {
+  const responseMessage = (response: CredentialResponse) => {
     console.log(response);
   };
-  const errorMessage = (error) => {
-    console.log(error);
+  const errorMessage = () => {
+    console.error('Google login error occurred');
   };
 
   return (

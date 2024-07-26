@@ -46,8 +46,8 @@ const ChatComponent: React.FC = () => {
 
   const fetchConversations = async (): Promise<void> => {
     try {
-      const response = await api.get<Conversation[]>('/chat/conversations/');
-      setConversations(response.data);
+      const response = await api.get('/chat/conversations/');
+      setConversations(response);
     } catch (error) {
       console.error('Error fetching conversations:', error);
     }
@@ -55,10 +55,10 @@ const ChatComponent: React.FC = () => {
 
   const fetchAiModels = async (): Promise<void> => {
     try {
-      const response = await api.get<AiModel[]>('/ai_models/');
-      setAiModels(response.data);
-      if (response.data.length > 0) {
-        setSelectedModel(response.data[0].name);
+      const response = await api.get('/ai_models/');
+      setAiModels(response);
+      if (response.length > 0) {
+        setSelectedModel(response[0].name);
       }
     } catch (error) {
       console.error('Error fetching AI models:', error);
@@ -67,8 +67,8 @@ const ChatComponent: React.FC = () => {
 
   const fetchMessages = async (id: string): Promise<void> => {
     try {
-      const response = await api.get<Message[]>(`/chat/conversations/${id}/`);
-      setMessages(response.data);
+      const response = await api.get(`/chat/conversations/${id}/`);
+      setMessages(response);
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
@@ -148,8 +148,8 @@ const ChatComponent: React.FC = () => {
 
   const handleNewConversation = async () => {
     try {
-      const response = await api.post('/chat/conversations/');
-      navigate(`/chat/${response.data.id}`);
+      const response = await api.post('/chat/conversations/', {});
+      navigate(`/chat/${response.id}`);
     } catch (error) {
       console.error('Error creating new conversation:', error);
     }

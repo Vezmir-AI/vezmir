@@ -13,7 +13,7 @@ const Dashboard: React.FC = () => {
   return (
     <div>
       <h1>Dashboard</h1>
-      <p>Welcome to your dashboard! Antoine est homo</p>
+      <p>Welcome to your dashboard!</p>
       <button onClick={goToChat}>Go to Chat</button>
       <button onClick={logout}>Logout</button>
     </div>
