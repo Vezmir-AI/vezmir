@@ -1,54 +1,64 @@
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: "http://localhost:8000/api",
-});
-
-api.interceptors.request.use(
-  async (config) => {
+const api = {
+  baseURL: 'http://localhost:8000/api',
+  getHeaders: function() {
     const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-      config.headers['Authorization'] = `Bearer ${accessToken}`;
-    }
-    return config;
+    return {
+      'Content-Type': 'application/json',
+      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+    };
   },
-  (error) => Promise.reject(error)
-);
-
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (refreshToken) {
-          const response = await api.post(`/auth/login/refresh/`, { refresh: refreshToken });
-          const newAccessToken = response.data.access;
-          localStorage.setItem('accessToken', newAccessToken);
-          api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-          return api(originalRequest);
-        } else {
-          // logout user
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          // redirect to login
-        //   window.location.href = '/login';
+  post: async function (url: string, body: any) {
+    return this._fetch(url, body, 'POST');
+  },
+  get: async function (url: string) {
+    return this._fetch(url, null, 'GET');
+  },
+  put: async function (url: string, data: any) {
+    return this._fetch(url, data, 'PUT');
+  },
+  delete: async function (url: string) {
+    return this._fetch(url, null, 'DELETE');
+  },
+  _fetch: async function (url: string, options: any, method: string, _retry: boolean = true): Promise<any> {
+    const fetchUrl = this.baseURL + url;
+    const response = await fetch(fetchUrl, {
+      method,
+      headers: this.getHeaders(),
+      body: JSON.stringify(options),
+    });
+    if (response.status === 401) {
+      const errorData = await response.json();
+      if (errorData.code === 'token_not_valid') {
+        if (_retry && await this._refreshToken()) {
+          return this._fetch(url, options, method, false);
         }
-      } catch (refreshError) {
-        // Handle refresh token failure (e.g., logout user)
-        console.error('Failed to refresh token', refreshError);
-        // console.log(refreshError.response.data);
-        // logout user
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        // redirect to login
-        // window.location.href = '/login';
+        this._clearTokensAndRedirect();
+        return;
+      } else {
+        return response.json();
       }
     }
-    return Promise.reject(error);
-  }
-);
+
+    return response.json();
+  },
+  _refreshToken: async function() {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) return false;
+
+    try {
+      const refreshResponse = await this.post('/auth/login/refresh', { refresh: refreshToken });
+      localStorage.setItem('accessToken', refreshResponse.access);
+      localStorage.setItem('refreshToken', refreshResponse.refresh);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  },
+  _clearTokensAndRedirect: function () {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    window.location.href = '/login';
+  },
+};
 
 export default api;
