@@ -91,8 +91,18 @@ const Register: React.FC = () => {
     setPasswordsMatch(newPassword === confirmPassword);
   };
 
-  const responseMessage = (response) => {
+  const responseMessage = async (response) => {
     console.log(response);
+    try {
+      // Send the Google credential to your backend
+      const backendResponse = await api.post('/api/auth/google/', { credential: response.credential });
+      const { access, refresh } = backendResponse.data;
+      login(access, refresh);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Google Sign-In failed', error);
+      // Handle error (e.g., show error message to user)
+    }
   };
 
   const errorMessage = (error) => {
