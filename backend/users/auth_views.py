@@ -1,11 +1,8 @@
-from django.contrib.auth import authenticate
-from rest_framework import generics, permissions, status
-from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import UserSerializer
 
@@ -15,14 +12,14 @@ class UserRegistrationView(APIView):
     Creates the user.
     """
 
-    permission_classes = [permissions.AllowAny]
+    permission_classes = (AllowAny,)
     serializer_class = UserSerializer
 
     def post(self, request):
 
         if request.user.is_authenticated:
             return Response(
-                {"error": "Useralready exists"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "User already exists"}, status=status.HTTP_400_BAD_REQUEST
             )
 
         serializer = UserSerializer(data=request.data)
@@ -41,7 +38,7 @@ class UserRegistrationView(APIView):
 
 
 class UserLogoutView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         refresh_token = request.data["refresh"]

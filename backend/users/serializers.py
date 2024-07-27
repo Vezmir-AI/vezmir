@@ -1,9 +1,8 @@
-from django.contrib.auth import authenticate
 from rest_framework import serializers
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from .models import User
 
-from django.contrib.auth.models import update_last_login
 
 # TODO modify to use email instead of username
 # modify to allow email verification, password reset, etc
@@ -28,3 +27,11 @@ class UserSerializer(serializers.ModelSerializer):
         instance.password = validated_data.get("password", instance.password)
         instance.save()
         return instance
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username_field = User.email
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        return data
