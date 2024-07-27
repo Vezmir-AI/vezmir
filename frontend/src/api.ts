@@ -48,7 +48,7 @@ const api = {
     if (!refreshToken) return false;
 
     try {
-      const refreshResponse = await this.post('/auth/login/refresh', { refresh: refreshToken });
+      const refreshResponse = await this.post('/auth/login/refresh/', { refresh: refreshToken });
       localStorage.setItem('accessToken', refreshResponse.access);
       localStorage.setItem('refreshToken', refreshResponse.refresh);
       return true;

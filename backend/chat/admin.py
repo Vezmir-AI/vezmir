@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import  AIModel, AIModelProvider, ChatConversation
+from .models import AIModel, AIModelProvider, ChatConversation
 
 admin.site.register(AIModel)
 admin.site.register(AIModelProvider)
