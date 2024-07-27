@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -9,23 +9,29 @@ import ThemeSelector from '../UI/Theme/ThemeSelector';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 const Register: React.FC = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, hasAccessToken, logout } = useAuth();
   const { theme } = useContext(ThemeContext);
 
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
+  useEffect(() => {
+    if (hasAccessToken()) {
+      logout();
+    }
+  }, [hasAccessToken, logout]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     let hasError = false;
 
-    if (!username) {
+    if (!email) {
       setEmailError(useLocalize('com_auth_email_required'));
       hasError = true;
     }
@@ -50,7 +56,7 @@ const Register: React.FC = () => {
     }
 
     try {
-      const response = await api.post('/auth/register/', { username, password });
+      const response = await api.post('/auth/register/', { email, password });
       const { access, refresh } = response;
       login(access, refresh);
       navigate('/dashboard');
@@ -72,7 +78,7 @@ const Register: React.FC = () => {
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const email = e.target.value;
-    setUsername(email);
+    setEmail(email);
     if (email && !isValidEmail(email)) {
       setEmailError(useLocalize('com_auth_email_pattern'));
     } else {
@@ -133,7 +139,7 @@ const Register: React.FC = () => {
               <input
                 type="text"
                 id="email"
-                value={username}
+                value={email}
                 autoComplete="email"
                 aria-label={useLocalize('com_auth_email')}
                 onChange={handleEmailChange}

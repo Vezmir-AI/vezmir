@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -9,16 +9,22 @@ import ThemeSelector from '../UI/Theme/ThemeSelector';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, logout, hasAccessToken } = useAuth();
   const { theme } = useContext(ThemeContext);
+
+  useEffect(() => {
+    if (hasAccessToken()) {
+      logout();
+    }
+  }, [hasAccessToken, logout]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await api.post('/auth/login/', { username, password });
+      const response = await api.post('/auth/login/', { email, password });
       const { access, refresh } = response;
       login(access, refresh);
       navigate('/dashboard');
@@ -62,10 +68,10 @@ const Login: React.FC = () => {
             <input
               type="text"
               id="email"
-              value={username}
+              value={email}
               autoComplete="email"
               aria-label={useLocalize('com_auth_email')}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               className="webkit-dark-styles peer block w-full appearance-none rounded-md border border-gray-300 bg-transparent px-3.5 pb-3.5 pt-4 text-sm text-gray-900 focus:border-[#a02d1f] focus:outline-none focus:ring-0 dark:border-gray-600 dark:text-white dark:focus:border-[#a02d1f]"
               placeholder=" "
             />

@@ -5,6 +5,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (accessToken: string, refreshToken: string) => void;
   logout: () => void;
+  hasAccessToken: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,16 +21,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = async () => {
     const refresh_token = localStorage.getItem('refreshToken');
-    if (refresh_token) {
-        await api.post('/auth/logout/', { refresh: refresh_token });
-    }
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     setIsAuthenticated(false);
+    if (refresh_token) {
+        await api.post('/auth/logout/', { refresh: refresh_token });
+    }
+  };
+
+  const hasAccessToken = () => {
+    return !!localStorage.getItem('accessToken');
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, hasAccessToken }}>
       {children}
     </AuthContext.Provider>
   );
