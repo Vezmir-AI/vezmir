@@ -28,32 +28,3 @@ class UserSerializer(serializers.ModelSerializer):
         instance.password = validated_data.get("password", instance.password)
         instance.save()
         return instance
-
-
-class UserLoginSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=255)
-    password = serializers.CharField(max_length=128, write_only=True)
-    token = serializers.CharField(max_length=255, read_only=True)
-
-    def validate(self, data):
-        username = data.get("username", None)
-        password = data.get("password", None)
-        
-        # Check if user exists
-        if not User.objects.filter(username=username).exists():
-            raise serializers.ValidationError("User does not exist.")
-        
-        user = authenticate(username=username, password=password)
-        if user is None:
-            raise serializers.ValidationError(
-                "A user with this username and password is not found."
-            )
-        try:
-            refresh = RefreshToken.for_user(user)
-            jwt_token = str(refresh.access_token)
-            update_last_login(None, user)
-        except User.DoesNotExist:
-            raise serializers.ValidationError(
-                "User with given username and password does not exist"
-            )
-        return {"username": user.username, "token": jwt_token}

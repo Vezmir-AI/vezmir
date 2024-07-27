@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 
-from .serializers import UserSerializer, UserLoginSerializer
+from .serializers import UserSerializer
 
 
 class UserRegistrationView(APIView):
@@ -38,22 +38,6 @@ class UserRegistrationView(APIView):
                     status=status.HTTP_201_CREATED,
                 )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class UserLoginView(APIView):
-    permission_classes = (permissions.AllowAny,)
-    serializer_class = UserLoginSerializer
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            response = {
-                "success": True,
-                "token": serializer.data["token"],
-            }
-            return Response(response, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class UserLogoutView(APIView):
