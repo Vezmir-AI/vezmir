@@ -10,6 +10,7 @@ from chat.serializers import (
     ChatMessageSerializer,
     AIModelSerializer,
     AIModelProviderSerializer,
+    FormattedMessageSerializer,
 )
 from utils.permissions import IsOwner
 from utils.chatbots import get_api_response
@@ -93,20 +94,23 @@ class ChatMessageView(APIView):
         # query model name and its provider
         model_name = request.data.get("model_name")
         model = AIModel.objects.get(name=model_name)
-        model_provider = model.provider
+        model_provider = model.provider.name
 
         # get the whole conversation to pass to the model
         # TODO: Use self.get? or a serializer?
-        conv_messages = ChatMessage.objects.filter(
-            chat_conversation=conversation
-        ).order_by("date_created")
+        conv_messages = FormattedMessageSerializer(
+            ChatMessage.objects.filter(chat_conversation=conversation).order_by(
+                "date_created"
+            ),
+            many=True,
+        ).data
 
         def stream_and_save():
             full_response = ""
             for chunk in get_api_response(
-                model=model,
+                model_name=model_name,
                 model_provider=model_provider,
-                messages=conv_messages.values(),
+                messages=conv_messages,
             ):
                 full_response += chunk
                 # this allows to send the response to the client as it is being generated
@@ -124,10 +128,10 @@ class ChatMessageView(APIView):
             )
             ai_message_serializer.is_valid(
                 raise_exception=True
-            )  # TODO: handle API problems, like stop generation (e.g. data.completed=False)
+            )  # TODO: handle API problems, like stop generation (i.e. data.completed=False)
             ai_message_serializer.save()
 
-        response = StreamingHttpResponse(stream_and_save(), content_type="text/plain")
+        response = StreamingHttpResponse(stream_and_save(), content_type="text/event-stream")
         # do not remove this, it is used by nginx to stream the response
         # https://discovergen.ai/article/creating-a-streaming-chat-application-with-django/
         response["X-Accel-Buffering"] = "no"

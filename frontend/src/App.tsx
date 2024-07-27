@@ -4,6 +4,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
+import ChatComponent from './components/Chat';
 
 function App() {
   return (
@@ -12,12 +13,10 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          } />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/chat" element={<PrivateRoute><ChatComponent /></PrivateRoute>} />
+          <Route path="/chat/:chatId" element={<PrivateRoute><ChatComponent /></PrivateRoute>} />
         </Routes>
       </Router>
     </AuthProvider>
