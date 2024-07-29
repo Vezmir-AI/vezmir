@@ -36,11 +36,12 @@ const api = {
         }
         this._clearTokensAndRedirect();
         throw new Error('Authentication failed');
-      } 
+      }
     }
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }  
+      const errorData = await response.json();
+      throw errorData || new Error(`HTTP error! status: ${response.status}`);
+    }
     if (stream) {
       return response.body;
     }
