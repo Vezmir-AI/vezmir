@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import api from '../api';
 
 interface AuthContextType {
@@ -9,9 +9,11 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    return !!accessToken;
+  });
 
   const login = (newAccessToken: string, newRefreshToken: string) => {
     localStorage.setItem('accessToken', newAccessToken);
@@ -25,7 +27,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.removeItem('refreshToken');
     setIsAuthenticated(false);
     if (refresh_token) {
-        await api.post('/auth/logout/', { refresh: refresh_token });
+      await api.post('/auth/logout/', { refresh: refresh_token });
     }
   };
 
