@@ -12,14 +12,14 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login, logout, hasAccessToken } = useAuth();
+  const { login, hasAccessToken } = useAuth();
   const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     if (hasAccessToken()) {
-      logout();
+      navigate('/');
     }
-  }, [hasAccessToken, logout]);
+  }, [hasAccessToken]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

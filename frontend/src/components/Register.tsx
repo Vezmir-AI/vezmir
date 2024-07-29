@@ -14,7 +14,7 @@ const Register: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const navigate = useNavigate();
-  const { login, hasAccessToken, logout } = useAuth();
+  const { login, hasAccessToken } = useAuth();
   const { theme } = useContext(ThemeContext);
 
   const [emailError, setEmailError] = useState('');
@@ -23,9 +23,9 @@ const Register: React.FC = () => {
 
   useEffect(() => {
     if (hasAccessToken()) {
-      logout();
+      navigate('/');
     }
-  }, [hasAccessToken, logout]);
+  }, [hasAccessToken]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
