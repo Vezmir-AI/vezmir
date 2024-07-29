@@ -31,7 +31,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email_verified = models.BooleanField(default=False)
     email_verification_token = models.CharField(max_length=255, null=True, blank=True)
-    email_verified_at = models.DateTimeField(null=True, blank=True)
+    email_verification_token_created_at = models.DateTimeField(null=True, blank=True)
 
     # django admin required file
     is_staff = models.BooleanField(default=False)
