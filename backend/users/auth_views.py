@@ -1,13 +1,11 @@
-from django.contrib.auth import authenticate
-from rest_framework import generics, permissions, status
-from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
+from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import UserSerializer, UserLoginSerializer
+from .serializers import UserSerializer
+from utils.mail import send_verification_email
 
 
 class UserRegistrationView(APIView):
@@ -15,20 +13,21 @@ class UserRegistrationView(APIView):
     Creates the user.
     """
 
-    permission_classes = [permissions.AllowAny]
+    permission_classes = (AllowAny,)
     serializer_class = UserSerializer
 
     def post(self, request):
 
         if request.user.is_authenticated:
             return Response(
-                {"error": "Useralready exists"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "User already exists"}, status=status.HTTP_400_BAD_REQUEST
             )
 
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             if user:
+                send_verification_email(user)
                 tokens = RefreshToken.for_user(user)
                 return Response(
                     {
@@ -40,24 +39,8 @@ class UserRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserLoginView(APIView):
-    permission_classes = (permissions.AllowAny,)
-    serializer_class = UserLoginSerializer
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            response = {
-                "success": True,
-                "token": serializer.data["token"],
-            }
-            return Response(response, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
 class UserLogoutView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         refresh_token = request.data["refresh"]

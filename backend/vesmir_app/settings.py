@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,19 +29,20 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 CORS_ORIGIN_ALLOW_ALL = True
+FRONTEND_URL = "http://localhost:3000"
 
 AUTH_USER_MODEL = "users.User"
 
 # Application definition
 SWAGGER_SETTINGS = {
-   'SECURITY_DEFINITIONS': {
-        'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header',
-            "description": "DO NOT FORGET TO ADD 'Bearer' BEFORE THE TOKEN"
-      }
-   }
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "DO NOT FORGET TO ADD 'Bearer' BEFORE THE TOKEN",
+        }
+    }
 }
 
 INSTALLED_APPS = [
@@ -92,7 +94,7 @@ ROOT_URLCONF = "vesmir_app.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "users/template"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -142,6 +144,13 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "jeanbaptiste.conan.jbc@gmail.com"
+EMAIL_HOST_PASSWORD = "sbnf hswd hhlq zdmk"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -158,6 +167,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

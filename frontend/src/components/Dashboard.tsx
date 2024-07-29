@@ -16,6 +16,7 @@ const Dashboard: React.FC = () => {
       <p>Welcome to your dashboard!</p>
       <button onClick={goToChat}>Go to Chat</button>
       <button onClick={logout}>Logout</button>
+      <button onClick={() => navigate('/resend-verification-email')}>Resend Verification Email</button>
     </div>
   );
 };
