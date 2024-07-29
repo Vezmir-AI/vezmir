@@ -1,6 +1,6 @@
 const api = {
   baseURL: 'http://localhost:8000/api',
-  getHeaders: function() {
+  getHeaders: function () {
     const accessToken = localStorage.getItem('accessToken');
     return {
       'Content-Type': 'application/json',
@@ -8,7 +8,7 @@ const api = {
     };
   },
   post: async function (url: string, body: any, stream: boolean = false) {
-    return this._fetch(url, body, 'POST', false, stream);
+    return this._fetch(url, body, 'POST', true, stream);
   },
   get: async function (url: string) {
     return this._fetch(url, null, 'GET');
@@ -26,24 +26,28 @@ const api = {
       headers: this.getHeaders(),
       body: options ? JSON.stringify(options) : undefined,
     });
-    if (response.status === 401) {
+    if (response.status === 401 && _retry) {
+
       const errorData = await response.json();
       if (errorData.code === 'token_not_valid') {
-        if (_retry && await this._refreshToken()) {
-          return this._fetch(url, options, method, false);
+        const canRetry = await this._refreshToken();
+        if (canRetry) {
+          return this._fetch(url, options, method, false, stream);
         }
         this._clearTokensAndRedirect();
-        return;
-      } else {
-        return response.json();
+        throw new Error('Authentication failed');
       }
+    }
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw errorData || new Error(`HTTP error! status: ${response.status}`);
     }
     if (stream) {
       return response.body;
     }
     return response.json();
   },
-  _refreshToken: async function() {
+  _refreshToken: async function () {
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) return false;
 

@@ -1,59 +1,38 @@
-from django.contrib.auth import authenticate
 from rest_framework import serializers
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from .models import User
 
-from django.contrib.auth.models import update_last_login
 
+# TODO modify to use email instead of username
+# modify to allow email verification, password reset, etc
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, required=True)
+    email_verified = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = User
-        fields = ("id", "username", "password", "balance")
+        fields = ("id", "email", "password", "email_verified")
 
     def create(self, validated_data):
         user = User(
-            username=validated_data['username'],
-            balance=validated_data.get('balance', 10)
+            email=validated_data["email"],
         )
-        user.set_password(validated_data['password'])
+        user.set_password(validated_data["password"])
         user.save()
         return user
 
     def update(self, instance, validated_data):
-        instance.username = validated_data.get("username", instance.username)
-        # instance.email = validated_data.get("email", instance.email)
+        instance.email = validated_data.get("email", instance.email)
         instance.password = validated_data.get("password", instance.password)
         instance.save()
         return instance
 
 
-class UserLoginSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=255)
-    password = serializers.CharField(max_length=128, write_only=True)
-    token = serializers.CharField(max_length=255, read_only=True)
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username_field = User.email
 
-    def validate(self, data):
-        username = data.get("username", None)
-        password = data.get("password", None)
-        
-        # Check if user exists
-        if not User.objects.filter(username=username).exists():
-            raise serializers.ValidationError("User does not exist.")
-        
-        user = authenticate(username=username, password=password)
-        if user is None:
-            raise serializers.ValidationError(
-                "A user with this username and password is not found."
-            )
-        try:
-            refresh = RefreshToken.for_user(user)
-            jwt_token = str(refresh.access_token)
-            update_last_login(None, user)
-        except User.DoesNotExist:
-            raise serializers.ValidationError(
-                "User with given username and password does not exist"
-            )
-        return {"username": user.username, "token": jwt_token}
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        return data
