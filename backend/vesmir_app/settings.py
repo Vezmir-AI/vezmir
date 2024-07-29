@@ -149,6 +149,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "jeanbaptiste.conan.jbc@gmail.com"
 EMAIL_HOST_PASSWORD = "***REMOVED-EMAIL-APP-PASSWORD***"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

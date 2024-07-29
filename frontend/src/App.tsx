@@ -5,12 +5,16 @@ import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 import ChatComponent from './components/Chat';
+import VerifyEmail from './components/VerifyEmail';
+import ResendVerificationEmail from './components/ResendVerificationEmail';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
+          <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/resend-verification-email" element={<PrivateRoute><ResendVerificationEmail /></PrivateRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
