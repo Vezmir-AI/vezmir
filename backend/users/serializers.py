@@ -9,10 +9,11 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, required=True)
+    email_verified = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = User
-        fields = ("id", "email", "password")
+        fields = ("id", "email", "password", "email_verified")
 
     def create(self, validated_data):
         user = User(

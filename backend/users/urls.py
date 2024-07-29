@@ -13,4 +13,6 @@ urlpatterns = [
     path("auth/login/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("auth/logout/", auth_views.UserLogoutView.as_view(), name="logout"),
     path("user/balance/", user_views.GetBalanceView.as_view(), name="balance"),
+    path("user/verify-email/", user_views.VerifyEmailView.as_view(), name="verify_email"),
+    path("user/resend-verification-email/", user_views.ResendEmailVerificationView.as_view(), name="resend_verification_email"),
 ]

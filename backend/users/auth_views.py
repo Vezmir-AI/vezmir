@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import UserSerializer
+from utils.mail import send_verification_email
 
 
 class UserRegistrationView(APIView):
@@ -26,6 +27,7 @@ class UserRegistrationView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             if user:
+                send_verification_email(user)
                 tokens = RefreshToken.for_user(user)
                 return Response(
                     {
