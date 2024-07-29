@@ -24,7 +24,7 @@ class VerifyEmailView(APIView):
         token = request.data.get("token")
         if not token:
             return Response(
-                {"error": "Verification token is required"},
+                {"message": "token_is_required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -32,22 +32,23 @@ class VerifyEmailView(APIView):
             user = User.objects.get(email_verification_token=token)
         except User.DoesNotExist:
             return Response(
-                {"error": "Invalid verification token"},
+                {"message": "invalid_verification_token"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         if user.email_verified:
             return Response(
-                {"message": "Email already verified"}, status=status.HTTP_200_OK
+                {"message": "email_already_verified"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         # Check if the token has expired (e.g., after 3 days)
         if (
             user.email_verification_token_created_at
-            < timezone.now() - timezone.timedelta(days=3)
+            < timezone.now() - timezone.timedelta(minutes=1)
         ):
             return Response(
-                {"error": "Verification token has expired"},
+                {"message": "token_has_expired"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -55,7 +56,7 @@ class VerifyEmailView(APIView):
         user.save()
 
         return Response(
-            {"message": "Email successfully verified"}, status=status.HTTP_200_OK
+            {"message": "email_verified_successfully"}, status=status.HTTP_200_OK
         )
 
 
@@ -63,7 +64,12 @@ class ResendEmailVerificationView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        send_verification_email(request.user)
+        user = request.user
+        if user.email_verified:
+            return Response(
+                {"message": "Email already verified"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        send_verification_email(user)
         return Response(
             {"message": "Email verification sent"}, status=status.HTTP_200_OK
         )
