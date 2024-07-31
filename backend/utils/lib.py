@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 
 from django.conf import settings
 from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 
 
 class AbstractAPI(ABC):
@@ -31,6 +32,17 @@ class OpenAIAPI(AbstractAPI):
             yield chunk
 
 
+class AnthropicAPI(AbstractAPI):
+    API_KEY = settings.ANTHROPIC_API_KEY
+
+    @classmethod
+    def _get_response(cls, messages: list[dict], model_name: str) -> str:
+        chat = ChatAnthropic(
+            api_key=cls.API_KEY,
+            model=model_name,
+        )
+        for chunk in chat.stream(messages, stream_usage=True):
+            yield chunk
 
 
 class SampleAPI(AbstractAPI):
