@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
+import Header from './Chat/Header';
+import ModelSelector from './Chat/ModelSelector';
 
 interface Conversation {
   id: string;
@@ -142,38 +144,12 @@ const ChatComponent: React.FC = () => {
     }
   };
 
-  const handleNewConversation = async () => {
-    try {
-      const response = await api.post('/chat/conversations/', {});
-      navigate(`/chat/${response.id}`);
-    } catch (error) {
-      console.error('Error creating new conversation:', error);
-    }
-  };
-
   return (
     <div className="flex h-screen">
-      {/* Conversation List and AI Model Selection */}
-      <div className="w-1/4 bg-black-100 overflow-y-auto flex flex-col">
-        <h2 className="text-xl font-bold p-4">Conversations</h2>
+      {/* Conversation List */}
+      <div className="w-72 bg-gray-850 overflow-y-auto flex flex-col">
         <div className="p-4">
-          <button
-            onClick={handleNewConversation}
-            className="w-full p-2 mb-4 bg-green-500 text-white rounded-md hover:bg-green-600"
-          >
-            New Conversation
-          </button>
-          <select
-            value={selectedModel}
-            onChange={(e) => setSelectedModel(e.target.value)}
-            className="w-full p-2 rounded-md"
-          >
-            {aiModels.map((model) => (
-              <option key={model.id} value={model.id}>
-                {model.name}
-              </option>
-            ))}
-          </select>
+          <Header />
         </div>
         <div className="flex-grow overflow-y-auto">
           {conversations.map((conv) => (
@@ -196,7 +172,16 @@ const ChatComponent: React.FC = () => {
       </div>
 
       {/* Chat Area */}
-      <div className="w-3/4 flex flex-col">
+      <div className="flex-1 flex flex-col bg-gray-800">
+        {/* Model Selector */}
+        <div className="p-4 bg-gray-800">
+          <ModelSelector
+            selectedModel={selectedModel}
+            setSelectedModel={setSelectedModel}
+            aiModels={aiModels}
+          />
+        </div>
+
         {/* Messages */}
         <div className="flex-grow overflow-y-auto p-4">
           {messages.map((msg, index) => (
