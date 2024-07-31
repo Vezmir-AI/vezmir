@@ -7,7 +7,7 @@ const Header = () => {
 
     const handleNewConversation = async () => {
         try {
-        const response = await api.post('/chat/conversations/', {});
+        const response = await api.post('/chat/conversations/', {name: 'New Chat'});
         navigate(`/chat/${response.id}`);
         } catch (error) {
         console.error('Error creating new conversation:', error);

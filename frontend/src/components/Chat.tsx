@@ -4,6 +4,7 @@ import api from '../api';
 import Header from './Chat/Header';
 import ModelSelector from './Chat/ModelSelector';
 import SendIcon from '../UI/svg/SendIcon';
+import ChatHistory from './Chat/ChatHistory';
 
 interface Conversation {
   id: string;
@@ -114,18 +115,6 @@ const ChatComponent: React.FC = () => {
     }
   };
 
-  const handleDeleteConversation = async (id: string): Promise<void> => {
-    try {
-      await api.delete(`/chat/conversations/${id}/`);
-      setConversations(conversations.filter(conv => conv.id !== id));
-      if (chatId === id) {
-        navigate('/chat');
-      }
-    } catch (error) {
-      console.error('Error deleting conversation:', error);
-    }
-  };
-
   return (
     <div className="flex h-screen">
       {/* Conversation List */}
@@ -133,24 +122,7 @@ const ChatComponent: React.FC = () => {
         <div className="p-4">
           <Header />
         </div>
-        <div className="flex-grow overflow-y-auto">
-          {conversations.map((conv) => (
-            <div key={conv.id} className="p-2 hover:bg-gray-800 flex justify-between items-center">
-              <span
-                className="cursor-pointer flex-grow"
-                onClick={() => navigate(`/chat/${conv.id}`)}
-              >
-                {conv.name}
-              </span>
-              <button
-                onClick={() => handleDeleteConversation(conv.id)}
-                className="bg-red-500 text-white px-2 py-1 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          ))}
-        </div>
+        <ChatHistory conversations={conversations} setConversations={setConversations} />
       </div>
 
       {/* Chat Area */}
