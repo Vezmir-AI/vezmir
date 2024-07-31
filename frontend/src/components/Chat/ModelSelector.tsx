@@ -42,7 +42,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ selectedModel, setSelecte
       <div>
         <button
           type="button"
-          className={`inline-flex justify-between w-full rounded-md shadow-sm px-4 py-2 text-sm font-medium text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-700 focus:ring-gray-500 ${
+          className={`inline-flex justify-between w-full rounded-xl shadow-sm px-5 py-3 text-lg font-medium text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-700 focus:ring-gray-500 ${
             isOpen ? 'bg-gray-700' : 'bg-gray-800 hover:bg-gray-700'
           }`}
           onClick={() => setIsOpen(!isOpen)}
