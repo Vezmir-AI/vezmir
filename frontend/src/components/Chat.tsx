@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
 import Header from './Chat/Header';
 import ModelSelector from './Chat/ModelSelector';
+import SendIcon from '../UI/svg/SendIcon';
 
 interface Conversation {
   id: string;
@@ -153,7 +154,7 @@ const ChatComponent: React.FC = () => {
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col bg-gray-800">
+      <div className="flex-1 flex flex-col bg-gray-800 pb-4">
         {/* Model Selector */}
         <div className="p-4 bg-gray-800">
           <ModelSelector selectedModel={selectedModel} setSelectedModel={setSelectedModel} />
@@ -170,22 +171,21 @@ const ChatComponent: React.FC = () => {
         </div>
 
         {/* Input Area */}
-        <form onSubmit={handleSendMessageToStream} className="p-4 bg-gray-200">
-          <div className="flex">
+        <form onSubmit={handleSendMessageToStream} className="p-4 bg-gray-800 mt-auto">
+          <div className="flex items-center max-w-4xl mx-auto">
             <input
               type="text"
               value={inputMessage}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)}
-              className="flex-grow p-2 rounded-l-md"
-              placeholder="Type a message..."
-              disabled={isStreaming}
+              className="flex-grow p-4 rounded-l-xl bg-gray-700 text-white text-lg border border-gray-600 focus:outline-none focus:ring-0 focus:border-gray-600"
+              placeholder={"Message " + selectedModel}
             />
             <button
               type="submit"
-              className="bg-blue-500 text-white p-2 rounded-r-md"
+              className="bg-gray-400 text-white p-4 rounded-r-xl text-lg flex items-center justify-center hover:bg-gray-300"
               disabled={isStreaming}
             >
-              Send
+              <SendIcon className="w-6 h-6" />
             </button>
           </div>
         </form>
