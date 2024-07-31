@@ -107,14 +107,16 @@ class ChatMessageView(APIView):
 
         def stream_and_save():
             full_response = ""
+            token_in = token_out = 0
             for chunk in get_api_response(
                 model_name=model_name,
                 model_provider=model_provider,
                 messages=conv_messages,
             ):
-                full_response += chunk
                 # this allows to send the response to the client as it is being generated
-                yield chunk
+                if content := chunk.content:
+                    full_response += content
+                    yield content
 
             # Save the complete response to the database
             ai_message_serializer = ChatMessageSerializer(
