@@ -16,7 +16,8 @@ class AIModel(models.Model):
         AIModelProvider, on_delete=models.CASCADE, related_name="models"
     )
     is_active = models.BooleanField(default=True)
-    price_per_1K_token = models.FloatField(default=0.0)
+    price_per_1K_token_input = models.FloatField(default=0.0)
+    price_per_1K_token_output = models.FloatField(default=0.0)
 
 
 class ChatConversation(models.Model):
