@@ -18,7 +18,7 @@ const Header = () => {
         <button
             data-testid="wide-header-new-chat-button"
             type="button"
-            className="w-full btn btn-neutral btn-large flex items-center justify-between whitespace-nowrap rounded-xl bg-gray-850 hover:bg-gray-800 py-4 px-6"
+            className="w-full flex items-center justify-between whitespace-nowrap rounded-xl bg-gray-850 hover:bg-gray-700 py-3 px-5"
             onClick={handleNewConversation}
         >
             <span className="text-token-text-primary overflow-hidden text-ellipsis whitespace-nowrap text-lg font-medium">New chat</span>

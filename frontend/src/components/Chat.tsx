@@ -14,16 +14,10 @@ interface Message {
   content: string;
 }
 
-interface AiModel {
-  id: string;
-  name: string;
-}
-
 const ChatComponent: React.FC = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState<string>('');
-  const [aiModels, setAiModels] = useState<AiModel[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>('');
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
@@ -32,7 +26,6 @@ const ChatComponent: React.FC = () => {
 
   useEffect(() => {
     fetchConversations();
-    fetchAiModels();
     if (chatId) {
       fetchMessages(chatId);
     }
@@ -52,18 +45,6 @@ const ChatComponent: React.FC = () => {
       setConversations(response);
     } catch (error) {
       console.error('Error fetching conversations:', error);
-    }
-  };
-
-  const fetchAiModels = async (): Promise<void> => {
-    try {
-      const response = await api.get('/ai_models/');
-      setAiModels(response);
-      if (response.length > 0) {
-        setSelectedModel(response[0].name);
-      }
-    } catch (error) {
-      console.error('Error fetching AI models:', error);
     }
   };
 
@@ -175,11 +156,7 @@ const ChatComponent: React.FC = () => {
       <div className="flex-1 flex flex-col bg-gray-800">
         {/* Model Selector */}
         <div className="p-4 bg-gray-800">
-          <ModelSelector
-            selectedModel={selectedModel}
-            setSelectedModel={setSelectedModel}
-            aiModels={aiModels}
-          />
+          <ModelSelector selectedModel={selectedModel} setSelectedModel={setSelectedModel} />
         </div>
 
         {/* Messages */}
