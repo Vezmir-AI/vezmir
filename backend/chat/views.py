@@ -85,16 +85,17 @@ class ChatMessageView(APIView):
         model_provider = model.provider.name
 
         # creates the user message
-        user_serializer = ChatMessageSerializer(
+        user_message_serializer = ChatMessageSerializer(
             data={
                 "user": request.user.id,
                 "chat_conversation": conv_id,
                 "content": request.data.get("content"),
                 "role": "user",
-                "model": model.name,
+                "model_name": model.name,
             }
         )
-
+        user_message_serializer.is_valid(raise_exception=True)
+        user_message_serializer.save()
         # get the whole conversation to pass to the model
         # TODO: Use self.get? or a serializer?
         conv_messages = FormattedMessageSerializer(
@@ -104,12 +105,9 @@ class ChatMessageView(APIView):
             many=True,
         ).data
 
-        token_in = 0
-
         def stream_and_save():
             full_response = ""
-            global token_in
-            token_out = 0
+            token_in = token_out = None
             for chunk in get_api_response(
                 model_name=model_name,
                 model_provider=model_provider,
@@ -120,10 +118,10 @@ class ChatMessageView(APIView):
                     full_response += content
                     yield content
                 if usage := chunk.usage_metadata:
-                    token_in = usage.get("input_tokens") if not token_in else token_in
-                    token_out = (
-                        usage.get("output_tokens") if not token_out else token_out
-                    )
+                    if token_in := usage.get("input_tokens"):
+                        user_message_serializer.num_tokens = token_in
+                    if token_out := usage.get("output_tokens"):
+                        pass
                 if response := chunk.response_metadata:
                     # TODO implement response metadata, e.g. stop reason
                     pass
@@ -135,7 +133,7 @@ class ChatMessageView(APIView):
                     "chat_conversation": conv_id,
                     "content": full_response,
                     "role": "assistant",
-                    "model": model.name,
+                    "model_name": model.name,
                     "num_tokens": token_out,
                 }
             )
@@ -143,10 +141,7 @@ class ChatMessageView(APIView):
                 raise_exception=True
             )  # TODO: handle API problems, like stop generation (i.e. data.completed=False)
             ai_message_serializer.save()
-
-        user_serializer.num_tokens = token_in
-        user_serializer.is_valid(raise_exception=True)
-        user_serializer.save()
+            ChatMessage.objects.filter(id=user_message_serializer.data["id"]).update(num_tokens=token_in)
 
         response = StreamingHttpResponse(
             stream_and_save(), content_type="text/event-stream"
