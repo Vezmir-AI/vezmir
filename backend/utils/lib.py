@@ -66,9 +66,9 @@ class SampleAPI(AbstractAPI):
             yield message(content=word + " ")
             yield message(content=" ")
         usage = {
-            "prompt_tokens": sum(
+            "input_tokens": sum(
                 map(len, map(lambda x: x["content"].split(), messages))
             ),
-            "completion_tokens": len(cls.RESPONSE),
+            "output_tokens": len(cls.RESPONSE.split()),
         }
         yield message(usage_metadata=usage)
