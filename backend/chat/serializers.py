@@ -33,6 +33,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatMessage
         fields = (
+            "id",
             "chat_conversation",
             "role",
             "content",
@@ -40,6 +41,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             "completed",
             "model_name",
             "user",
+            "num_tokens",
         )
 
 # serializer for chat conversation, having a list of chat messages
