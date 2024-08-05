@@ -5,6 +5,7 @@ import Header from './Chat/Header';
 import ModelSelector from './Chat/ModelSelector';
 import SendIcon from '../UI/svg/SendIcon';
 import ChatHistory from './Chat/ChatHistory';
+import ChatMessages from './Chat/ChatMessages';
 
 interface Conversation {
   id: string;
@@ -52,7 +53,9 @@ const ChatComponent: React.FC = () => {
 
   const fetchMessages = async (id: string): Promise<void> => {
     try {
-      const response = await api.get(`/chat/conversations/${id}/`);
+      const url = `/chat/conversations/${id}/`;
+      console.log('Fetching messages from:', url);
+      const response = await api.get(url);
       setMessages(response);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -134,11 +137,7 @@ const ChatComponent: React.FC = () => {
 
         {/* Messages */}
         <div className="flex-grow overflow-y-auto p-4">
-          {messages.map((msg, index) => (
-            <div key={index} className={`mb-2 ${msg.role === 'assistant' ? 'text-blue-600' : 'text-green-600'}`}>
-              <strong>{msg.role}: </strong>{msg.content}
-            </div>
-          ))}
+          <ChatMessages messages={messages} />
           <div ref={messagesEndRef} />
         </div>
 
