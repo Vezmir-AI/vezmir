@@ -141,7 +141,9 @@ class ChatMessageView(APIView):
                 raise_exception=True
             )  # TODO: handle API problems, like stop generation (i.e. data.completed=False)
             ai_message_serializer.save()
-            ChatMessage.objects.filter(id=user_message_serializer.data["id"]).update(num_tokens=token_in)
+            ChatMessage.objects.filter(id=user_message_serializer.data["id"]).update(
+                num_tokens=token_in
+            )
 
         response = StreamingHttpResponse(
             stream_and_save(), content_type="text/event-stream"
