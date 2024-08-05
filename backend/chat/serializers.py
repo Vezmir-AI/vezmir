@@ -6,7 +6,13 @@ from .models import ChatConversation, AIModel, AIModelProvider, ChatMessage
 class AIModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = AIModel
-        fields = ("name", "provider", "is_active", "price_per_1K_token")
+        fields = (
+            "name",
+            "provider",
+            "is_active",
+            "price_per_1K_token_input",
+            "price_per_1K_token_output",
+        )
 
 
 class AIModelProviderSerializer(serializers.ModelSerializer):
@@ -27,6 +33,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatMessage
         fields = (
+            "id",
             "chat_conversation",
             "role",
             "content",
@@ -34,6 +41,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             "completed",
             "model_name",
             "user",
+            "num_tokens",
         )
 
 # serializer for chat conversation, having a list of chat messages
