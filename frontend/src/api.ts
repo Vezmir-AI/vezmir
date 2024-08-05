@@ -45,6 +45,11 @@ const api = {
     if (stream) {
       return response.body;
     }
+    // prevent errors on api.delete request, which contains no response data
+    // as 204 responses doesn't have a body
+    if (response.status == 204) {
+      return;
+    }
     return response.json();
   },
   _refreshToken: async function () {
