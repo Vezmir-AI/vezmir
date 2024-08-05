@@ -53,9 +53,7 @@ const ChatComponent: React.FC = () => {
 
   const fetchMessages = async (id: string): Promise<void> => {
     try {
-      const url = `/chat/conversations/${id}/`;
-      console.log('Fetching messages from:', url);
-      const response = await api.get(url);
+      const response = await api.get(`/chat/conversations/${id}/`);
       setMessages(response);
     } catch (error) {
       console.error('Error fetching messages:', error);
