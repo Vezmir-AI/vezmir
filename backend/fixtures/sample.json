@@ -27,13 +27,19 @@
         "fields": {}
     },
     {
+        "model": "chat.aimodelprovider",
+        "pk": "Anthropic",
+        "fields": {}
+    },
+    {
         "model": "chat.aimodel",
         "pk": 1,
         "fields": {
             "name": "sample",
             "provider": "sample",
             "is_active": true,
-            "price_per_1K_token": 0.0
+            "price_per_1K_token_input": 0.0,
+            "price_per_1K_token_output": 0.0
         }
     },
     {
@@ -43,7 +49,19 @@
             "name": "gpt-4o",
             "provider": "OpenAI",
             "is_active": true,
-            "price_per_1K_token": 0.0
+            "price_per_1K_token_input": 0.0005,
+            "price_per_1K_token_output": 0.0015
+        }
+    },
+    {
+        "model": "chat.aimodel",
+        "pk": 3,
+        "fields": {
+            "name": "claude-3-5-sonnet-20240620",
+            "provider": "Anthropic",
+            "is_active": true,
+            "price_per_1K_token_input": 0.0003,
+            "price_per_1K_token_output": 0.0015
         }
     }
 ]
