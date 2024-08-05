@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
+import Header from './Chat/Header';
+import ModelSelector from './Chat/ModelSelector';
+import SendIcon from '../UI/svg/SendIcon';
+import ChatHistory from './Chat/ChatHistory';
+import ChatMessages from './Chat/ChatMessages';
 
 interface Conversation {
   id: string;
@@ -12,16 +17,10 @@ interface Message {
   content: string;
 }
 
-interface AiModel {
-  id: string;
-  name: string;
-}
-
 const ChatComponent: React.FC = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState<string>('');
-  const [aiModels, setAiModels] = useState<AiModel[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>('');
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
@@ -30,7 +29,6 @@ const ChatComponent: React.FC = () => {
 
   useEffect(() => {
     fetchConversations();
-    fetchAiModels();
     if (chatId) {
       fetchMessages(chatId);
     }
@@ -50,18 +48,6 @@ const ChatComponent: React.FC = () => {
       setConversations(response);
     } catch (error) {
       console.error('Error fetching conversations:', error);
-    }
-  };
-
-  const fetchAiModels = async (): Promise<void> => {
-    try {
-      const response = await api.get('/ai_models/');
-      setAiModels(response);
-      if (response.length > 0) {
-        setSelectedModel(response[0].name);
-      }
-    } catch (error) {
-      console.error('Error fetching AI models:', error);
     }
   };
 
@@ -130,100 +116,45 @@ const ChatComponent: React.FC = () => {
     }
   };
 
-  const handleDeleteConversation = async (id: string): Promise<void> => {
-    try {
-      await api.delete(`/chat/conversations/${id}/`);
-      setConversations(conversations.filter(conv => conv.id !== id));
-      if (chatId === id) {
-        navigate('/chat');
-      }
-    } catch (error) {
-      console.error('Error deleting conversation:', error);
-    }
-  };
-
-  const handleNewConversation = async () => {
-    try {
-      const response = await api.post('/chat/conversations/', {});
-      navigate(`/chat/${response.id}`);
-    } catch (error) {
-      console.error('Error creating new conversation:', error);
-    }
-  };
-
   return (
     <div className="flex h-screen">
-      {/* Conversation List and AI Model Selection */}
-      <div className="w-1/4 bg-black-100 overflow-y-auto flex flex-col">
-        <h2 className="text-xl font-bold p-4">Conversations</h2>
+      {/* Conversation List */}
+      <div className="w-72 bg-gray-850 overflow-y-auto flex flex-col">
         <div className="p-4">
-          <button
-            onClick={handleNewConversation}
-            className="w-full p-2 mb-4 bg-green-500 text-white rounded-md hover:bg-green-600"
-          >
-            New Conversation
-          </button>
-          <select
-            value={selectedModel}
-            onChange={(e) => setSelectedModel(e.target.value)}
-            className="w-full p-2 rounded-md"
-          >
-            {aiModels.map((model) => (
-              <option key={model.id} value={model.id}>
-                {model.name}
-              </option>
-            ))}
-          </select>
+          <Header />
         </div>
-        <div className="flex-grow overflow-y-auto">
-          {conversations.map((conv) => (
-            <div key={conv.id} className="p-2 hover:bg-gray-800 flex justify-between items-center">
-              <span
-                className="cursor-pointer flex-grow"
-                onClick={() => navigate(`/chat/${conv.id}`)}
-              >
-                {conv.name}
-              </span>
-              <button
-                onClick={() => handleDeleteConversation(conv.id)}
-                className="bg-red-500 text-white px-2 py-1 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          ))}
-        </div>
+        <ChatHistory conversations={conversations} setConversations={setConversations} />
       </div>
 
       {/* Chat Area */}
-      <div className="w-3/4 flex flex-col">
+      <div className="flex-1 flex flex-col bg-gray-800 pb-4">
+        {/* Model Selector */}
+        <div className="p-4 bg-gray-800">
+          <ModelSelector selectedModel={selectedModel} setSelectedModel={setSelectedModel} />
+        </div>
+
         {/* Messages */}
         <div className="flex-grow overflow-y-auto p-4">
-          {messages.map((msg, index) => (
-            <div key={index} className={`mb-2 ${msg.role === 'assistant' ? 'text-blue-600' : 'text-green-600'}`}>
-              <strong>{msg.role}: </strong>{msg.content}
-            </div>
-          ))}
+          <ChatMessages messages={messages} />
           <div ref={messagesEndRef} />
         </div>
 
         {/* Input Area */}
-        <form onSubmit={handleSendMessageToStream} className="p-4 bg-gray-200">
-          <div className="flex">
+        <form onSubmit={handleSendMessageToStream} className="p-4 bg-gray-800 mt-auto">
+          <div className="flex items-center max-w-4xl mx-auto">
             <input
               type="text"
               value={inputMessage}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)}
-              className="flex-grow p-2 rounded-l-md"
-              placeholder="Type a message..."
-              disabled={isStreaming}
+              className="flex-grow p-4 rounded-l-xl bg-gray-700 text-white text-lg border border-gray-600 focus:outline-none focus:ring-0 focus:border-gray-600"
+              placeholder={"Message " + selectedModel}
             />
             <button
               type="submit"
-              className="bg-blue-500 text-white p-2 rounded-r-md"
+              className="bg-gray-400 text-white p-4 rounded-r-xl text-lg flex items-center justify-center hover:bg-gray-300"
               disabled={isStreaming}
             >
-              Send
+              <SendIcon className="w-6 h-6" />
             </button>
           </div>
         </form>
