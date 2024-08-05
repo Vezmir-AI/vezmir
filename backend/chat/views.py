@@ -152,6 +152,19 @@ class ChatMessageView(APIView):
         response["Cache-Control"] = "no-cache"
         return response
 
+    def put(self, request, conv_id):
+        try:
+            conversation = ChatConversation.objects.get(id=conv_id, user=request.user)
+        except ChatConversation.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = ChatConversationSerializer(
+            conversation, data=request.data, partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     # delete a conversation
     def delete(self, request, conv_id):
         try:
