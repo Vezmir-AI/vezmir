@@ -6,6 +6,7 @@ import ModelSelector from './Chat/ModelSelector';
 import SendIcon from '../UI/svg/SendIcon';
 import ChatHistory from './Chat/ChatHistory';
 import ChatMessages from './Chat/ChatMessages';
+import { getProviderLogo } from '../utils/providerUtils';
 
 interface Conversation {
   id: string;
@@ -41,6 +42,7 @@ const ChatComponent: React.FC = () => {
 
   useEffect(() => {
     fetchConversations();
+    fetchAiModels();
     if (chatId) {
       fetchMessages(chatId);
     }
@@ -72,6 +74,20 @@ const ChatComponent: React.FC = () => {
     }
   };
 
+  const fetchAiModels = async () => {
+    try {
+      const response = await api.get('/ai_models/');
+      const gpt4o = response.find(model => model.name === 'gpt-4o');
+      if (gpt4o) {
+        setSelectedModel(gpt4o);
+      } else if (response.length > 0) {
+        setSelectedModel(response[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching AI models:', error);
+    }
+  };
+
   const handleSendMessageToStream = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     if (!inputMessage.trim() || !selectedModel) return;
@@ -80,25 +96,26 @@ const ChatComponent: React.FC = () => {
       let url, newChatId;
 
       if (!chatId) {
-        // Create a new conversation first
         const newConversationResponse = await api.post('/chat/conversations/', {});
         if (!newConversationResponse) {
           throw new Error('Failed to create a new conversation');
         }
         newChatId = newConversationResponse.id;
-        // Set the user message in the current state before navigating
-        const userMessage = { role: 'user' as const, content: inputMessage };
-        setMessages([userMessage]);
-        navigate(`/chat/${newChatId}`, { state: { userMessage } });
+        navigate(`/chat/${newChatId}`, { state: { userMessage: inputMessage } });
         url = `/chat/conversations/${newChatId}/`;
       } else {
         url = `/chat/conversations/${chatId}/`;
-        // Add the user message to the existing chat
-        setMessages(prevMessages => [...prevMessages, { role: 'user', content: inputMessage }]);
       }
 
       setInputMessage('');
       setIsStreaming(true);
+
+      // Add a delay before updating the messages state
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const userMessage = { role: 'user' as const, content: inputMessage };
+      setMessages(prevMessages => [...prevMessages, userMessage]);
+
       let assistantMessage = '';
       setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage }]);
 
@@ -158,7 +175,22 @@ const ChatComponent: React.FC = () => {
 
         {/* Messages */}
         <div className="flex-grow overflow-y-auto p-4">
-          <ChatMessages messages={messages} />
+          {messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full space-y-4">
+              {selectedModel && (
+                <div className="bg-white rounded-full p-2">
+                  <img
+                    src={getProviderLogo(selectedModel.provider)}
+                    alt={`${selectedModel.provider} logo`}
+                    className="w-12 h-12"
+                  />
+                </div>
+              )}
+              <p className="text-4xl font-bold text-white">How can I help you today?</p>
+            </div>
+          ) : (
+            <ChatMessages messages={messages} />
+          )}
           <div ref={messagesEndRef} />
         </div>
 
