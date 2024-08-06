@@ -79,10 +79,13 @@ class ChatMessageView(APIView):
         except ChatConversation.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        # query model name and its provider
+        # Query model name and its provider
         model_name = request.data.get("model_name")
-        model = AIModel.objects.get(name=model_name)
-        model_provider = model.provider.name
+        try:
+            model = AIModel.objects.select_related('provider').get(name=model_name)
+            model_provider = model.provider.name
+        except AIModel.DoesNotExist:
+            return Response({"error": "Invalid model name"}, status=status.HTTP_400_BAD_REQUEST)
 
         # creates the user message
         user_message_serializer = ChatMessageSerializer(

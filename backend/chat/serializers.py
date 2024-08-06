@@ -8,17 +8,19 @@ class AIModelSerializer(serializers.ModelSerializer):
         model = AIModel
         fields = (
             "name",
+            "display_name",
             "provider",
             "is_active",
-            "price_per_1K_token_input",
-            "price_per_1K_token_output",
+            "hint",
         )
 
 
 class AIModelProviderSerializer(serializers.ModelSerializer):
+    models = AIModelSerializer(many=True, read_only=True)
+
     class Meta:
         model = AIModelProvider
-        fields = ("name",)
+        fields = ("name", "models")
 
 
 class ChatConversationSerializer(serializers.ModelSerializer):
@@ -43,6 +45,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             "user",
             "num_tokens",
         )
+
 
 # serializer for chat conversation, having a list of chat messages
 # each chat message is a dict {"role": role, "content": content}

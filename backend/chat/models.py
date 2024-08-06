@@ -8,13 +8,13 @@ class AIModelProvider(models.Model):
 
 
 class AIModel(models.Model):
-    id = models.AutoField(
-        primary_key=True,
-    )
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
+    display_name = models.CharField(max_length=100, null=True)
     provider = models.ForeignKey(
         AIModelProvider, on_delete=models.CASCADE, related_name="models"
     )
+    hint = models.CharField(max_length=100, null=True)
     is_active = models.BooleanField(default=True)
     price_per_1K_token_input = models.FloatField(default=0.0)
     price_per_1K_token_output = models.FloatField(default=0.0)
@@ -26,6 +26,7 @@ class ChatConversation(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+
 
 class ChatMessage(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)

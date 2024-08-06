@@ -36,7 +36,9 @@
         "pk": 1,
         "fields": {
             "name": "sample",
+            "display_name": "Sample response",
             "provider": "sample",
+            "hint": "This is a sample response",
             "is_active": true,
             "price_per_1K_token_input": 0.0,
             "price_per_1K_token_output": 0.0
@@ -47,7 +49,9 @@
         "pk": 2,
         "fields": {
             "name": "gpt-4o",
+            "display_name": "GPT-4o",
             "provider": "OpenAI",
+            "hint": "Best model for general purpose, ideas and writing",
             "is_active": true,
             "price_per_1K_token_input": 0.0005,
             "price_per_1K_token_output": 0.0015
@@ -55,10 +59,25 @@
     },
     {
         "model": "chat.aimodel",
+        "pk": 4,
+        "fields": {
+            "name": "gpt-4o-mini",
+            "display_name": "GPT-4o Mini",
+            "provider": "OpenAI",
+            "hint": "Smaller, faster version of GPT-4o",
+            "is_active": true,
+            "price_per_1K_token_input": 0.0003,
+            "price_per_1K_token_output": 0.0006
+        }
+    },
+    {
+        "model": "chat.aimodel",
         "pk": 3,
         "fields": {
             "name": "claude-3-5-sonnet-20240620",
+            "display_name": "Claude 3.5 Sonnet",
             "provider": "Anthropic",
+            "hint": "Best model for coding and reasoning.",
             "is_active": true,
             "price_per_1K_token_input": 0.0003,
             "price_per_1K_token_output": 0.0015
