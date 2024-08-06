@@ -11,7 +11,7 @@ interface Conversation {
 interface ChatHistoryProps {
     conversations: Conversation[];
     setConversations: (conversations: Conversation[]) => void;
-    resetMessages: () => void; // Added this line
+    resetMessages: () => void;
 }
 
 const ChatHistory = ({ conversations, setConversations, resetMessages }: ChatHistoryProps) => {
@@ -38,7 +38,7 @@ const ChatHistory = ({ conversations, setConversations, resetMessages }: ChatHis
             <div key={conv.id} className="mb-2 hover:bg-gray-800">
                 <div className="p-3 flex justify-between items-center">
                     <span
-                        className="cursor-pointer flex-grow text-white text-lg"
+                        className="cursor-pointer flex-grow text-white text-lg ml-6"
                         onClick={() => navigate(`/chat/${conv.id}`)}
                     >
                         {conv.name}
