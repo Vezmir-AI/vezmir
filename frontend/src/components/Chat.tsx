@@ -17,11 +17,19 @@ interface Message {
   content: string;
 }
 
+interface AiModel {
+  id: string;
+  name: string;
+  provider: string;
+  display_name: string;
+  hint: string;
+}
+
 const ChatComponent: React.FC = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState<string>('');
-  const [selectedModel, setSelectedModel] = useState<string>('');
+  const [selectedModel, setSelectedModel] = useState<AiModel | null>(null);
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
   const navigate = useNavigate();
@@ -94,7 +102,7 @@ const ChatComponent: React.FC = () => {
       let assistantMessage = '';
       setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage }]);
 
-      const payload = { content: inputMessage, model_name: selectedModel };
+      const payload = { content: inputMessage, model_name: selectedModel.name };
       const response = await api.post(url, payload, true);
 
       if (!response) {
@@ -145,7 +153,7 @@ const ChatComponent: React.FC = () => {
       <div className="flex-1 flex flex-col bg-gray-800 pb-4">
         {/* Model Selector */}
         <div className="p-4 bg-gray-800">
-          <ModelSelector selectedModel={selectedModel} setSelectedModel={setSelectedModel} />
+          <ModelSelector selectedModel={selectedModel?.name || ''} setSelectedModel={setSelectedModel} />
         </div>
 
         {/* Messages */}
@@ -162,7 +170,7 @@ const ChatComponent: React.FC = () => {
               value={inputMessage}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)}
               className="flex-grow p-4 rounded-l-xl bg-gray-700 text-white text-lg border border-gray-600 focus:outline-none focus:ring-0 focus:border-gray-600"
-              placeholder={"Message " + selectedModel}
+              placeholder={`Message ${selectedModel?.display_name || ''}`}
             />
             <button
               type="submit"
