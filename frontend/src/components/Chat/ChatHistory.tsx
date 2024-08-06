@@ -11,9 +11,10 @@ interface Conversation {
 interface ChatHistoryProps {
     conversations: Conversation[];
     setConversations: (conversations: Conversation[]) => void;
+    resetMessages: () => void; // Added this line
 }
 
-const ChatHistory = ({ conversations, setConversations }: ChatHistoryProps) => {
+const ChatHistory = ({ conversations, setConversations, resetMessages }: ChatHistoryProps) => {
     const navigate = useNavigate();
     const { chatId } = useParams<{ chatId: string }>();
 
@@ -24,6 +25,7 @@ const ChatHistory = ({ conversations, setConversations }: ChatHistoryProps) => {
           setConversations(conversations.filter(conv => conv.id !== id));
           if (chatId === id) {
             navigate('/chat');
+            resetMessages();
           }
         } catch (error) {
           console.error('Error deleting conversation:', error);

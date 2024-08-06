@@ -27,6 +27,10 @@ const ChatComponent: React.FC = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const resetMessages = () => {
+    setMessages([]);
+  };
+
   useEffect(() => {
     fetchConversations();
     if (chatId) {
@@ -65,54 +69,61 @@ const ChatComponent: React.FC = () => {
     if (!inputMessage.trim() || !selectedModel) return;
 
     try {
-      const payload = { content: inputMessage, model_name: selectedModel };
-      setMessages(prevMessages => [...prevMessages, { role: 'user', content: inputMessage }]);
+      let url, newChatId;
+
+      if (!chatId) {
+        // Create a new conversation first
+        const newConversationResponse = await api.post('/chat/conversations/', {});
+        if (!newConversationResponse) {
+          throw new Error('Failed to create a new conversation');
+        }
+        newChatId = newConversationResponse.id;
+        // Set the user message in the current state before navigating
+        const userMessage = { role: 'user' as const, content: inputMessage };
+        setMessages([userMessage]);
+        navigate(`/chat/${newChatId}`, { state: { userMessage } });
+        url = `/chat/conversations/${newChatId}/`;
+      } else {
+        url = `/chat/conversations/${chatId}/`;
+        // Add the user message to the existing chat
+        setMessages(prevMessages => [...prevMessages, { role: 'user', content: inputMessage }]);
+      }
+
       setInputMessage('');
       setIsStreaming(true);
       let assistantMessage = '';
       setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage }]);
 
-      let url = chatId
-        ? `/chat/conversations/${chatId}/`
-        : '/chat/conversations/';
-
+      const payload = { content: inputMessage, model_name: selectedModel };
       const response = await api.post(url, payload, true);
 
       if (!response) {
-        throw new Error('Response body is null');
+          throw new Error('Response body is null');
       }
       const reader = response.getReader();
       const decoder = new TextDecoder('utf-8');
 
-
       const processText = async ({ done, value }: ReadableStreamReadResult<Uint8Array>): Promise<void> => {
-        if (done) {
-          setIsStreaming(false);
-          if (!chatId) {
-            // If it's a new conversation, navigate to the new chat URL
-            const fullResponse = JSON.parse(assistantMessage);
-            navigate(`/chat/${fullResponse.id}`);
+          if (done) {
+              setIsStreaming(false);
+              return;
           }
-          return;
-        }
 
-        const chunk = decoder.decode(value, { stream: true });
-        assistantMessage += chunk;
-        setMessages(prevMessages => [
-          ...prevMessages.slice(0, -1),
-          { role: 'assistant', content: assistantMessage }
-        ]);
+          const chunk = decoder.decode(value, { stream: true });
+          assistantMessage += chunk;
+          setMessages(prevMessages => [
+              ...prevMessages.slice(0, -1),
+              { role: 'assistant', content: assistantMessage }
+          ]);
 
-        // Read the next chunk
-        return reader.read().then(processText);
-
+          return reader.read().then(processText);
       };
 
       reader.read().then(processText);
 
     } catch (error) {
-      console.error('Error sending message:', error);
-      setIsStreaming(false);
+        console.error('Error sending message:', error);
+        setIsStreaming(false);
     }
   };
 
@@ -123,7 +134,11 @@ const ChatComponent: React.FC = () => {
         <div className="p-4">
           <Header />
         </div>
-        <ChatHistory conversations={conversations} setConversations={setConversations} />
+        <ChatHistory 
+          conversations={conversations} 
+          setConversations={setConversations} 
+          resetMessages={resetMessages}
+        />
       </div>
 
       {/* Chat Area */}
