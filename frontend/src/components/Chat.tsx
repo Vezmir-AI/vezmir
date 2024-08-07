@@ -103,6 +103,8 @@ const ChatComponent: React.FC = () => {
         newChatId = newConversationResponse.id;
         navigate(`/chat/${newChatId}`, { state: { userMessage: inputMessage } });
         url = `/chat/conversations/${newChatId}/`;
+        // Add a delay before updating the messages state
+        await new Promise(resolve => setTimeout(resolve, 500));
       } else {
         url = `/chat/conversations/${chatId}/`;
       }
@@ -110,8 +112,6 @@ const ChatComponent: React.FC = () => {
       setInputMessage('');
       setIsStreaming(true);
 
-      // Add a delay before updating the messages state
-      await new Promise(resolve => setTimeout(resolve, 500));
 
       const userMessage = { role: 'user' as const, content: inputMessage };
       setMessages(prevMessages => [...prevMessages, userMessage]);
