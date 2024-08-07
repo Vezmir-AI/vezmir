@@ -3,10 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
 import Header from './Chat/Header';
 import ModelSelector from './Chat/ModelSelector';
-import SendIcon from '../UI/svg/SendIcon';
 import ChatHistory from './Chat/ChatHistory';
 import ChatMessages from './Chat/ChatMessages';
 import { getProviderLogo } from '../utils/providerUtils';
+import InputMessage from './Chat/InputMessage';
 
 interface Conversation {
   id: string;
@@ -29,7 +29,6 @@ interface AiModel {
 const ChatComponent: React.FC = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [inputMessage, setInputMessage] = useState<string>('');
   const [selectedModel, setSelectedModel] = useState<AiModel | null>(null);
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
@@ -88,9 +87,8 @@ const ChatComponent: React.FC = () => {
     }
   };
 
-  const handleSendMessageToStream = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault();
-    if (!inputMessage.trim() || !selectedModel) return;
+  const handleSendMessageToStream = async (message: string): Promise<void> => {
+    if (!selectedModel) return;
 
     try {
       let url, newChatId;
@@ -101,7 +99,7 @@ const ChatComponent: React.FC = () => {
           throw new Error('Failed to create a new conversation');
         }
         newChatId = newConversationResponse.id;
-        navigate(`/chat/${newChatId}`, { state: { userMessage: inputMessage } });
+        navigate(`/chat/${newChatId}`, { state: { userMessage: message } });
         url = `/chat/conversations/${newChatId}/`;
         // Add a delay before updating the messages state
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -109,17 +107,15 @@ const ChatComponent: React.FC = () => {
         url = `/chat/conversations/${chatId}/`;
       }
 
-      setInputMessage('');
       setIsStreaming(true);
 
-
-      const userMessage = { role: 'user' as const, content: inputMessage };
+      const userMessage = { role: 'user' as const, content: message };
       setMessages(prevMessages => [...prevMessages, userMessage]);
 
       let assistantMessage = '';
       setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage }]);
 
-      const payload = { content: inputMessage, model_name: selectedModel.name };
+      const payload = { content: message, model_name: selectedModel.name };
       const response = await api.post(url, payload, true);
 
       if (!response) {
@@ -195,24 +191,11 @@ const ChatComponent: React.FC = () => {
         </div>
 
         {/* Input Area */}
-        <form onSubmit={handleSendMessageToStream} className="p-4 bg-gray-800 mt-auto">
-          <div className="flex items-center max-w-4xl mx-auto">
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)}
-              className="flex-grow p-4 rounded-l-xl bg-gray-700 text-white text-lg border border-gray-600 focus:outline-none focus:ring-0 focus:border-gray-600"
-              placeholder={`Message ${selectedModel?.display_name || ''}`}
-            />
-            <button
-              type="submit"
-              className="bg-gray-400 text-white p-4 rounded-r-xl text-lg flex items-center justify-center hover:bg-gray-300"
-              disabled={isStreaming}
-            >
-              <SendIcon className="w-6 h-6" />
-            </button>
-          </div>
-        </form>
+        <InputMessage
+          selectedModel={selectedModel}
+          isStreaming={isStreaming}
+          onSendMessage={handleSendMessageToStream}
+        />
       </div>
     </div>
   );
