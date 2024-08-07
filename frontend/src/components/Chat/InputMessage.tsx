@@ -22,6 +22,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
       const lineHeight = 24;
       const maxHeight = lineHeight * 4;
       textareaRef.current.style.height = `${Math.min(scrollHeight, maxHeight)}px`;
+      textareaRef.current.style.overflowY = scrollHeight > maxHeight ? 'auto' : 'hidden';
     }
   };
 
@@ -49,21 +50,23 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
 
   return (
     <form onSubmit={handleSubmit} className="p-4 bg-gray-800 mt-auto">
-      <div className="flex items-center max-w-4xl mx-auto">
+      <div className="flex items-center max-w-4xl mx-auto relative">
         <textarea
           ref={textareaRef}
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-grow p-4 rounded-l-xl bg-gray-700 text-white text-lg border border-gray-600 focus:outline-none focus:ring-0 focus:border-gray-600 resize-none overflow-y-auto"
+          className="flex-grow p-4 pr-16 rounded-xl bg-gray-700 text-white text-lg border border-gray-600 focus:outline-none focus:ring-0 focus:border-gray-600 resize-none overflow-hidden"
           placeholder={`Message ${selectedModel?.display_name || ''}`}
           rows={1}
           style={{ minHeight: '56px', maxHeight: '120px' }}
         />
         <button
           type="submit"
-          className="bg-gray-400 text-white p-4 rounded-r-xl text-lg flex items-center justify-center hover:bg-gray-300"
-          disabled={isStreaming}
+          className={`absolute right-4 bottom-3 p-2 rounded-full text-lg flex items-center justify-center transition-colors duration-200 ${
+            inputMessage.trim() ? 'bg-white text-gray-800' : 'bg-gray-400 text-white'
+          }`}
+          disabled={isStreaming || !inputMessage.trim()}
         >
           <SendIcon className="w-6 h-6" />
         </button>
