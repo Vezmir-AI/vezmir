@@ -59,7 +59,7 @@ const Register: React.FC = () => {
       const response = await api.post('/auth/register/', { email, password });
       const { access, refresh } = response;
       login(access, refresh);
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       console.error('Register failed', error);
     }
@@ -104,7 +104,7 @@ const Register: React.FC = () => {
       const backendResponse = await api.post('/api/auth/google/', { credential: response.credential });
       const { access, refresh } = backendResponse;
       login(access, refresh);
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       console.error('Google Sign-In failed', error);
       // Handle error (e.g., show error message to user)
