@@ -24,7 +24,7 @@ const ChatHistory = ({ conversations, setConversations, resetMessages }: ChatHis
           await api.delete(`/chat/conversations/${id}/`);
           setConversations(conversations.filter(conv => conv.id !== id));
           if (chatId === id) {
-            navigate('/chat');
+            navigate('/');
             resetMessages();
           }
         } catch (error) {

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -14,13 +14,14 @@ function App() {
       <Router>
         <Routes>
           <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route path="/resend-verification-email" element={<PrivateRoute><ResendVerificationEmail /></PrivateRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="/chat" element={<PrivateRoute><ChatComponent /></PrivateRoute>} />
-          <Route path="/chat/:chatId" element={<PrivateRoute><ChatComponent /></PrivateRoute>} />
+          <Route element={<PrivateRoute />}>
+            <Route path="/" element={<ChatComponent />} />
+            <Route path="/chat/:chatId" element={<ChatComponent />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/resend-verification-email" element={<ResendVerificationEmail />} />
+          </Route>
         </Routes>
       </Router>
     </AuthProvider>
