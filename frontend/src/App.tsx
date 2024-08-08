@@ -7,6 +7,7 @@ import PrivateRoute from './components/PrivateRoute';
 import ChatComponent from './components/Chat';
 import VerifyEmail from './components/VerifyEmail';
 import ResendVerificationEmail from './components/ResendVerificationEmail';
+import Layout from './components/Layout';
 
 function App() {
   return (
@@ -17,10 +18,12 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route element={<PrivateRoute />}>
-            <Route path="/" element={<ChatComponent />} />
-            <Route path="/chat/:chatId" element={<ChatComponent />} />
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/resend-verification-email" element={<ResendVerificationEmail />} />
+            <Route element={<Layout />}>
+              <Route path="/" element={<ChatComponent />} />
+              <Route path="/chat/:chatId" element={<ChatComponent />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
           </Route>
         </Routes>
       </Router>
