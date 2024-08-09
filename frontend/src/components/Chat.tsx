@@ -94,7 +94,7 @@ const ChatComponent: React.FC = () => {
       let url, newChatId;
 
       if (!chatId) {
-        const newConversationResponse = await api.post('/chat/conversations/', {});
+        const newConversationResponse = await api.post('/chat/conversations/');
         if (!newConversationResponse) {
           throw new Error('Failed to create a new conversation');
         }
