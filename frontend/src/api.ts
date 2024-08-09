@@ -7,7 +7,7 @@ const api = {
       ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
     };
   },
-  post: async function (url: string, body: any, stream: boolean = false) {
+  post: async function (url: string, body: any = {}, stream: boolean = false) {
     return this._fetch(url, body, 'POST', true, stream);
   },
   get: async function (url: string) {
@@ -30,6 +30,7 @@ const api = {
 
       const errorData = await response.json();
       if (errorData.code === 'token_not_valid') {
+        console.info('Token not valid, refreshing token');
         const canRetry = await this._refreshToken();
         if (canRetry) {
           return this._fetch(url, options, method, false, stream);
