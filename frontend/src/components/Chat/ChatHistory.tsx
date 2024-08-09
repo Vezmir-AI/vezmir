@@ -2,17 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import { useParams } from 'react-router-dom';
 import TrashIcon from '../../UI/svg/TrashIcon';
+import { ChatHistoryProps } from '../../types';
 
-interface Conversation {
-    id: string;
-    name: string;
-  }
-
-interface ChatHistoryProps {
-    conversations: Conversation[];
-    setConversations: (conversations: Conversation[]) => void;
-    resetMessages: () => void;
-}
 
 const ChatHistory = ({ conversations, setConversations, resetMessages }: ChatHistoryProps) => {
     const navigate = useNavigate();
