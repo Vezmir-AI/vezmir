@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ConversationProvider } from './context/ConversationContext';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
@@ -7,7 +8,7 @@ import PrivateRoute from './components/PrivateRoute';
 import ChatComponent from './components/Chat';
 import VerifyEmail from './components/VerifyEmail';
 import ResendVerificationEmail from './components/ResendVerificationEmail';
-import Layout from './components/Layout';
+import AppLayout from './layouts/AppLayout';
 
 function App() {
   return (
@@ -19,7 +20,11 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route element={<PrivateRoute />}>
             <Route path="/resend-verification-email" element={<ResendVerificationEmail />} />
-            <Route element={<Layout />}>
+            <Route element={
+              <ConversationProvider>
+                <AppLayout />
+              </ConversationProvider>
+            }>
               <Route path="/" element={<ChatComponent />} />
               <Route path="/chat/:chatId" element={<ChatComponent />} />
               <Route path="/dashboard" element={<Dashboard />} />
