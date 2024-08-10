@@ -15,7 +15,7 @@ const ChatComponent: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { addConversation, selectedAIModel, setSelectedAIModel } = useConversation();
+  const { addConversation, selectedAIModel } = useConversation();
 
   const resetMessages = useCallback(() => {
     setMessages([]);
