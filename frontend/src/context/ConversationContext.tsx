@@ -21,10 +21,21 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
     const [selectedAIModel, setSelectedAIModel] = useState<AIModel | null>(null);
 
     useEffect(() => {
-        fetchConversations();
-        fetchAiModels();
-        setSelectedAIModel(aiModels.find(model => model.name === 'gpt-4o') || aiModels[0]);
+        const initializeData = async () => {
+            await fetchConversations();
+            await fetchAiModels();
+            console.log("ai models", aiModels);
+        };
+
+        initializeData();
     }, []);
+
+    useEffect(() => {
+        if (aiModels.length > 0) {
+            const defaultModel = aiModels.find(model => model.name === 'gpt-4o') || aiModels[0];
+            setSelectedAIModel(defaultModel);
+        }
+    }, [aiModels]);
 
     const fetchConversations = async () => {
         const convs = await api.get('/chat/conversations/');
@@ -33,7 +44,6 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
     const addConversation = async () => {
         const newConversation = await api.post('/chat/conversations/');
-        console.log("newConversation:", newConversation);
         setConversations([...conversations, newConversation]);
         navigate(`/chat/${newConversation.id}`);
         return newConversation;
