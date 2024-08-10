@@ -1,50 +1,92 @@
-import { useNavigate } from 'react-router-dom';
-import api from '../../api';
-import { useParams } from 'react-router-dom';
-import TrashIcon from '../../UI/svg/TrashIcon';
-import { ChatHistoryProps } from '../../types';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { TrashIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { useConversation } from '../../context/ConversationContext';
+import { useState } from 'react';
 
-
-const ChatHistory = ({ conversations, setConversations, resetMessages }: ChatHistoryProps) => {
+const ChatHistory = () => {
     const navigate = useNavigate();
     const { chatId } = useParams<{ chatId: string }>();
+    const { conversations, deleteConversation } = useConversation();
+    const [showAllConversations, setShowAllConversations] = useState(false);
 
+    const toggleAllConversations = () => {
+        setShowAllConversations(!showAllConversations);
+    };
 
-    const handleDeleteConversation = async (id: string): Promise<void> => {
-        try {
-          await api.delete(`/chat/conversations/${id}/`);
-          setConversations(conversations.filter(conv => conv.id !== id));
-          if (chatId === id) {
+    const handleDeleteConversation = (id: string, event: React.MouseEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
+        deleteConversation(id);
+        if (chatId === id) {
             navigate('/');
-            resetMessages();
-          }
-        } catch (error) {
-          console.error('Error deleting conversation:', error);
+            // Emit a custom event when the current conversation is deleted
+            window.dispatchEvent(new CustomEvent('conversationDeleted', { detail: { id } }));
         }
-      };
+    };
 
     return (
-        <div className="flex-grow overflow-y-auto">
-            {conversations.map((conv) => (
-            <div key={conv.id} className="mb-2 hover:bg-gray-800">
-                <div className="p-3 flex justify-between items-center">
-                    <span
-                        className="cursor-pointer flex-grow text-white text-lg ml-6"
-                        onClick={() => navigate(`/chat/${conv.id}`)}
-                    >
-                        {conv.name}
-                    </span>
-                    <button
-                        onClick={() => handleDeleteConversation(conv.id)}
-                        className="p-2 rounded-full bg-gray-800 hover:bg-red-500 transition-colors duration-200"
-                        aria-label="Delete conversation"
-                    >
-                        <TrashIcon className="text-white" color="white" size={20} />
-                    </button>
-                </div>
-            </div>
+        <ul role="list" className="-mx-2 space-y-1">
+            {conversations.slice(0, 3).map((item) => (
+                <li key={item.id}>
+                    <div className="flex items-center justify-between">
+                        <Link
+                            to={`/chat/${item.id}`}
+                            className="text-gray-400 hover:bg-gray-800 hover:text-white group flex-grow flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                            title={item.name}
+                        >
+                            {item.name}
+                        </Link>
+                        <button
+                            onClick={(e) => handleDeleteConversation(item.id, e)}
+                            className="p-2 text-gray-400 hover:text-white"
+                            title="Delete conversation"
+                        >
+                            <TrashIcon className="h-4 w-4" />
+                        </button>
+                    </div>
+                </li>
             ))}
-        </div>
+            {conversations.length > 3 && (
+                <li>
+                    <button
+                        onClick={toggleAllConversations}
+                        className="flex items-center w-full text-gray-400 hover:bg-gray-800 hover:text-white group gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                    >
+                        {showAllConversations ? (
+                            <>
+                                <ChevronUpIcon className="h-5 w-5" />
+                                Show less
+                            </>
+                        ) : (
+                            <>
+                                <ChevronDownIcon className="h-5 w-5" />
+                                Show all ({conversations.length-3})
+                            </>
+                        )}
+                    </button>
+                </li>
+            )}
+            {showAllConversations && conversations.slice(3).map((item) => (
+                <li key={item.id}>
+                    <div className="flex items-center justify-between">
+                        <Link
+                            to={`/chat/${item.id}`}
+                            className="text-gray-400 hover:bg-gray-800 hover:text-white group flex-grow flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                            title={item.name}
+                        >
+                            {item.name}
+                        </Link>
+                        <button
+                            onClick={(e) => handleDeleteConversation(item.id, e)}
+                            className="p-2 text-gray-400 hover:text-white"
+                            title="Delete conversation"
+                        >
+                            <TrashIcon className="h-4 w-4" />
+                        </button>
+                    </div>
+                </li>
+            ))}
+        </ul>
     );
 };
 
