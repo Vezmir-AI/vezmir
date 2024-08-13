@@ -28,7 +28,7 @@ export default function SideBar() {
   const settingsRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  const isDashboard = location.pathname === '/dashboard';
+  const isDashboard = location.pathname.startsWith('/dashboard');
 
   useEffect(() => {
     if (isDashboard) {
@@ -39,7 +39,7 @@ export default function SideBar() {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (location.pathname !== '/dashboard' &&
+      if (location.pathname.startsWith('/dashboard') &&
         settingsRef.current && !settingsRef.current.contains(event.target as Node) &&
         profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setShowSettings(false);
@@ -65,9 +65,9 @@ export default function SideBar() {
   };
 
   const settings = [
-    { id: 1, name: 'Profile', action: () => { navigate('/dashboard#profile') }, icon: UserIcon },
-    { id: 2, name: 'Usage', action: () => { navigate('/dashboard#usage') }, icon: ChartPieIcon },
-    { id: 3, name: 'Billing', action: () => { navigate('/dashboard#billing') }, icon: CreditCardIcon },
+    { id: 1, name: 'Profile', action: () => { navigate('/dashboard/profile') }, icon: UserIcon },
+    { id: 2, name: 'Usage', action: () => { navigate('/dashboard/usage') }, icon: ChartPieIcon },
+    { id: 3, name: 'Billing', action: () => { navigate('/dashboard/billing') }, icon: CreditCardIcon },
     { id: 4, name: 'Logout', action: () => { logout() }, icon: ArrowRightEndOnRectangleIcon },
   ]
 

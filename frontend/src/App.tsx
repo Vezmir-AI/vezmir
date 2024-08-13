@@ -27,7 +27,7 @@ function App() {
             }>
               <Route path="/" element={<ChatComponent />} />
               <Route path="/chat/:chatId" element={<ChatComponent />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard/:section" element={<Dashboard />} />
             </Route>
           </Route>
         </Routes>
