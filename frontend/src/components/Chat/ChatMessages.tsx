@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { InlineMath } from 'react-katex';
+import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 
 interface Message {
@@ -22,8 +22,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
 
     // Regular expression for code blocks
     const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-    // Regular expression for inline LaTeX: \( ... \)
-    const latexRegex = /\\\((.*?)\\\)/g;
 
     let match;
 
@@ -82,18 +80,36 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   };
 
   const processLatex = (text: string, messageIndex: number, startIndex: number) => {
-
-    const latexRegex = /\\\((.*?)\\\)/g;
-
     const parts = [];
     let lastIndex = 0;
     let match;
 
-    while ((match = latexRegex.exec(text)) !== null) {
+    const combinedRegex = /(\\\(.*?\\\)|\\\[[\s\S]*?\\\])/g;
+
+    while ((match = combinedRegex.exec(text)) !== null) {
       if (match.index > lastIndex) {
         parts.push(text.slice(lastIndex, match.index));
       }
-      parts.push(<InlineMath key={`${messageIndex}-${startIndex + parts.length}`} math={match[1]} />);
+
+      const latexContent = match[1];
+      if (latexContent.startsWith('\\(') && latexContent.endsWith('\\)')) {
+        // Inline LaTeX
+        parts.push(
+          <InlineMath
+            key={`${messageIndex}-${startIndex + parts.length}`}
+            math={latexContent.slice(2, -2)}
+          />
+        );
+      } else if (latexContent.startsWith('\\[') && latexContent.endsWith('\\]')) {
+        // Block LaTeX
+        parts.push(
+          <BlockMath
+            key={`${messageIndex}-${startIndex + parts.length}`}
+            math={latexContent.slice(2, -2)}
+          />
+        );
+      }
+
       lastIndex = match.index + match[0].length;
     }
 
