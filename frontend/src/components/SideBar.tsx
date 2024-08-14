@@ -227,7 +227,7 @@ export default function SideBar() {
           </button>
         </div>
 
-        <div className={`py-10 ${isCollapsed ? 'lg:pl-16' : 'lg:pl-72'} transition-all duration-300`}>
+        <div className={`py-10 ${isCollapsed ? 'lg:pl-4' : 'lg:pl-60'} transition-all duration-300`}>
           <div className="px-4 sm:px-6 lg:px-8"></div>
         </div>
       </div>
