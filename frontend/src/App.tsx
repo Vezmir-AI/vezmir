@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ConversationProvider } from './context/ConversationContext';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
@@ -7,6 +8,7 @@ import PrivateRoute from './components/PrivateRoute';
 import ChatComponent from './components/Chat';
 import VerifyEmail from './components/VerifyEmail';
 import ResendVerificationEmail from './components/ResendVerificationEmail';
+import AppLayout from './layouts/AppLayout';
 
 function App() {
   return (
@@ -14,13 +16,20 @@ function App() {
       <Router>
         <Routes>
           <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route path="/resend-verification-email" element={<PrivateRoute><ResendVerificationEmail /></PrivateRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="/chat" element={<PrivateRoute><ChatComponent /></PrivateRoute>} />
-          <Route path="/chat/:chatId" element={<PrivateRoute><ChatComponent /></PrivateRoute>} />
+          <Route element={<PrivateRoute />}>
+            <Route path="/resend-verification-email" element={<ResendVerificationEmail />} />
+            <Route element={
+              <ConversationProvider>
+                <AppLayout />
+              </ConversationProvider>
+            }>
+              <Route path="/" element={<ChatComponent />} />
+              <Route path="/chat/:chatId" element={<ChatComponent />} />
+              <Route path="/dashboard/:section" element={<Dashboard />} />
+            </Route>
+          </Route>
         </Routes>
       </Router>
     </AuthProvider>
