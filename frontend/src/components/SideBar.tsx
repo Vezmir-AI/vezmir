@@ -11,8 +11,10 @@ import {
   ArrowRightEndOnRectangleIcon,
 } from '@heroicons/react/24/outline'
 import { useAuth } from '../context/AuthContext';
+import { useProfile } from '../context/ProfileContext';
 import NewChatButton from './Chat/NewChat';
 import ChatHistory from './Chat/ChatHistory';
+import AvatarPlaceholder from './Dashboard/AvatarPlaceholder';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -22,7 +24,9 @@ export default function SideBar() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [userName, setUserName] = useState('')
   const { logout } = useAuth();
+  const { user } = useProfile()
   const navigate = useNavigate();
   const location = useLocation();
   const settingsRef = useRef<HTMLDivElement>(null);
@@ -35,7 +39,11 @@ export default function SideBar() {
       setIsCollapsed(false);
       setShowSettings(true);
     }
-  }, [isDashboard]);
+    setUserName(`${user.first_name} ${user.last_name}`)
+    if (!user.first_name || !user.last_name) {
+      setUserName("Your Profile")
+    }
+  }, [isDashboard, user]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -178,13 +186,9 @@ export default function SideBar() {
                       onMouseLeave={handleMouseLeave}
                     >
                       <div className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800 cursor-pointer">
-                        <img
-                          alt=""
-                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                          className="h-8 w-8 rounded-full bg-gray-800"
-                        />
+                        <AvatarPlaceholder />
                         <span className="sr-only">Your profile</span>
-                        <span aria-hidden="true">Tom Cook</span>
+                        <span aria-hidden="true">{userName}</span>
                       </div>
                       {showSettings && (
                         <div
