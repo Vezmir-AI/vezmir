@@ -1,23 +1,24 @@
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import ProfileTab from "./Dashboard/ProfileTab";
 
 const Dashboard: React.FC = () => {
-  const { logout } = useAuth();
+  const { section } = useParams<{section: string}>();
   const navigate = useNavigate();
-
-  const goToChat = () => {
-    navigate('/chat');
-  };
-
+  let Component: React.FC = () => <div> No tab {section} exists. Redirecting...</div>
+  switch (section){
+   case "profile":
+    Component = ProfileTab;
+    break;
+    default:
+      console.error("No tab exists")
+      setTimeout(() => {
+        navigate("/dashboard/profile")
+      }, 3000);
+  }
   return (
     <div>
-      <h1>Dashboard</h1>
-      <p>Welcome to your dashboard!</p>
-      <button onClick={goToChat}>Go to Chat</button>
-      <button onClick={logout}>Logout</button>
-      <button onClick={() => navigate('/resend-verification-email')}>Resend Verification Email</button>
-      <button onClick={() => navigate('/setup-payment')}>Setup Payment</button>
+      <Component />
     </div>
   );
 };
