@@ -17,6 +17,12 @@ const ChatComponent: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { addConversation, selectedAIModel } = useConversation();
 
+  useEffect(() => {
+    if (!chatId) {
+      resetMessages();
+    }
+  }, [chatId]);
+
   const resetMessages = useCallback(() => {
     setMessages([]);
   }, []);
@@ -124,7 +130,7 @@ const ChatComponent: React.FC = () => {
   return (
     <div className="flex h-screen">
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col bg-gray-800 pr-4">
+      <div className="flex-1 flex flex-col bg-gray-800 pl-4">
         {/* Model Selector */}
         <div className="p-4 bg-gray-800">
           <ModelSelector/>
