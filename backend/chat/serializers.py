@@ -7,6 +7,7 @@ class AIModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = AIModel
         fields = (
+            "id",
             "name",
             "display_name",
             "provider",

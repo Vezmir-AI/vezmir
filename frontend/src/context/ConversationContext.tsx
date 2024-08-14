@@ -24,7 +24,6 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
         const initializeData = async () => {
             await fetchConversations();
             await fetchAiModels();
-            console.log("ai models", aiModels);
         };
 
         initializeData();

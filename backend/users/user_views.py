@@ -8,15 +8,6 @@ from .models import User
 from utils.mail import send_verification_email
 
 
-class GetBalanceView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        user = request.user
-        balance = user.balance
-        return Response({"balance": balance})
-
-
 class VerifyEmailView(APIView):
     permission_classes = (AllowAny,)
 
@@ -67,7 +58,8 @@ class ResendEmailVerificationView(APIView):
         user = request.user
         if user.email_verified:
             return Response(
-                {"message": "Email already verified"}, status=status.HTTP_400_BAD_REQUEST
+                {"message": "Email already verified"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         send_verification_email(user)
         return Response(
