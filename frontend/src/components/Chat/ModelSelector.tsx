@@ -24,7 +24,7 @@ const ModelSelector: React.FC = () => {
 
 
   return (
-    <div className="relative inline-block text-left w-72">
+    <div className="relative inline-block text-left w-72 z-50">
       <div>
         <button
           type="button"
@@ -39,7 +39,7 @@ const ModelSelector: React.FC = () => {
       </div>
 
       {isOpen && (
-        <div className="origin-top-right absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5">
+        <div className="origin-top-right absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-50">
           <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
             {aiModels.map((model) => (
               <button
