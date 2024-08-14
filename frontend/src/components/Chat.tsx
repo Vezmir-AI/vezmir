@@ -124,7 +124,7 @@ const ChatComponent: React.FC = () => {
   return (
     <div className="flex h-screen">
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col bg-gray-800">
+      <div className="flex-1 flex flex-col bg-gray-800 pr-4">
         {/* Model Selector */}
         <div className="p-4 bg-gray-800">
           <ModelSelector/>
