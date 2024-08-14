@@ -73,6 +73,7 @@ const ChatComponent: React.FC = () => {
         }
         newChatId = newConversationResponse.id;
         navigate(`/chat/${newChatId}`, { state: { userMessage: message } });
+        navigate(`/chat/${newChatId}`, { state: { userMessage: message } });
         url = `/chat/conversations/${newChatId}/`;
         await new Promise(resolve => setTimeout(resolve, 500));
       } else {
