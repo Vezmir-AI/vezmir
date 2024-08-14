@@ -130,7 +130,7 @@ const ChatComponent: React.FC = () => {
   return (
     <div className="flex h-screen">
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col bg-gray-800 pl-4">
+      <div className="flex-1 flex flex-col bg-gray-800">
         {/* Model Selector */}
         <div className="p-4 bg-gray-800">
           <ModelSelector/>
@@ -158,7 +158,38 @@ const ChatComponent: React.FC = () => {
             )}
             <div ref={messagesEndRef} />
           </div>
+        {/* Messages and Input Area Container */}
+        <div className="flex flex-col flex-grow">
+          {/* Messages */}
+          <div className="flex-grow overflow-y-auto">
+            {messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full space-y-4">
+                {selectedAIModel && (
+                  <div className="bg-white rounded-full p-2">
+                    <img
+                      src={getProviderLogo(selectedAIModel.provider)}
+                      alt={`${selectedAIModel.provider} logo`}
+                      className="w-12 h-12"
+                    />
+                  </div>
+                )}
+                <p className="text-4xl font-bold text-white">How can I help you today?</p>
+              </div>
+            ) : (
+              <ChatMessages messages={messages} />
+            )}
+            <div ref={messagesEndRef} />
+          </div>
 
+          {/* Input Area */}
+          <div className="p-4">
+            <InputMessage
+              selectedModel={selectedAIModel}
+              isStreaming={isStreaming}
+              onSendMessage={handleSendMessageToStream}
+            />
+          </div>
+        </div>
           {/* Input Area */}
           <div className="p-4">
             <InputMessage
