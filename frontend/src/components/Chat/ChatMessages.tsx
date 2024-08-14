@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -15,15 +17,24 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
 
   const renderContent = (content: string, messageIndex: number) => {
-    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
     const parts = [];
     let lastIndex = 0;
+
+    // Regular expression for code blocks
+    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+    // Regular expression for inline LaTeX: \( ... \)
+    const latexRegex = /\\\((.*?)\\\)/g;
+
     let match;
 
+    // First, handle code blocks
     while ((match = codeBlockRegex.exec(content)) !== null) {
       if (match.index > lastIndex) {
-        parts.push(content.slice(lastIndex, match.index));
+        // Process text before code block for LaTeX
+        const textBeforeCode = content.slice(lastIndex, match.index);
+        parts.push(...processLatex(textBeforeCode, messageIndex, parts.length));
       }
+
       const language = match[1] || 'text';
       const code = match[2].trim();
       const codeBlockIndex = parts.length;
@@ -57,11 +68,37 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
           </div>
         </div>
       );
+
       lastIndex = match.index + match[0].length;
     }
 
+    // Process any remaining text for LaTeX
     if (lastIndex < content.length) {
-      parts.push(content.slice(lastIndex));
+      const remainingText = content.slice(lastIndex);
+      parts.push(...processLatex(remainingText, messageIndex, parts.length));
+    }
+
+    return parts;
+  };
+
+  const processLatex = (text: string, messageIndex: number, startIndex: number) => {
+
+    const latexRegex = /\\\((.*?)\\\)/g;
+
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = latexRegex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(text.slice(lastIndex, match.index));
+      }
+      parts.push(<InlineMath key={`${messageIndex}-${startIndex + parts.length}`} math={match[1]} />);
+      lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(text.slice(lastIndex));
     }
 
     return parts;
