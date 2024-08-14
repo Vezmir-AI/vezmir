@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ConversationProvider } from './context/ConversationContext';
+import { ProfileProvider } from './context/ProfileContext';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
@@ -22,7 +23,9 @@ function App() {
             <Route path="/resend-verification-email" element={<ResendVerificationEmail />} />
             <Route element={
               <ConversationProvider>
-                <AppLayout />
+                <ProfileProvider>
+                  <AppLayout />
+                </ProfileProvider>
               </ConversationProvider>
             }>
               <Route path="/" element={<ChatComponent />} />
