@@ -68,7 +68,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           }`}
           disabled={isStreaming || !inputMessage.trim()}
         >
-          <SendIcon className="w-6 h-6" />
+          <SendIcon />
         </button>
       </div>
     </form>

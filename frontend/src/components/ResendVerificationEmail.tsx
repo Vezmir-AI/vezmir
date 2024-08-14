@@ -12,7 +12,7 @@ const ResendVerificationEmail: React.FC = () => {
     useEffect(() => {
         const resendVerificationEmail = async () => {
             try {
-                await api.post("/user/resend-verification-email/", {});
+                await api.post("/user/resend-verification-email/");
                 setMessage('Verification email has been resent. Please check your inbox.');
             } catch (error) {
                 const errorResponse = error as ErrorResponse;

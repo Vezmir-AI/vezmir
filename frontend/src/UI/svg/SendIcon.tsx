@@ -1,4 +1,4 @@
-export default function SendIcon({ size = 24, className = '' }) {
+export default function SendIcon({ size = 24 }) {
   return (
     <svg
       width={size}

@@ -1,4 +1,4 @@
-import React, { useContext, useCallback } from 'react';
+import { useContext, useCallback } from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { ThemeContext } from './ThemeContext';
 
@@ -12,7 +12,7 @@ const Theme = ({ theme, onChange }: { theme: string; onChange: (value: string) =
   return (
     <div className="flex items-center justify-between">
       <div className="cursor-pointer" onClick={() => onChange(theme === 'dark' ? 'light' : 'dark')}>
-        {themeIcons[theme]}
+        {themeIcons[theme as keyof typeof themeIcons]}
       </div>
     </div>
   );

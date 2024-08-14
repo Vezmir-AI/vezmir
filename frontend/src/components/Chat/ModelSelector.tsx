@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import api from '../../api';
 import { getProviderLogo, getProviderColor } from '../../utils/providerUtils';
-
+import { useConversation } from '../../context/ConversationContext';
 interface AiModel {
   id: string;
   name: string;
@@ -11,36 +10,18 @@ interface AiModel {
   hint: string;
 }
 
-interface ModelSelectorProps {
-  selectedModel: string;
-  setSelectedModel: React.Dispatch<React.SetStateAction<AiModel | null>>;
-}
 
-const ModelSelector: React.FC<ModelSelectorProps> = ({ selectedModel, setSelectedModel }) => {
+const ModelSelector: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [aiModels, setAiModels] = useState<AiModel[]>([]);
   const [hoveredHint, setHoveredHint] = useState<string | null>(null);
+  const { aiModels, selectedAIModel, setSelectedAIModel } = useConversation();
 
-  useEffect(() => {
-    fetchAiModels();
-  }, []);
 
   const handleModelChange = (model: AiModel) => {
-    setSelectedModel(model);
+    setSelectedAIModel(model);
     setIsOpen(false);
   };
 
-  const fetchAiModels = async (): Promise<void> => {
-    try {
-      const response = await api.get('/ai_models/');
-      setAiModels(response);
-      if (response.length > 0 && !selectedModel) {
-        setSelectedModel(response[0]);
-      }
-    } catch (error) {
-      console.error('Error fetching AI models:', error);
-    }
-  };
 
   return (
     <div className="relative inline-block text-left w-72">
@@ -52,7 +33,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ selectedModel, setSelecte
           }`}
           onClick={() => setIsOpen(!isOpen)}
         >
-          {aiModels.find(model => model.name === selectedModel)?.display_name || 'Select a model'}
+          {aiModels.find(model => model.name === selectedAIModel?.name)?.display_name || 'Select a model'}
           <ChevronDown className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
         </button>
       </div>
