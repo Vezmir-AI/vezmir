@@ -6,6 +6,7 @@ interface ProfileContextType {
     user: userProfile,
     updateProfile: (userChange: profileUpdate) => Promise<serverResponse>,
     updatePassword: (passwordChange: passwordUpdate) => Promise<serverResponse>,
+    deleteAccount: () => Promise<serverResponse>,
 }
 
 const ProfileContext = createContext<ProfileContextType | null>(null);
@@ -33,7 +34,12 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
         const response = await api.put('/user/me/', data);
         return response;
     }
-    return <ProfileContext.Provider value={{ user, updateProfile, updatePassword }}>{children}</ProfileContext.Provider>
+
+    const deleteAccount = async () => {
+        const response = await api.delete('/user/me/');
+        return response;
+    }
+    return <ProfileContext.Provider value={{ user, updateProfile, updatePassword, deleteAccount }}>{children}</ProfileContext.Provider>
 }
 
 export const useProfile = () => {
