@@ -9,6 +9,7 @@ import ChatComponent from './components/Chat';
 import VerifyEmail from './components/VerifyEmail';
 import ResendVerificationEmail from './components/ResendVerificationEmail';
 import AppLayout from './layouts/AppLayout';
+import StripePayment from './components/StripePayment';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/setup-payment" element={<StripePayment />} />
           <Route element={<PrivateRoute />}>
             <Route path="/resend-verification-email" element={<ResendVerificationEmail />} />
             <Route element={
