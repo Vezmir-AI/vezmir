@@ -14,6 +14,7 @@ import StripePayment from './components/StripePayment';
 import './index.css'
 import StripePayment from './components/StripePayment';
 import './index.css'
+import StripePayment from './components/StripePayment';
 
 function App() {
   return (

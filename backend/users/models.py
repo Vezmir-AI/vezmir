@@ -51,8 +51,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     stripe_setup_intent = models.CharField(max_length=50, blank=True, null=True)
 
-    stripe_setup_intent = models.CharField(max_length=50, blank=True, null=True)
-
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
