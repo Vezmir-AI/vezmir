@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../../context/ProfileContext';
+import { useAuth } from '../../context/AuthContext';
 import { useConversation } from '../../context/ConversationContext';
+import ConfirmDeletePopup from './ConfirmDeletePopup'
 
 const ProfileTab: React.FC = () => {
   const { user, updateProfile, updatePassword, deleteAccount } = useProfile();
-
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const { aiModels } = useConversation();
   const [preferredModel, setPreferredModel] = useState("automatic");
+  const [showConfirmationDelete, setShowConfirmationDelete] = useState(false);
 
   useEffect(() => {
     if (aiModels.length > 0 && user.preferred_model) {
@@ -44,11 +49,25 @@ const ProfileTab: React.FC = () => {
     });
   }
 
-
+  // function props to pass to the confirm delete popup
+  const handleConfirmDelete = (confirmed: boolean) => {
+    setShowConfirmationDelete(false);
+    if (confirmed) {
+      deleteAccount();
+      logout();
+      navigate("/");
+    }
+  }
 
   return (
     <>
       <div>
+        {/* Will show when the delete account button is clicked */}
+        <ConfirmDeletePopup
+          open={showConfirmationDelete}
+          setOpen={setShowConfirmationDelete}
+          onConfirm={handleConfirmDelete}
+        />
         <div className="xl:pl-72">
           <main>
             <h1 className="sr-only">Account Settings</h1>
@@ -258,21 +277,19 @@ const ProfileTab: React.FC = () => {
               <div className="max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
                 <h2 className="text-base font-semibold leading-7 text-white">Delete account</h2>
                 <p className="mt-1 text-sm leading-6 text-gray-400 mb-6">
-                  No longer want to use our service? You can delete your account here. This action is not reversible.
-                  All information related to this account will be deleted permanently.
+                  No longer want to use our service? You can delete your account here.
+                  All information related to this account will be deleted permanently in 30 days. You can revert this action in the meantime.
                 </p>
 
-                <form className="w-full">
-                  <button
-                    type="submit"
-                    onClick={() => {
-                      deleteAccount();
-                    }}
-                    className="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400"
-                  >
-                    Yes, delete my account
-                  </button>
-                </form>
+                <button
+                  type="submit"
+                  onClick={() => {
+                    setShowConfirmationDelete(true);
+                  }}
+                  className="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400"
+                >
+                  Yes, delete my account
+                </button>
               </div>
             </div>
           </main>
