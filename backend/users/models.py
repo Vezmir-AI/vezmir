@@ -37,7 +37,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
-    stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
+    stripe_setup_intent = models.CharField(max_length=50, blank=True, null=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
