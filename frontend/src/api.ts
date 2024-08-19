@@ -10,7 +10,11 @@ const api = {
   post: async function (url: string, body: any = {}, stream: boolean = false) {
     return this._fetch(url, body, 'POST', true, stream);
   },
-  get: async function (url: string) {
+  get: async function (url: string, params: { [key: string]: string } | null = null) {
+    if (params) {
+      const searchParams = Object.keys(params).map(key => `${key}=${params[key]}`).join('&');
+      return this._fetch(`${url}?${searchParams}`, null, 'GET');
+    }
     return this._fetch(url, null, 'GET');
   },
   put: async function (url: string, data: any) {

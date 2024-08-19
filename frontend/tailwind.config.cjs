@@ -79,6 +79,7 @@ module.exports = {
           'border-medium-alt': 'var(--border-medium-alt)',
           'border-heavy': 'var(--gray-300)',
           'border-xheavy': 'var(--gray-400',
+          'vezmir': '#6D071A'
         },
       },
     },
