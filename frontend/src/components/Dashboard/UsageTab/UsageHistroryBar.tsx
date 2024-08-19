@@ -4,7 +4,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
 import { Switch } from '@headlessui/react'
 import { useProfile } from '@/context/ProfileContext';
 import { usageData } from '@/types';
-import { formatDate, formatDateReadable } from '@/utils/dateUtils';
+import { formatDate, formatDateReadable } from '@/utils';
 import CustomTooltip from './CustomTooltip';
 
 
