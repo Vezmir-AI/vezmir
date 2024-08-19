@@ -5,6 +5,7 @@ from django.conf import settings
 
 class AIModelProvider(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
+    display_name = models.CharField(max_length=100)
 
 
 class AIModel(models.Model):
