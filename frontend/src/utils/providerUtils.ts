@@ -1,6 +1,6 @@
-import OpenAILogo from '../assets/openai.svg';
-import AnthropicLogo from '../assets/anthropic.svg';
-import React from '../assets/react.svg';
+import OpenAILogo from '@/assets/openai.svg';
+import AnthropicLogo from '@/assets/anthropic.svg';
+import React from '@/assets/react.svg';
 
 export const getProviderLogo = (provider: string): string => {
   switch (provider.toLowerCase()) {
