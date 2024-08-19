@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import api from '../api';
+import React, { useEffect } from 'react';
+import api from '@/api';
 
 interface ErrorResponse {
     message: string

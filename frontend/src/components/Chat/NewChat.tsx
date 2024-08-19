@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import NewChatIcon from '../../UI/svg/newChatIcon';
+import NewChatIcon from '@/UI/svg/newChatIcon';
 
 const NewChatButton = () => {
     const navigate = useNavigate();

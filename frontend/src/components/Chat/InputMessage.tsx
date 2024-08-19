@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import SendIcon from '../../UI/svg/SendIcon';
+  import React, { useState, useRef, useEffect } from 'react';
+import SendIcon from '@/UI/svg/SendIcon';
 
 interface InputMessageProps {
   selectedModel: { display_name: string } | null;

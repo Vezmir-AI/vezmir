@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
 import { Switch } from '@headlessui/react'
-import { useProfile } from '../../../context/ProfileContext';
-import { usageData } from '../../../types';
-import { formatDate, formatDateReadable } from '../../../utils/dateUtils';
+import { useProfile } from '@/context/ProfileContext';
+import { usageData } from '@/types';
+import { formatDate, formatDateReadable } from '@/utils/dateUtils';
 import CustomTooltip from './CustomTooltip';
 
 

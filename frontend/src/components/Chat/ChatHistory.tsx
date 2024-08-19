@@ -1,9 +1,9 @@
+import React, { useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { TrashIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
-import { useConversation } from '../../context/ConversationContext';
-import { useState } from 'react';
+import { useConversation } from '@/context/ConversationContext';
 
-const ChatHistory = () => {
+const ChatHistory: React.FC = () => {
     const navigate = useNavigate();
     const { chatId } = useParams<{ chatId: string }>();
     const { conversations, deleteConversation } = useConversation();

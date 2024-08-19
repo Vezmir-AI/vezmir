@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import api from "../api"
+import api from "@/api"
 
 const VerifyEmail: React.FC = () => {
     const [isVerified, setIsVerified] = useState(false)

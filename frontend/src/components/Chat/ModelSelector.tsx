@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { getProviderLogo, getProviderColor } from '../../utils/providerUtils';
-import { useConversation } from '../../context/ConversationContext';
-interface AiModel {
-  id: string;
-  name: string;
-  provider: string;
-  display_name: string;
-  hint: string;
-}
-
+import { useConversation } from '@/context/ConversationContext';
+import { getProviderLogo, getProviderColor } from '@/utils';
+import { AIModel } from '@/types';
 
 const ModelSelector: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +10,7 @@ const ModelSelector: React.FC = () => {
   const { aiModels, selectedAIModel, setSelectedAIModel } = useConversation();
 
 
-  const handleModelChange = (model: AiModel) => {
+  const handleModelChange = (model: AIModel) => {
     setSelectedAIModel(model);
     setIsOpen(false);
   };
