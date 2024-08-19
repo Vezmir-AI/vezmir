@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
-import api from '../api';
-import { serverResponse, profileUpdate, passwordUpdate, userProfile, userUsage } from '../types';
+import api from '@/api';
+import { serverResponse, profileUpdate, passwordUpdate, userProfile, userUsage } from '@/types';
 
 interface ProfileContextType {
     user: userProfile,

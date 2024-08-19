@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Switch } from "@headlessui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
-import { useProfile } from "../../../context/ProfileContext";
-import { usageData } from '../../../types'
-import { getWeekStart, getWeekEnd, formatDate } from '../../../utils';
+import { useProfile } from "@/context/ProfileContext";
+import { usageData } from '@/types'
+import { getWeekStart, getWeekEnd, formatDate } from '@/utils';
 
 const UsageConsumptionArea: React.FC = () => {
     const [showDetails, setShowDetails] = useState(false);

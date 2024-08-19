@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../api';
+import api from '@/api';
+import { useConversation } from '@/context/ConversationContext';
+import { Message } from '@/types';
+import { getProviderLogo } from '@/utils';
 import ModelSelector from './Chat/ModelSelector';
 import ChatMessages from './Chat/ChatMessages';
-import { getProviderLogo } from '../utils/providerUtils';
 import InputMessage from './Chat/InputMessage';
-import { useConversation } from '../context/ConversationContext';
-import { Message } from '../types';
 
 
 const ChatComponent: React.FC = () => {
