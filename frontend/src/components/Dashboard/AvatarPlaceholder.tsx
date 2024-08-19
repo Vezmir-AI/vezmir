@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useProfile } from '../../context/ProfileContext';
+import { useProfile } from '@/context/ProfileContext';
 
 
 const AvatarPlaceholder: React.FC = () => {

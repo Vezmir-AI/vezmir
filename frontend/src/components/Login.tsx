@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import api from '../api';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useLocalize } from '../hooks';
-import { useContext } from 'react';
-import { ThemeContext, isDark } from '../UI/Theme/ThemeContext';
-import ThemeSelector from '../UI/Theme/ThemeSelector';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
+import api from '@/api';
+import { useAuth } from '@/context/AuthContext';
+import { useLocalize } from '@/hooks';
+import { ThemeContext, isDark } from '@/UI/Theme/ThemeContext';
+import ThemeSelector from '@/UI/Theme/ThemeSelector';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useProfile } from '../../context/ProfileContext';
-import { useAuth } from '../../context/AuthContext';
-import { useConversation } from '../../context/ConversationContext';
+import { useAuth } from '@/context/AuthContext';
+import { useConversation } from '@/context/ConversationContext';
+import { useProfile } from '@/context/ProfileContext';
 import ConfirmDeletePopup from './ConfirmDeletePopup'
 
 const ProfileTab: React.FC = () => {
