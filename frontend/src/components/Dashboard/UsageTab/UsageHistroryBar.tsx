@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
-import CustomTooltip from './CustomTooltip';
 import { Switch } from '@headlessui/react'
-import { useProfile } from '@/context/ProfileContext';
-import { usageData } from '@/types/serverTypes';
-import { formatDate, formatDateReadable } from '@/utils';
+import { useProfile } from '../../../context/ProfileContext';
+import { usageData } from '../../../types';
+import { formatDate, formatDateReadable } from '../../../utils/dateUtils';
+import CustomTooltip from './CustomTooltip';
 
 
 const UsageHistoryBar: React.FC = () => {
