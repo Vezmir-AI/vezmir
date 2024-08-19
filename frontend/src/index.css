@@ -2184,3 +2184,23 @@ ol ol):not(:where([class~=not-prose] *)) {
   animation: moveUp 4s ease-in-out infinite;
   
 }
+
+.animate-subtle-wave {
+  animation: subtle-wave 8s ease-in-out infinite;
+}
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-loading {
+  background-size: 200% 100%;
+  animation: gradientMove 6s ease infinite;
+}

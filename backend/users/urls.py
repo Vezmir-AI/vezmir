@@ -14,4 +14,6 @@ urlpatterns = [
     path("auth/logout/", auth_views.UserLogoutView.as_view(), name="logout"),
     path("user/verify-email/", user_views.VerifyEmailView.as_view(), name="verify_email"),
     path("user/resend-verification-email/", user_views.ResendEmailVerificationView.as_view(), name="resend_verification_email"),
+    path("user/me/", user_views.UserInfosView.as_view(), name="get_user_infos"),
+    path("user/usage/<str:type>/", user_views.UserUsageView.as_view(), name="get_user_usage"),
 ]
