@@ -4,9 +4,9 @@ import api from '@/api';
 import { useConversation } from '@/context/ConversationContext';
 import { Message } from '@/types';
 import { getProviderLogo } from '@/utils';
-import ModelSelector from './Chat/ModelSelector';
-import ChatMessages from './Chat/ChatMessages';
-import InputMessage from './Chat/InputMessage';
+import ModelSelector from './ModelSelector';
+import ChatMessages from './ChatMessages';
+import InputMessage from './InputMessage';
 
 
 const ChatComponent: React.FC = () => {

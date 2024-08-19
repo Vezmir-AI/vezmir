@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import ProfileTab from "./Dashboard/ProfileTab";
-import UsageTab from './Dashboard/UsageTab';
-import BillingTab from './Dashboard/BillingTab';
+import ProfileTab from "./ProfileTab";
+import UsageTab from './UsageTab';
+import BillingTab from './BillingTab';
 
 const Dashboard: React.FC = () => {
   const { section } = useParams<{ section: string }>();
