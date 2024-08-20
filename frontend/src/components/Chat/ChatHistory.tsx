@@ -28,7 +28,7 @@ const ChatHistory: React.FC = () => {
         <ul role="list" className="-mx-2 space-y-1">
             {conversations.slice(0, 3).map((item) => (
                 <li key={item.id}>
-                    <div className="flex items-center justify-between bg-[var(--gray-800)]">
+                    <div className="flex items-center justify-between bg-[var(--gray-900)]">
                         <Link
                             to={`/chat/${item.id}`}
                             className="text-[var(--gray-400)] hover:bg-[var(--gray-800)] hover:text-white group flex-grow flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
@@ -38,7 +38,7 @@ const ChatHistory: React.FC = () => {
                         </Link>
                         <button
                             onClick={(e) => handleDeleteConversation(item.id, e)}
-                            className="p-2 text-[var(--gray-400)] hover:text-white"
+                            className="p-2 text-[var(--gray-400)] hover:text-white bg-[var(--gray-900)] hover:bg-[var(--gray-800)]"
                             title="Delete conversation"
                         >
                             <TrashIcon className="h-4 w-4" />
@@ -78,7 +78,7 @@ const ChatHistory: React.FC = () => {
                         </Link>
                         <button
                             onClick={(e) => handleDeleteConversation(item.id, e)}
-                            className="p-2 text-gray-400 hover:text-white"
+                            className="p-2 text-gray-400 hover:text-white bg-[var(--gray-900)] hover:bg-[var(--gray-800)]"
                             title="Delete conversation"
                         >
                             <TrashIcon className="h-4 w-4" />
