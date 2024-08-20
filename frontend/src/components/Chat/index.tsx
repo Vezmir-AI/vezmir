@@ -128,11 +128,11 @@ const ChatComponent: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-[var(--gray-800)]">
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col bg-gray-800 pl-4">
+      <div className="flex-1 flex flex-col bg-[var(--gray-800)] pl-4">
         {/* Model Selector */}
-        <div className="p-4 bg-gray-800">
+        <div className="p-4 bg-[var(--gray-800)]">
           <ModelSelector/>
         </div>
 
@@ -182,7 +182,7 @@ const ChatComponent: React.FC = () => {
           </div>
 
           {/* Input Area */}
-          <div className="p-4">
+          <div className="p-4 bg-[var(--gray-800)]">
             <InputMessage
               selectedModel={selectedAIModel}
               isStreaming={isStreaming}

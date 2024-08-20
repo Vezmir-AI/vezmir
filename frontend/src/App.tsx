@@ -11,6 +11,7 @@ import VerifyEmail from './components/VerifyEmail';
 import ResendVerificationEmail from './components/ResendVerificationEmail';
 import AppLayout from './layouts/AppLayout';
 import StripePayment from './components/StripePayment';
+import './index.css'
 
 function App() {
   return (

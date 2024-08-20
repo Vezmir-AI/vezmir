@@ -155,8 +155,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
           <div
             className={`max-w-[80%] ${
               msg.role === 'user'
-                ? 'bg-gray-700 text-white rounded-3xl rounded-br-sm'
-                : 'bg-gray-800 text-white rounded-3xl rounded-tl-sm'
+                ? 'bg-[var(--gray-700)] text-white rounded-3xl rounded-br-sm'
+                : 'bg-[var(--gray-800)] text-white rounded-3xl rounded-tl-sm'
             } p-3`}
           >
             {renderContent(msg.content, index)}
