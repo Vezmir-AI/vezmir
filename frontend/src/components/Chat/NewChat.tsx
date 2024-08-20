@@ -11,7 +11,7 @@ const NewChatButton = () => {
         <button
             data-testid="wide-header-new-chat-button"
             type="button"
-            className="w-full flex items-center justify-between whitespace-nowrap rounded-xl bg-gray-850 hover:bg-gray-700 py-3 px-5"
+            className="w-full flex items-center justify-between whitespace-nowrap rounded-xl bg-gray-850 py-3 px-5"
             onClick={goToNewChat}
         >
             <span className="text-token-text-primary overflow-hidden text-ellipsis whitespace-nowrap text-lg font-medium">New chat</span>

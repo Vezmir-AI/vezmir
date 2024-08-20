@@ -49,14 +49,14 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-gray-800 mt-auto">
-      <div className="flex items-center max-w-4xl mx-auto relative">
+    <form onSubmit={handleSubmit} className="p-4 bg-[var(--gray-dark)] mt-auto">
+      <div className="flex items-center max-w-4xl mx-auto relative bg-[var(--gray-800)]">
         <textarea
           ref={textareaRef}
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-grow p-4 pr-16 rounded-[25px] bg-gray-700 text-white text-lg border border-gray-600 focus:outline-none focus:ring-0 focus:border-gray-600 resize-none overflow-hidden"
+          className="flex-grow p-4 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none overflow-hidden"
           placeholder={`Message ${selectedModel?.display_name || ''}`}
           rows={1}
           style={{ minHeight: '56px', maxHeight: '120px' }}
@@ -64,8 +64,8 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
         <button
           type="submit"
           className={`absolute right-3 bottom-2.5 p-2 rounded-full text-lg flex items-center justify-center transition-colors duration-200 ${
-            inputMessage.trim() ? 'bg-white text-gray-800' : 'bg-gray-400 text-white'
-          }`}
+            inputMessage.trim() ? 'bg-white text-gray-800 hover:bg-gray-400' : 'bg-gray-400 text-white hover:bg-gray-400'
+          } ${(isStreaming || !inputMessage.trim()) ? 'cursor-not-allowed opacity-50' : ''}`}
           disabled={isStreaming || !inputMessage.trim()}
         >
           <SendIcon />
