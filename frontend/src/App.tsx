@@ -10,6 +10,7 @@ import ChatComponent from './components/Chat';
 import VerifyEmail from './components/VerifyEmail';
 import ResendVerificationEmail from './components/ResendVerificationEmail';
 import AppLayout from './layouts/AppLayout';
+import './index.css'
 
 function App() {
   return (

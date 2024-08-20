@@ -124,84 +124,78 @@ const Register: React.FC = () => {
             alt="Logo"
           />
         </div>
-        <div className="absolute bottom-0 left-0 md:m-4">
+        {/* <div className="absolute bottom-0 left-0 md:m-4">
           <ThemeSelector />
-        </div>
+        </div> */}
         <h1
-          className="mb-4 text-center text-3xl font-bold text-gray-700 dark:text-white"
+          className="mb-4 text-center text-4xl font-bold text-gray-700 dark:text-white"
         >
           {useLocalize('com_auth_create_account')}
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-2 relative">
-            <div className="relative">
-              <input
-                type="text"
-                id="email"
-                value={email}
-                autoComplete="email"
-                aria-label={useLocalize('com_auth_email')}
-                onChange={handleEmailChange}
-                className="webkit-dark-styles peer block w-full appearance-none rounded-md border border-gray-300 bg-transparent px-3.5 pb-3.5 pt-4 text-sm text-gray-900 focus:border-[#a02d1f] focus:outline-none focus:ring-0 dark:border-gray-600 dark:text-white dark:focus:border-[#a02d1f]"
-                placeholder=" "
-              />
-              <label
-                htmlFor="email"
-                className="absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-3 text-sm text-gray-500 duration-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-3 peer-focus:text-[#a02d1f] dark:bg-gray-900 dark:text-gray-400 dark:peer-focus:text-[#a02d1f] rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
-              >
-                {useLocalize('com_auth_email_address')}
-              </label>
-            </div>
-            {emailError && <p className="text-[#892619] text-sm mt-1">{emailError}</p>}
+            <input
+              type="text"
+              id="email"
+              value={email}
+              autoComplete="email"
+              aria-label={useLocalize('com_auth_email')}
+              onChange={handleEmailChange}
+              className="input-field peer"
+              placeholder=" "
+            />
+            <label
+              htmlFor="email"
+              className="floating-label"
+            >
+              {useLocalize('com_auth_email_address')}
+            </label>
+            {emailError && <p className="text-[var(--bordeaux)] text-sm mt-1">{emailError}</p>}
           </div>
           <div className="mb-2 relative">
-            <div className="relative">
-              <input
-                type="password"
-                id="password"
-                value={password}
-                autoComplete="new-password"
-                aria-label={useLocalize('com_auth_password')}
-                onChange={handlePasswordChange}
-                className="webkit-dark-styles peer block w-full appearance-none rounded-md border border-gray-300 bg-transparent px-3.5 pb-3.5 pt-4 text-sm text-gray-900 focus:border-[#a02d1f] focus:outline-none focus:ring-0 dark:border-gray-600 dark:text-white dark:focus:border-[#a02d1f]"
-                placeholder=" "
-              />
-              <label
-                htmlFor="password"
-                className="absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-3 text-sm text-gray-500 duration-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-3 peer-focus:text-[#a02d1f] dark:bg-gray-900 dark:text-gray-400 dark:peer-focus:text-[#a02d1f] rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
-              >
-                {useLocalize('com_auth_password')}
-              </label>
-            </div>
-            {passwordError && <p className="text-[#892619] text-sm mt-1">{passwordError}</p>}
+            <input
+              type="password"
+              id="password"
+              value={password}
+              autoComplete="new-password"
+              aria-label={useLocalize('com_auth_password')}
+              onChange={handlePasswordChange}
+              className="input-field peer"
+              placeholder=" "
+            />
+            <label
+              htmlFor="password"
+              className="floating-label"
+            >
+              {useLocalize('com_auth_password')}
+            </label>
+            {passwordError && <p className="text-[var(--bordeaux)] text-sm mt-1">{passwordError}</p>}
           </div>
           <div className="mb-2 relative">
-            <div className="relative">
-              <input
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                autoComplete="new-password"
-                aria-label={useLocalize('com_auth_confirm_password')}
-                onChange={handleConfirmPasswordChange}
-                className={`webkit-dark-styles peer block w-full appearance-none rounded-md border border-gray-300 bg-transparent px-3.5 pb-3.5 pt-4 text-sm text-gray-900 focus:border-[#a02d1f] focus:outline-none focus:ring-0 dark:border-gray-600 dark:text-white dark:focus:border-[#a02d1f] ${!passwordsMatch ? 'border-[#892619]' : ''}`}
-                placeholder=" "
-              />
-              <label
-                htmlFor="confirmPassword"
-                className="absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-3 text-sm text-gray-500 duration-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-3 peer-focus:text-[#a02d1f] dark:bg-gray-900 dark:text-gray-400 dark:peer-focus:text-[#a02d1f] rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
-              >
-                {useLocalize('com_auth_password_confirm')}
-              </label>
-            </div>
-            {confirmPasswordError && <p className="text-[#892619] text-sm mt-1">{confirmPasswordError}</p>}
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              autoComplete="new-password"
+              aria-label={useLocalize('com_auth_confirm_password')}
+              onChange={handleConfirmPasswordChange}
+              className={`input-field peer ${!passwordsMatch ? 'border-[var(--bordeaux)]' : ''}`}
+              placeholder=" "
+            />
+            <label
+              htmlFor="confirmPassword"
+              className="floating-label"
+            >
+              {useLocalize('com_auth_password_confirm')}
+            </label>
+            {confirmPasswordError && <p className="text-[var(--bordeaux)] text-sm mt-1">{confirmPasswordError}</p>}
           </div>
           {!passwordsMatch && confirmPassword !== '' && (
-            <p className="text-[#892619] text-sm mb-2">{useLocalize('com_auth_password_not_match')}</p>
+            <p className="text-[var(--bordeaux)] text-sm mb-2">{useLocalize('com_auth_password_not_match')}</p>
           )}
           <button
             type="submit"
-            className="w-full transform rounded-md bg-[#892619] px-4 py-3 tracking-wide text-white transition-colors duration-200 hover:bg-[#a02d1f] focus:bg-[#a02d1f] focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:hover:bg-[#892619]"
+            className="w-full transform rounded-md bg-[var(--bordeaux)] px-4 py-3 tracking-wide text-white transition-colors duration-200 hover:bg-[var(--bordeaux-hover)] focus:bg-[var(--bordeaux-hover)] focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:hover:bg-[var(--bordeaux)]"
             disabled={!passwordsMatch || confirmPassword === ''}
           >
             {useLocalize('com_auth_register')}
@@ -218,7 +212,7 @@ const Register: React.FC = () => {
         </div>
         <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
           {useLocalize('com_auth_already_have_account')}{' '}
-          <a href="/login" aria-label="Login" className="p-1 text-[#892619] hover:text-[#a02d1f]">
+          <a href="/login" aria-label="Login" className="p-1 text-[var(--bordeaux-clear)]">
             {useLocalize('com_auth_login')}
           </a>
         </p>

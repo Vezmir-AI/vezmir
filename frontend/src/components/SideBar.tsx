@@ -147,10 +147,10 @@ export default function SideBar() {
         {/* Collapsible sidebar for desktop */}
         <div className={`hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col ${isCollapsed ? 'lg:w-16' : 'lg:w-72'} transition-all duration-300`}>
           {isCollapsed ? (
-            <div className="flex h-16 shrink-0 items-center justify-center">
+            <div className="flex h-16 shrink-0 items-center justify-center mt-3 ml-3">
               <button
                 onClick={() => setIsCollapsed(false)}
-                className="p-2 rounded-md text-gray-400 hover:bg-gray-800 hover:text-white"
+                className="p-2 rounded-md text-gray-400 bg-[var(--gray-700)] hover:bg-[var(--gray-600)]"
               >
                 <Bars3Icon className="h-6 w-6" />
               </button>
