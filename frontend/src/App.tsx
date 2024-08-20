@@ -13,6 +13,7 @@ import AppLayout from './layouts/AppLayout';
 import StripePayment from './components/StripePayment';
 import './index.css'
 import StripePayment from './components/StripePayment';
+import './index.css'
 
 function App() {
   return (
