@@ -17,7 +17,9 @@ from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(os.path.join(BASE_DIR, "../.env"))
+
+# Load environment variables
+load_dotenv(BASE_DIR)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
@@ -28,28 +30,10 @@ STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "***REMOVED-DJANGO-SECRET-KEY***"
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ["*"]
-CORS_ORIGIN_ALLOW_ALL = True
-FRONTEND_URL = "http://localhost:3000"
-
-AUTH_USER_MODEL = "users.User"
-
-# Application definition
-SWAGGER_SETTINGS = {
-    "SECURITY_DEFINITIONS": {
-        "Bearer": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header",
-            "description": "DO NOT FORGET TO ADD 'Bearer' BEFORE THE TOKEN",
-        }
-    }
-}
+DEBUG = os.getenv("DEV")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -58,15 +42,41 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # 3rd party
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
-    "drf_yasg",
+    # apps
     "users",
     "chat",
     "billing",
 ]
+
+AUTH_USER_MODEL = "users.User"
+
+if DEBUG:
+    ALLOWED_HOSTS = ["*"]
+    CORS_ORIGIN_ALLOW_ALL = True
+
+    # adds swagger for development
+    INSTALLED_APPS.append("drf_yasg")
+    SWAGGER_SETTINGS = {
+        "SECURITY_DEFINITIONS": {
+            "Bearer": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "description": "DO NOT FORGET TO ADD 'Bearer' BEFORE THE TOKEN",
+            }
+        }
+    }
+else:
+    ALLOWED_HOSTS = ["*.vezmir.ai"]
+    CORS_ORIGIN_ALLOW_ALL = True
+    FRONTEND_URL = "https://vezmir.ai"
+    CSRF_COOKIE_SECURE=True
+    SESSION_COOKIE_SECURE=True
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
@@ -78,7 +88,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
@@ -122,12 +132,12 @@ WSGI_APPLICATION = "vesmir_app.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "vesmir",
-        "USER": "postgres",
-        "PASSWORD": "bite",
-        "HOST": "db",
-        "PORT": "5432",
+        "ENGINE": os.getenv("DJANGO_DATABSE_ENGINE"),
+        "NAME": os.getenv("DJANGO_DATABSE_NAME"),
+        "USER": os.getenv("DJANGO_DATABSE_USER"),
+        "PASSWORD": os.getenv("DJANGO_DATABSE_PASSWORD"),
+        "HOST": os.getenv("DJANGO_DATABSE_HOST"),
+        "PORT": os.getenv("DJANGO_DATABSE_PORT"),
     }
 }
 
@@ -150,13 +160,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# SERVICES API KEYS
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "jeanbaptiste.conan.jbc@gmail.com"
-EMAIL_HOST_PASSWORD = "***REMOVED-EMAIL-APP-PASSWORD***"
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL CONFIG
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
