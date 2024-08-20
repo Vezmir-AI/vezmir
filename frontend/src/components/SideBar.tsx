@@ -113,7 +113,7 @@ export default function SideBar() {
                 <nav className="flex flex-1 flex-col">
                   <NewChatButton />
                   <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                    <li>
+                    <li className="mt-4">
                       <ChatHistory />
                     </li>
                     <li>
@@ -156,8 +156,8 @@ export default function SideBar() {
               </button>
             </div>
           ) : (
-            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6">
-              <div className="flex h-16 shrink-0 items-center justify-between">
+            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[var(--gray-900)] px-6">
+              <div className="flex h-16 shrink-0 items-center justify-between mt-2">
                 <img
                   alt="vezmir-logo"
                   src="/assets/white.svg"
@@ -166,7 +166,7 @@ export default function SideBar() {
                 {!isDashboard && (
                   <button
                     onClick={() => setIsCollapsed(true)}
-                    className="p-2 rounded-md text-gray-400 hover:bg-gray-800 hover:text-white"
+                    className="p-2 rounded-md text-gray-400 bg-[var(--gray-700)] hover:bg-[var(--gray-600)] mt-2"
                   >
                     <ChevronLeftIcon className="h-6 w-6" />
                   </button>
@@ -175,17 +175,17 @@ export default function SideBar() {
               <nav className="flex flex-1 flex-col">
                 <NewChatButton />
                 <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                  <li>
+                  <li className="mt-4">
                     <ChatHistory />
                   </li>
                   <li className="mt-auto pr-2">
                     <div
                       ref={profileRef}
-                      className={`relative rounded-md -mx-6 ${showSettings ? 'bg-gray-800' : ''}`}
+                      className={`relative rounded-md -mx-6 ${showSettings ? 'bg-[var(--gray-800)]' : ''}`}
                       onMouseEnter={handleMouseEnter}
                       onMouseLeave={handleMouseLeave}
                     >
-                      <div className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800 cursor-pointer">
+                      <div className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-[var(--gray-800)] cursor-pointer">
                         <AvatarPlaceholder />
                         <span className="sr-only">Your profile</span>
                         <span aria-hidden="true">{userName}</span>
@@ -193,7 +193,7 @@ export default function SideBar() {
                       {showSettings && (
                         <div
                           ref={settingsRef}
-                          className="absolute bottom-full left-0 w-full bg-gray-800 py-2"
+                          className="absolute bottom-full left-0 w-full bg-[var(--gray-900)] py-2"
                         >
                           <div className="text-xs font-semibold leading-6 text-gray-400 px-6 mb-2">Settings</div>
                           <ul role="list">
@@ -202,11 +202,11 @@ export default function SideBar() {
                                 <button
                                   onClick={option.action}
                                   className={classNames(
-                                    'text-gray-400 hover:bg-gray-700 hover:text-white',
-                                    'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 w-full px-6',
+                                    'text-gray-400 hover:bg-[var(--gray-800)] hover:text-white',
+                                    'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 w-full px-6 bg-[var(--gray-900)]',
                                   )}
                                 >
-                                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white">
+                                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-[var(--gray-700)] text-[0.625rem] font-medium text-gray-400 group-hover:text-white">
                                     <option.icon className="h-4 w-4" aria-hidden="true" />
                                   </span>
                                   <span className="truncate">{option.name}</span>
