@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from django.conf import settings
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
-
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 class AbstractAPI(ABC):
     @classmethod
@@ -43,7 +43,18 @@ class AnthropicAPI(AbstractAPI):
         )
         for chunk in chat.stream(messages, stream_usage=True):
             yield chunk
+            
+class GoogleAPI(AbstractAPI):
+    API_KEY = settings.GOOGLE_API_KEY
 
+    @classmethod
+    def _get_response(cls, messages: list[dict], model_name: str) -> str:
+        chat = ChatGoogleGenerativeAI(
+            api_key=cls.API_KEY,
+            model=model_name,
+        )
+        for chunk in chat.stream(messages):
+            yield chunk
 
 class SampleAPI(AbstractAPI):
     RESPONSE = (
