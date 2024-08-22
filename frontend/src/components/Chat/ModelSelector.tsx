@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { AIModel } from '@/types';
 import { getProviderLogo, getProviderColor } from '../../utils/providerUtils';
@@ -16,7 +16,20 @@ const ModelSelector: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredHint, setHoveredHint] = useState<string | null>(null);
   const { aiModels, selectedAIModel, setSelectedAIModel } = useConversation();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleModelChange = (model: AIModel) => {
     setSelectedAIModel(model);
@@ -24,7 +37,7 @@ const ModelSelector: React.FC = () => {
   };
 
   return (
-    <div className="relative inline-block text-left w-72 z-50 ">
+    <div className="relative inline-block text-left w-72 z-50" ref={dropdownRef}>
       <div>
         <button
           type="button"
