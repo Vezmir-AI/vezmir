@@ -160,7 +160,7 @@ const ChatComponent: React.FC = () => {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 bg-[var(--gray-800)]">
+          <div className="p-4 bg-[var(--gray-800)] flex-shrink-0" style={{ maxHeight: '300px', overflowY: 'auto' }}>
             <InputMessage
               selectedModel={selectedAIModel}
               isStreaming={isStreaming}
