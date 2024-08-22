@@ -32,6 +32,11 @@
         "fields": {}
     },
     {
+        "model": "chat.aimodelprovider",
+        "pk": "Google",
+        "fields": {}
+    },
+    {
         "model": "chat.aimodel",
         "pk": 1,
         "fields": {
@@ -72,12 +77,77 @@
     },
     {
         "model": "chat.aimodel",
+        "pk": 5,
+        "fields": {
+            "name": "gpt-4",
+            "display_name": "GPT-4",
+            "provider": "OpenAI",
+            "hint": "Biggest model of OpenAI, Highest cost, Highest quality, Slowest response",
+            "is_active": true,
+            "price_per_1K_token_input": 0.03,
+            "price_per_1K_token_output": 0.06
+        }
+    },
+    {
+        "model": "chat.aimodel",
         "pk": 3,
         "fields": {
             "name": "claude-3-5-sonnet-20240620",
-            "display_name": "Claude 3.5 Sonnet",
+            "display_name": "Claude Sonnet",
             "provider": "Anthropic",
             "hint": "Best model for coding and reasoning.",
+            "is_active": true,
+            "price_per_1K_token_input": 0.0003,
+            "price_per_1K_token_output": 0.0015
+        }
+    },
+    {
+        "model": "chat.aimodel",
+        "pk": 6,
+        "fields": {
+            "name": "claude-3-opus-20240229",
+            "display_name": "Claude Opus",
+            "provider": "Anthropic",
+            "hint": "Biggest model of Anthropic, Highest cost, Highest quality, Slowest response",
+            "is_active": true,
+            "price_per_1K_token_input": 0.0003,
+            "price_per_1K_token_output": 0.0015
+        }
+    },
+    {
+        "model": "chat.aimodel",
+        "pk": 7,
+        "fields": {
+            "name": "claude-3-haiku-20240307",
+            "display_name": "Claude Haiku",
+            "provider": "Anthropic",
+            "hint": "Fastest model of Anthropic, good for basic tasks",
+            "is_active": true,
+            "price_per_1K_token_input": 0.0003,
+            "price_per_1K_token_output": 0.0015
+        }
+    },
+    {
+        "model": "chat.aimodel",
+        "pk": 8,
+        "fields": {
+            "name": "gemini-1.5-pro",
+            "display_name": "Gemini Pro",
+            "provider": "Google",
+            "hint": "Best model for writing and searching information",
+            "is_active": true,
+            "price_per_1K_token_input": 0.0003,
+            "price_per_1K_token_output": 0.0015
+        }
+    },
+    {
+        "model": "chat.aimodel",
+        "pk": 9,
+        "fields": {
+            "name": "gemini-1.5-flash",
+            "display_name": "Gemini Flash",
+            "provider": "Google",
+            "hint": "Fastest model of Google, good for basic tasks",
             "is_active": true,
             "price_per_1K_token_input": 0.0003,
             "price_per_1K_token_output": 0.0015
