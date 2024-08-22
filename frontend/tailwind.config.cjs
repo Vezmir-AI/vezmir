@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Nunito'],
+        sans: ['Plus-Jakarta-Sans'],
       },
       extend: {
         width: {
