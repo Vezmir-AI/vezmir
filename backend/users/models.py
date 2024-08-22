@@ -46,6 +46,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     preferred_model = models.ForeignKey(
         AIModel, on_delete=models.SET_NULL, null=True, blank=True
     )
+    stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
+    stripe_payment_method_id = models.CharField(max_length=50, blank=True, null=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

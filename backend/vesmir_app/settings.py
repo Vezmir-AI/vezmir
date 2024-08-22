@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # apps
     "users",
     "chat",
+    "billing",
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -68,9 +69,10 @@ if DEBUG:
 else:
     ALLOWED_HOSTS = ["*.vezmir.ai"]
     CORS_ORIGIN_ALLOW_ALL = True
-    FRONTEND_URL = "https://vezmir.ai"
     CSRF_COOKIE_SECURE=True
     SESSION_COOKIE_SECURE=True
+
+FRONTEND_URL = os.getenv("DJANGO_FRONTEND_URL")
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
@@ -158,6 +160,8 @@ AUTH_PASSWORD_VALIDATORS = [
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 
 # EMAIL CONFIG
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
