@@ -3,131 +3,115 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 200;
   font-style: normal;
   font-display: swap;
-  src: url("/font/Nunito-ExtraLight.woff2") format("woff2"),url("/font/Nunito-ExtraLight.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-200-normal.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-200-normal.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 200;
   font-style: italic;
   font-display: swap;
-  src: url("/font/Nunito-ExtraLightItalic.woff2") format("woff2"),url("/font/Nunito-ExtraLightItalic.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-200-italic.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-200-italic.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 300;
   font-style: normal;
   font-display: swap;
-  src: url("/font/Nunito-Light.woff2") format("woff2"),url("/font/Nunito-Light.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-300-normal.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-300-normal.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 300;
   font-style: italic;
   font-display: swap;
-  src: url("/font/Nunito-LightItalic.woff2") format("woff2"),url("/font/Nunito-LightItalic.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-300-italic.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-300-italic.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  src: url("/font/Nunito-Regular.woff2") format("woff2"),url("/font/Nunito-Regular.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-400-normal.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-400-normal.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 400;
   font-style: italic;
   font-display: swap;
-  src: url("/font/Nunito-Italic.woff2") format("woff2"),url("/font/Nunito-Italic.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-400-italic.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-400-italic.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 500;
   font-style: normal;
   font-display: swap;
-  src: url("/font/Nunito-Medium.woff2") format("woff2"),url("/font/Nunito-Medium.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-500-normal.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-500-normal.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 500;
   font-style: italic;
   font-display: swap;
-  src: url("/font/Nunito-MediumItalic.woff2") format("woff2"),url("/font/Nunito-MediumItalic.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-500-italic.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-500-italic.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 600;
   font-style: normal;
   font-display: swap;
-  src: url("/font/Nunito-SemiBold.woff2") format("woff2"),url("/font/Nunito-SemiBold.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-600-normal.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-600-normal.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 600;
   font-style: italic;
   font-display: swap;
-  src: url("/font/Nunito-SemiBoldItalic.woff2") format("woff2"),url("/font/Nunito-SemiBoldItalic.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-600-italic.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-600-italic.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-  src: url("/font/Nunito-Bold.woff2") format("woff2"),url("/font/Nunito-Bold.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-700-normal.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-700-normal.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 700;
   font-style: italic;
   font-display: swap;
-  src: url("/font/Nunito-BoldItalic.woff2") format("woff2"),url("/font/Nunito-BoldItalic.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-700-italic.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-700-italic.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 800;
   font-style: normal;
   font-display: swap;
-  src: url("/font/Nunito-ExtraBold.woff2") format("woff2"),url("/font/Nunito-ExtraBold.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-800-normal.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-800-normal.woff") format("woff");
 }
 
 @font-face {
-  font-family: Nunito;
+  font-family: Plus-Jakarta-Sans;
   font-weight: 800;
   font-style: italic;
   font-display: swap;
-  src: url("/font/Nunito-ExtraBoldItalic.woff2") format("woff2"),url("/font/Nunito-ExtraBoldItalic.woff") format("woff");
-}
-
-@font-face {
-  font-family: Nunito;
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-  src: url("/font/Nunito-Black.woff2") format("woff2"),url("/font/Nunito-Black.woff") format("woff");
-}
-
-@font-face {
-  font-family: Nunito;
-  font-weight: 900;
-  font-style: italic;
-  font-display: swap;
-  src: url("/font/Nunito-BlackItalic.woff2") format("woff2"),url("/font/Nunito-BlackItalic.woff") format("woff");
+  src: url("/font/plus-jakarta-sans-latin-8000-italic.woff2") format("woff2"),url("/font/plus-jakarta-sans-latin-8000-italic.woff") format("woff");
 }
 
 :root {
@@ -145,19 +129,19 @@
   --gray-800: #212121;
   --gray-850: #171717;
   --gray-900: #0d0d0d;
-  --bordeaux: #800020;
-  --bordeaux-hover: #600018;
-  --bordeaux-clear: #D4A5A5;
+  --bordeaux: #8F22FC;
+  --bordeaux-hover: #521A8B;
+  --bordeaux-clear: #B469FF;
   --background-dark: var(--gray-800);
 }
 
 body {
-  background-color: var(--gray-800);
+  background-color: var(--black);
   color: var(--white);
 }
 
 body, html {
-  font-family: 'Nunito', sans-serif !important;
+  font-family: 'Plus-Jakarta-Sans', sans-serif !important;
 }
 
 button {
