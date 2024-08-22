@@ -29,6 +29,7 @@ services:
     ports:
       - 5432:5432
     env_file: ./backend/.env
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
