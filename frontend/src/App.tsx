@@ -10,9 +10,8 @@ import ChatComponent from './components/Chat';
 import VerifyEmail from './components/VerifyEmail';
 import ResendVerificationEmail from './components/ResendVerificationEmail';
 import AppLayout from './layouts/AppLayout';
-import StripePayment from './components/StripePayment';
-import './index.css'
-import StripePayment from './components/StripePayment';
+import SetupPayment from './components/Stripe/SetupPayment';
+import ConfirmPayment from './components/Stripe/ConfirmPayment';
 import './index.css'
 
 function App() {
@@ -23,7 +22,8 @@ function App() {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/setup-payment" element={<StripePayment />} />
+          <Route path="/setup-payment" element={<SetupPayment />} />
+          <Route path="/setup-payment-success" element={<ConfirmPayment />} />
           <Route element={<PrivateRoute />}>
             <Route path="/resend-verification-email" element={<ResendVerificationEmail />} />
             <Route element={
