@@ -47,9 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         AIModel, on_delete=models.SET_NULL, null=True, blank=True
     )
     stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
-    stripe_setup_intent = models.CharField(max_length=50, blank=True, null=True)
-
-    stripe_setup_intent = models.CharField(max_length=50, blank=True, null=True)
+    stripe_payment_method_id = models.CharField(max_length=50, blank=True, null=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
