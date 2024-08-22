@@ -1,4 +1,4 @@
-  import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import SendIcon from '@/UI/svg/SendIcon';
 
 interface InputMessageProps {
@@ -18,11 +18,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      const scrollHeight = textareaRef.current.scrollHeight;
-      const lineHeight = 24;
-      const maxHeight = lineHeight * 4;
-      textareaRef.current.style.height = `${Math.min(scrollHeight, maxHeight)}px`;
-      textareaRef.current.style.overflowY = scrollHeight > maxHeight ? 'auto' : 'hidden';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
 
@@ -37,14 +33,6 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
-    } else if (e.key === 'Enter' && e.shiftKey) {
-      e.preventDefault();
-      setInputMessage(prev => prev + '\n');
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
-        }
-      }, 0);
     }
   };
 
@@ -59,7 +47,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           className="flex-grow p-4 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none overflow-hidden"
           placeholder={`Message ${selectedModel?.display_name || ''}`}
           rows={1}
-          style={{ minHeight: '56px', maxHeight: '120px' }}
+          style={{ minHeight: '56px', maxHeight: '200px' }}
         />
         <button
           type="submit"
