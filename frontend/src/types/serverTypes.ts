@@ -38,3 +38,13 @@ export interface userUsage {
     money_usage?: usageData[];
     token_usage?: usageData[];
 }
+
+export interface PaymentMethod {
+    type: string;
+    last4: string;
+    brand: string;
+    exp_month: number;
+    exp_year: number;
+    id: string;
+    selected: boolean;
+}
