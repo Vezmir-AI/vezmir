@@ -12,9 +12,9 @@ import {
 } from '@heroicons/react/24/outline'
 import { useAuth } from '@/context/AuthContext';
 import { useProfile } from '@/context/ProfileContext';
-import NewChatButton from './Chat/NewChat';
-import ChatHistory from './Chat/ChatHistory';
-import AvatarPlaceholder from './Dashboard/AvatarPlaceholder';
+import NewChatButton from '../Chat/NewChat';
+import ChatHistory from '../Chat/ChatHistory';
+import AvatarPlaceholder from '../Dashboard/AvatarPlaceholder';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')

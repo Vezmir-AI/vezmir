@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useNavigate } from 'react-router-dom';
 import api from '@/api';
 import { Conversation, AIModel } from '@/types';
+import { useAuth } from './AuthContext';
 
 interface ConversationContext {
     conversations: Conversation[];
@@ -16,6 +17,7 @@ interface ConversationContext {
 const ConversationContext = createContext<ConversationContext | null>(null);
 export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [aiModels, setAiModels] = useState<AIModel[]>([]);
     const [selectedAIModel, setSelectedAIModel] = useState<AIModel | null>(null);
@@ -26,8 +28,10 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
             await fetchAiModels();
         };
 
-        initializeData();
-    }, []);
+        if (isAuthenticated) {
+            initializeData();
+        }
+    }, [isAuthenticated]);
 
     useEffect(() => {
         if (aiModels.length > 0) {
@@ -63,12 +67,12 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
 
     return (
-        <ConversationContext.Provider value={{ 
-            conversations, 
+        <ConversationContext.Provider value={{
+            conversations,
             aiModels,
             selectedAIModel,
-            addConversation, 
-            deleteConversation, 
+            addConversation,
+            deleteConversation,
             fetchConversations,
             setSelectedAIModel
         }}>

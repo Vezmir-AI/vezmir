@@ -1,6 +1,7 @@
 export interface serverResponse {
-    status: number;
-    message: string;
+    status?: "success" | "error";
+    message?: string;
+    data?: any;
 }
 
 export interface userProfile {
@@ -8,6 +9,8 @@ export interface userProfile {
     last_name: string;
     preferred_model: string;
     email: string;
+    email_verified: boolean;
+    stripe_payment_method_id: string;
 }
 
 export interface profileUpdate {
