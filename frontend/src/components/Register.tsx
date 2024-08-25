@@ -11,7 +11,7 @@ const Register: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const navigate = useNavigate();
-  const { login, hasAccessToken } = useAuth();
+  const { login, hasAccessToken, googleLogin } = useAuth();
   const { locale } = useTheme();
 
   const [emailError, setEmailError] = useState('');
@@ -95,17 +95,8 @@ const Register: React.FC = () => {
   };
 
   const responseMessage = async (response: CredentialResponse) => {
-    console.log(response);
-    try {
-      // Send the Google credential to your backend
-      const backendResponse = await api.post('/api/auth/google/', { credential: response.credential });
-      const { access, refresh } = backendResponse;
-      login(access, refresh);
-      navigate('/');
-    } catch (error) {
-      console.error('Google Sign-In failed', error);
-      // Handle error (e.g., show error message to user)
-    }
+    googleLogin(response);
+    navigate('/');
   };
 
   const errorMessage = () => {
@@ -114,7 +105,7 @@ const Register: React.FC = () => {
 
   return (
     <div className="relative flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-md p-6 rounded-lg">
+      <div className="max-w-md p-6 rounded-lg">
         <div className="mt-24 h-36 w-full bg-cover mb-8">
           <img
             src="/assets/white.svg"
@@ -196,13 +187,17 @@ const Register: React.FC = () => {
             {locale('com_auth_register')}
           </button>
         </form>
-        <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
-          {locale('com_auth_or_sign_up_with')}
-        </p>
-        <div className="mt-2 w-full">
+        <div className="relative mt-6 flex w-full items-center justify-center border border-t border-gray-300 uppercase dark:border-gray-600">
+          <div className="absolute bg-[var(--background-dark)] px-3 text-xs text-white dark:text-white">
+            {locale('com_auth_or')}
+          </div>
+        </div>
+        <div className="mt-4 w-full">
           <GoogleLogin
             onSuccess={responseMessage}
             onError={errorMessage}
+            width={350}
+            text="signup_with"
           />
         </div>
         <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
