@@ -20,7 +20,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     setDashboardLayout(currentPath.startsWith("/dashboard"));
 
     // Check if user just logged in or registered
-    if (currentPath === "/" || currentPath.startsWith("/chat")) {
+    if (currentPath === "/") {
       if (justLoggedInOrRegistered) {
         setShowCPM(showCompleteProfileModal);
         setJustLoggedInOrRegistered(false);
