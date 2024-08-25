@@ -16,9 +16,9 @@ def send_verification_email(user):
         {"activation_link": verification_url, "user": user},
     )
     email = EmailMessage(
-        "[Vesmir AI] Please verify your email",
+        "Please verify your email",
         html_body,
-        "jeanbaptiste.conan.jbc@gmail.com",
+        "Vezmir AI <no-reply@vezmir.com>",
         [user.email],
     )
     email.content_subtype = "html"
