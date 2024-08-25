@@ -9,3 +9,4 @@ langchain-openai==0.1.19
 langchain-anthropic==0.1.21
 langchain-google-genai==1.0.10
 stripe==10.7.0
+google-auth==2.34.0

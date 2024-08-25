@@ -1,3 +1,6 @@
+from django.conf import settings
+from google.oauth2 import id_token
+from google.auth.transport import requests
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -5,6 +8,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenViewBase
 
+
+from .models import User
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer
 from utils.mail import send_verification_email
 
@@ -75,3 +80,57 @@ class CustomTokenRefreshView(TokenViewBase):
             "data": response.data,
         }
         return Response(custom_response, status=status.HTTP_200_OK)
+
+
+class GoogleLoginView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        access_token = request.data.get("credential")
+        if not access_token:
+            return Response(
+                {"status": "error", "message": "google_login_error"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            # Verify the ID token
+            idinfo = id_token.verify_oauth2_token(
+                access_token,
+                requests.Request(),
+                settings.GOOGLE_OAUTH2_CLIENT_ID,
+            )
+
+            # Check if the token is issued for your application
+            if idinfo["aud"] not in [settings.GOOGLE_OAUTH2_CLIENT_ID]:
+                raise ValueError("Wrong Audience")
+
+            # Get or create user
+            email = idinfo["email"]
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                user = User.objects.create_user(
+                    email=email,
+                    first_name=idinfo.get("given_name", ""),
+                    last_name=idinfo.get("family_name", ""),
+                    email_verified=True,
+                )
+
+            tokens = RefreshToken.for_user(user)
+
+            return Response(
+                {
+                    "data": {
+                        "refresh": str(tokens),
+                        "access": str(tokens.access_token),
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+        except Exception as e:
+            print(e)
+            return Response(
+                {"status": "error", "message": "google_login_error"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
