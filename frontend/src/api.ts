@@ -60,7 +60,6 @@ const api = {
     const responseData = await response.json();
     const { data, status, message } = responseData;
     this._emitNotification(message, status);
-    console.debug(data)
     return data || responseData;
   },
   _refreshToken: async function () {

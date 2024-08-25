@@ -39,7 +39,7 @@ const ProfileTab: React.FC = () => {
     };
     // TODO: handle responses ==> feedback to user
     updatePassword(data).then((response) => {
-      if (response.status === 200) {
+      if (response.status === "success") {
         // empty the form
         e.currentTarget.reset();
         // setPasswordUpdateSuccess(true);

@@ -19,6 +19,12 @@ function App() {
   return (
     <Router>
       <AuthProvider>
+        <Routes>
+          <Route element={<PrivateRoute />}>
+            <Route path="/setup-payment" element={<SetupPayment />} />
+            <Route path="/setup-payment-success" element={<ConfirmPayment />} />
+          </Route>
+        </Routes>
         <ThemeProvider>
           <ProfileProvider>
             <ConversationProvider>
@@ -28,8 +34,6 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route element={<PrivateRoute />}>
-                    <Route path="/setup-payment" element={<SetupPayment />} />
-                    <Route path="/setup-payment-success" element={<ConfirmPayment />} />
                     <Route path="/resend-verification-email" element={<ResendVerificationEmail />} />
                     <Route path="/" element={<ChatComponent />} />
                     <Route path="/chat/:chatId" element={<ChatComponent />} />
