@@ -18,38 +18,47 @@ from utils.chatbots import get_api_response
 
 # class to get all the models
 # TODO: fetch per provider
-class AIModelView(generics.ListAPIView):
-    queryset = AIModel.objects.all()
-    serializer_class = AIModelSerializer
+class AIModelView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        serializer = AIModelSerializer(AIModel.objects.all(), many=True)
+        return Response({"data": serializer.data})
 
 
 # class to get all the model providers
-class AIModelProviderView(generics.ListAPIView):
-    queryset = AIModelProvider.objects.all()
-    serializer_class = AIModelProviderSerializer
+class AIModelProviderView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        serializer = AIModelProviderSerializer(AIModelProvider.objects.all(), many=True)
+        return Response({"data": serializer.data})
 
 
 class UserConversationView(generics.ListCreateAPIView):
-    queryset = ChatConversation.objects.all()
     serializer_class = ChatConversationSerializer
     permission_classes = (IsAuthenticated, IsOwner)
 
     # get all conversations for the user, last modified first
-    def get_queryset(self):
-        return ChatConversation.objects.filter(user=self.request.user).order_by(
-            "-date_updated"
+    def get(self, request):
+        serializer = self.get_serializer(
+            ChatConversation.objects.filter(user=self.request.user).order_by(
+                "-date_updated"
+            ),
+            many=True,
         )
+        return Response({"data": serializer.data})
 
     # create a new conversation
-    def create(self, request):
+    def post(self, request):
         data = request.data
         data["user"] = request.user.id
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=self.request.user)
-        headers = self.get_success_headers(serializer.data)
         return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+            {"data": serializer.data},
+            status=status.HTTP_201_CREATED,
         )
 
 
@@ -61,13 +70,16 @@ class ChatMessageView(APIView):
         try:
             conversation = ChatConversation.objects.get(id=conv_id, user=request.user)
         except ChatConversation.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "conversation_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         messages = ChatMessage.objects.filter(chat_conversation=conversation).order_by(
             "date_created"
         )
         serializer = ChatMessageSerializer(messages, many=True)
-        return Response(serializer.data)
+        return Response({"data": serializer.data})
 
     # create a new message in a conversation
     def post(self, request, conv_id):
@@ -77,15 +89,21 @@ class ChatMessageView(APIView):
                 id=conv_id, user=request.user.id
             )
         except ChatConversation.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "conversation_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         # Query model name and its provider
         model_name = request.data.get("model_name")
         try:
-            model = AIModel.objects.select_related('provider').get(name=model_name)
+            model = AIModel.objects.select_related("provider").get(name=model_name)
             model_provider = model.provider.name
         except AIModel.DoesNotExist:
-            return Response({"error": "Invalid model name"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "server_error", "status": "error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         # creates the user message
         user_message_serializer = ChatMessageSerializer(
@@ -161,21 +179,33 @@ class ChatMessageView(APIView):
         try:
             conversation = ChatConversation.objects.get(id=conv_id, user=request.user)
         except ChatConversation.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "conversation_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
         serializer = ChatConversationSerializer(
             conversation, data=request.data, partial=True
         )
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"data": serializer.data})
+        return Response(
+            {"message": "invalid_data", "status": "error"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     # delete a conversation
     def delete(self, request, conv_id):
         try:
             conversation = ChatConversation.objects.get(id=conv_id, user=request.user)
         except ChatConversation.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "conversation_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         conversation.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"message": "conversation_deleted", "status": "success"},
+            status=status.HTTP_204_NO_CONTENT,
+        )

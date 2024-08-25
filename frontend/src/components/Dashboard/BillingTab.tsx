@@ -34,14 +34,9 @@ const BillingTab: React.FC = () => {
     });
     setPaymentMethods(updatedPaymentMethods);
     try {
-      const { status, message } = await api.post('/billing/me/', { payment_method_id: updatedPaymentMethods[index].id });
-      if (status === 'success') {
-        setPaymentMethods(updatedPaymentMethods);
-        fetchBillingInfo();
-      } else {
-        console.error(message);
-        setPaymentMethods(paymentMethods);
-      }
+      await api.post('/billing/me/', { payment_method_id: updatedPaymentMethods[index].id });
+      setPaymentMethods(updatedPaymentMethods);
+      fetchBillingInfo();
     } catch (error) {
       console.error(error);
       setPaymentMethods(paymentMethods);

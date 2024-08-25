@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import SendIcon from '@/UI/svg/SendIcon';
+import { ArrowUpIcon } from '@heroicons/react/24/outline';
 
 interface InputMessageProps {
   selectedModel: { display_name: string } | null;
@@ -56,7 +56,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           } ${(isStreaming || !inputMessage.trim()) ? 'cursor-not-allowed opacity-50' : ''}`}
           disabled={isStreaming || !inputMessage.trim()}
         >
-          <SendIcon />
+          <ArrowUpIcon className="size-6" />
         </button>
       </div>
     </form>

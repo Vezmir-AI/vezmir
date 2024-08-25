@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import api from '@/api';
 import { useAuth } from '@/context/AuthContext';
-import { useLocalize } from '@/hooks';
-import { ThemeContext, isDark } from '@/UI/Theme/ThemeContext';
-import ThemeSelector from '@/UI/Theme/ThemeSelector';
+import { useTheme } from '@/context/ThemeContext';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -14,7 +12,7 @@ const Register: React.FC = () => {
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const navigate = useNavigate();
   const { login, hasAccessToken } = useAuth();
-  const { theme } = useContext(ThemeContext);
+  const { locale } = useTheme();
 
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -31,17 +29,17 @@ const Register: React.FC = () => {
     let hasError = false;
 
     if (!email) {
-      setEmailError(useLocalize('com_auth_email_required'));
+      setEmailError(locale('com_auth_email_required'));
       hasError = true;
     }
 
     if (!password) {
-      setPasswordError(useLocalize('com_auth_password_required'));
+      setPasswordError(locale('com_auth_password_required'));
       hasError = true;
     }
 
     if (!confirmPassword) {
-      setConfirmPasswordError(useLocalize('com_auth_password_required'));
+      setConfirmPasswordError(locale('com_auth_password_required'));
       hasError = true;
     }
 
@@ -79,7 +77,7 @@ const Register: React.FC = () => {
     const email = e.target.value;
     setEmail(email);
     if (email && !isValidEmail(email)) {
-      setEmailError(useLocalize('com_auth_email_pattern'));
+      setEmailError(locale('com_auth_email_pattern'));
     } else {
       setEmailError('');
     }
@@ -89,7 +87,7 @@ const Register: React.FC = () => {
     const newPassword = e.target.value.slice(0, 128); // Limit to 128 characters
     setPassword(newPassword);
     if (newPassword.length > 0 && newPassword.length < 8) {
-      setPasswordError(useLocalize('com_auth_password_min_length'));
+      setPasswordError(locale('com_auth_password_min_length'));
     } else {
       setPasswordError('');
     }
@@ -119,18 +117,15 @@ const Register: React.FC = () => {
       <div className="w-full max-w-md p-6 rounded-lg">
         <div className="mt-24 h-36 w-full bg-cover mb-8">
           <img
-            src={isDark(theme) ? "/assets/white.svg" : "/assets/black.svg"}
+            src="/assets/white.svg"
             className="h-full w-full object-contain"
             alt="Logo"
           />
         </div>
-        {/* <div className="absolute bottom-0 left-0 md:m-4">
-          <ThemeSelector />
-        </div> */}
         <h1
           className="mb-4 text-center text-4xl font-bold text-gray-700 dark:text-white"
         >
-          {useLocalize('com_auth_create_account')}
+          {locale('com_auth_create_account')}
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-2 relative">
@@ -139,7 +134,7 @@ const Register: React.FC = () => {
               id="email"
               value={email}
               autoComplete="email"
-              aria-label={useLocalize('com_auth_email')}
+              aria-label={locale('com_auth_email')}
               onChange={handleEmailChange}
               className="input-field peer"
               placeholder=" "
@@ -148,7 +143,7 @@ const Register: React.FC = () => {
               htmlFor="email"
               className="floating-label"
             >
-              {useLocalize('com_auth_email_address')}
+              {locale('com_auth_email_address')}
             </label>
             {emailError && <p className="text-[var(--bordeaux)] text-sm mt-1">{emailError}</p>}
           </div>
@@ -158,7 +153,7 @@ const Register: React.FC = () => {
               id="password"
               value={password}
               autoComplete="new-password"
-              aria-label={useLocalize('com_auth_password')}
+              aria-label={locale('com_auth_password')}
               onChange={handlePasswordChange}
               className="input-field peer"
               placeholder=" "
@@ -167,7 +162,7 @@ const Register: React.FC = () => {
               htmlFor="password"
               className="floating-label"
             >
-              {useLocalize('com_auth_password')}
+              {locale('com_auth_password')}
             </label>
             {passwordError && <p className="text-[var(--bordeaux)] text-sm mt-1">{passwordError}</p>}
           </div>
@@ -177,7 +172,7 @@ const Register: React.FC = () => {
               id="confirmPassword"
               value={confirmPassword}
               autoComplete="new-password"
-              aria-label={useLocalize('com_auth_confirm_password')}
+              aria-label={locale('com_auth_confirm_password')}
               onChange={handleConfirmPasswordChange}
               className={`input-field peer ${!passwordsMatch ? 'border-[var(--bordeaux)]' : ''}`}
               placeholder=" "
@@ -186,24 +181,24 @@ const Register: React.FC = () => {
               htmlFor="confirmPassword"
               className="floating-label"
             >
-              {useLocalize('com_auth_password_confirm')}
+              {locale('com_auth_password_confirm')}
             </label>
             {confirmPasswordError && <p className="text-[var(--bordeaux)] text-sm mt-1">{confirmPasswordError}</p>}
           </div>
           {!passwordsMatch && confirmPassword !== '' && (
-            <p className="text-[var(--bordeaux)] text-sm mb-2">{useLocalize('com_auth_password_not_match')}</p>
+            <p className="text-[var(--bordeaux)] text-sm mb-2">{locale('com_auth_password_not_match')}</p>
           )}
           <button
             type="submit"
             className="w-full transform rounded-md bg-[var(--bordeaux)] px-4 py-3 tracking-wide text-white transition-colors duration-200 hover:bg-[var(--bordeaux-hover)] focus:bg-[var(--bordeaux-hover)] focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:hover:bg-[var(--bordeaux)]"
             disabled={!passwordsMatch || confirmPassword === ''}
           >
-            {useLocalize('com_auth_register')}
+            {locale('com_auth_register')}
           </button>
         </form>
         <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
-  {useLocalize('com_auth_or_sign_up_with')}
-</p>
+          {locale('com_auth_or_sign_up_with')}
+        </p>
         <div className="mt-2 w-full">
           <GoogleLogin
             onSuccess={responseMessage}
@@ -211,9 +206,9 @@ const Register: React.FC = () => {
           />
         </div>
         <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
-          {useLocalize('com_auth_already_have_account')}{' '}
+          {locale('com_auth_already_have_account')}{' '}
           <a href="/login" aria-label="Login" className="p-1 text-[var(--bordeaux-clear)]">
-            {useLocalize('com_auth_login')}
+            {locale('com_auth_login')}
           </a>
         </p>
       </div>

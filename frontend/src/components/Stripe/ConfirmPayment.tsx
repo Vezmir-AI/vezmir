@@ -13,18 +13,16 @@ const PaymentSuccess: React.FC = () => {
     useEffect(() => {
         const fetchPaymentMethod = async () => {
             try {
-                const { message, status } = await api.post("/billing/confirm-checkout-session/", { session_id: sessionId });
-                if (status === "success") {
-                    setSuccess(true);
-                    setCountdown(5);
-                    const interval = setInterval(() => {
-                        setCountdown((prevCountdown) => prevCountdown - 1);
-                    }, 1000);
-                    setTimeout(() => {
-                        clearInterval(interval);
-                        navigate("/", { state: { from: "/setup-payment", message } });
-                    }, 5000);
-                }
+                await api.post("/billing/confirm-checkout-session/", { session_id: sessionId });
+                setSuccess(true);
+                setCountdown(5);
+                const interval = setInterval(() => {
+                    setCountdown((prevCountdown) => prevCountdown - 1);
+                }, 1000);
+                setTimeout(() => {
+                    clearInterval(interval);
+                    navigate("/dashboard/billing");
+                }, 5000);
             } catch (error) {
                 console.error("Error confirming payment:", error);
             } finally {
