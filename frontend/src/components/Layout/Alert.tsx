@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Transition } from '@headlessui/react'
 import { CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import { XMarkIcon } from '@heroicons/react/20/solid'
+import { useTheme } from '@/context/ThemeContext';
 import { serverResponse } from '@/types';
 
 interface AlertProps {
@@ -11,12 +12,15 @@ interface AlertProps {
 const Alert: React.FC<AlertProps> = ({ notification }) => {
     const [show, setShow] = useState(true)
     const icon = notification.status === 'success' ? <CheckCircleIcon aria-hidden="true" className="h-6 w-6 text-green-400" /> : <ExclamationTriangleIcon aria-hidden="true" className="h-6 w-6 text-red-400" />
+    const { removeNotification } = useTheme();
+
     
     useEffect(() => {
         console.log(notification)
         setTimeout(() => {
             setShow(false)
-        }, 10000)
+            removeNotification(notification.message ?? '');
+        }, 5000)
     }, [])
 
     return (

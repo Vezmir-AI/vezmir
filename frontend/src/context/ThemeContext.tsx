@@ -7,6 +7,7 @@ interface ThemeContextType {
     notifications: serverResponse[];
     showCompleteProfileModal: boolean;
     setShowCompleteProfileModal: (show: boolean) => void;
+    removeNotification: (message: string) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -31,8 +32,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return englishTranslations[key as keyof typeof englishTranslations] || key;
     }
 
+    const removeNotification = (message: string) => {
+        setNotifications(prevNotifications => prevNotifications.filter(notification => notification.message !== message));
+    }
+
     return (
-        <ThemeContext.Provider value={{ locale, notifications, showCompleteProfileModal, setShowCompleteProfileModal }}>
+        <ThemeContext.Provider value={{ locale, notifications, showCompleteProfileModal, setShowCompleteProfileModal, removeNotification }}>
             {children}
         </ThemeContext.Provider>
     );
