@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/context/AuthContext';
 import { useConversation } from '@/context/ConversationContext';
 import { useProfile } from '@/context/ProfileContext';
@@ -149,9 +150,24 @@ const ProfileTab: React.FC = () => {
                     </div>
 
                     <div className="col-span-full">
-                      <label htmlFor="email" className="block text-sm font-medium leading-6 text-white">
-                        Email address
-                      </label>
+                      <div className="flex items-center">
+
+                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-white">
+                          Email address
+                        </label>
+                        {user.email_verified ? (
+                          <span className="ml-2 flex items-center text-green-400">
+                            <CheckIcon className="h-5 w-5" />
+                            <span className="ml-1 text-xs">Email verified</span>
+                          </span>
+                        ) : (
+                          <span className="ml-2 flex items-center text-red-400">
+                            <XMarkIcon className="h-5 w-5" />
+                            <span className="ml-1 text-xs">Email not verified</span>
+                            <Link to="/resend-verification-email" className="ml-2 text-xs text-white underline">Resend verification email</Link>
+                          </span>
+                        )}
+                      </div>
                       <div className="mt-2">
                         <input
                           id="email"
