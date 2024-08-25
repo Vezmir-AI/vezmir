@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import NewChatIcon from '@/UI/svg/newChatIcon';
+import { PencilSquareIcon } from '@heroicons/react/24/outline';
 
 const NewChatButton = () => {
     const navigate = useNavigate();
@@ -15,7 +15,7 @@ const NewChatButton = () => {
             onClick={goToNewChat}
         >
             <span className="text-token-text-primary overflow-hidden text-ellipsis whitespace-nowrap text-lg font-medium">New chat</span>
-            <NewChatIcon />
+            <PencilSquareIcon className="size-6" />
         </button>
     );
 }
