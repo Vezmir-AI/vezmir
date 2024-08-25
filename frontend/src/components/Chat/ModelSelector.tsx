@@ -4,13 +4,6 @@ import { AIModel } from '@/types';
 import { getProviderLogo, getProviderColor } from '../../utils/providerUtils';
 import { useConversation } from '../../context/ConversationContext';
 
-interface AiModel {
-  id: string;
-  name: string;
-  provider: string;
-  display_name: string;
-  hint: string;
-}
 
 const ModelSelector: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
