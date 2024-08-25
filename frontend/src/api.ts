@@ -45,6 +45,8 @@ const api = {
     }
     if (!response.ok) {
       const errorData = await response.json();
+      const { message, status } = errorData;
+      this._emitNotification(message, status);
       throw errorData || new Error(`HTTP error! status: ${response.status}`);
     }
     if (stream) {
@@ -55,7 +57,10 @@ const api = {
     if (response.status == 204) {
       return;
     }
-    return response.json();
+    const responseData = await response.json();
+    const { data, status, message } = responseData;
+    this._emitNotification(message, status);
+    return data || responseData;
   },
   _refreshToken: async function () {
     const refreshToken = localStorage.getItem('refreshToken');
@@ -75,6 +80,12 @@ const api = {
     localStorage.removeItem('refreshToken');
     window.location.href = '/login';
   },
+  _emitNotification: function (message: string, status: string) {
+    if (message && status) {
+      const event = new CustomEvent('notification', { detail: { message, status } });
+      window.dispatchEvent(event);
+    }
+  }
 };
 
 export default api;

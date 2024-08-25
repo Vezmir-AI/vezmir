@@ -28,13 +28,13 @@ class CreateCheckoutSessionView(APIView):
             )
             user.stripe_customer_id = customer.id
             user.save()
-            return Response({"clientSecret": checkout_session.client_secret})
+            return Response({"data": {"clientSecret": checkout_session.client_secret}})
         except stripe.error.StripeError as e:
             print(e)
-            return Response({"error": str(e)}, status=400)
+            return Response({"message": "stripe_error", "status": "error"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             print(e)
-            return Response({"error": str(e)}, status=400)
+            return Response({"message": "server_error", "status": "error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ConfirmCheckoutSessionView(APIView):
@@ -53,7 +53,7 @@ class ConfirmCheckoutSessionView(APIView):
                 {"message": "payment_method_confirmed", "status": "success"}
             )
         else:
-            return Response({"error": "Setup intent not successful"}, status=400)
+            return Response({"message": "setup_intent_not_successful", "status": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetStripeInfo(APIView):
@@ -85,15 +85,15 @@ class GetStripeInfo(APIView):
                 "payment_methods": formatted_methods,
             }
 
-            return Response(response_data)
+            return Response({"data": response_data})
 
         except stripe.error.StripeError as e:
             print(e)
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "stripe_error", "status": "error"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             print(e)
             return Response(
-                {"error": "An unexpected error occurred"},
+                {"message": "server_error", "status": "error"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
@@ -107,6 +107,6 @@ class GetStripeInfo(APIView):
         except Exception as e:
             print(e)
             return Response(
-                {"error": "An unexpected error occurred"},
+                {"message": "server_error", "status": "error"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

@@ -19,7 +19,9 @@ class UserInfosView(RetrieveUpdateDestroyAPIView):
     def get(self, request):
         user = request.user
         serializer = self.serializer_class(user)
-        return Response(serializer.data)
+        return Response({
+            "data": serializer.data,
+        })
 
     def put(self, request):
         user = request.user
@@ -30,30 +32,38 @@ class UserInfosView(RetrieveUpdateDestroyAPIView):
             new_password = request.data.get("new_password")
 
             if not user.check_password(old_password):
-                return Response(
-                    {"error": "Current password is incorrect"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                return Response({
+                    "status": "error",
+                    "message": "incorrect_current_password"
+                }, status=status.HTTP_400_BAD_REQUEST)
 
             user.set_password(new_password)
             user.save()
-            return Response(
-                {"message": "Password changed successfully"}, status=status.HTTP_200_OK
-            )
+            return Response({
+                "status": "success",
+                "message": "password_changed_successfully"
+            })
 
         elif action == "update_info":
-            print(request.data)
             serializer = self.serializer_class(user, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                print(serializer.data)
-                return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response({
+                    "data": serializer.data,
+                    "status": "success",
+                    "message": "user_info_updated"
+                })
+            return Response({
+                "status": "error",
+                "message": "invalid_user_data",
+                "data": serializer.errors, # helps the frontend to know what is wrong
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         else:
-            return Response(
-                {"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({
+                "status": "error",
+                "message": "invalid_action"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
         user = request.user
@@ -68,41 +78,39 @@ class VerifyEmailView(APIView):
     def post(self, request):
         token = request.data.get("token")
         if not token:
-            return Response(
-                {"message": "token_is_required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({
+                "status": "error",
+                "message": "token_required"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             user = User.objects.get(email_verification_token=token)
         except User.DoesNotExist:
-            return Response(
-                {"message": "invalid_verification_token"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({
+                "status": "error",
+                "message": "invalid_verification_token"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         if user.email_verified:
-            return Response(
-                {"message": "email_already_verified"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({
+                "status": "error",
+                "message": "email_already_verified"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if the token has expired (e.g., after 3 days)
-        if (
-            user.email_verification_token_created_at
-            < timezone.now() - timezone.timedelta(minutes=1)
-        ):
-            return Response(
-                {"message": "token_has_expired"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        if (user.email_verification_token_created_at
+                < timezone.now() - timezone.timedelta(minutes=1)):
+            return Response({
+                "status": "error",
+                "message": "token_expired"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         user.email_verified = True
         user.save()
 
-        return Response(
-            {"message": "email_verified_successfully"}, status=status.HTTP_200_OK
-        )
+        return Response({
+            "status": "success",
+            "message": "email_verified_successfully"
+        }, status=status.HTTP_200_OK)
 
 
 class ResendEmailVerificationView(APIView):
@@ -111,14 +119,16 @@ class ResendEmailVerificationView(APIView):
     def post(self, request):
         user = request.user
         if user.email_verified:
-            return Response(
-                {"message": "Email already verified"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({
+                "data": {"message": "email_already_verified"},
+                "status": "error",
+                "message": "email_already_verified"
+            }, status=status.HTTP_400_BAD_REQUEST)
         send_verification_email(user)
-        return Response(
-            {"message": "Email verification sent"}, status=status.HTTP_200_OK
-        )
+        return Response({
+            "status": "success",
+            "message": "verification_email_sent"
+        }, status=status.HTTP_200_OK)
 
 
 class UserUsageView(ListAPIView):
@@ -211,7 +221,11 @@ class UserUsageView(ListAPIView):
                         date[model_name]["price_in"] + date[model_name]["price_out"]
                     )
 
-            return Response({"money_spent": money_spent})
+            return Response({
+                "data": {"money_spent": money_spent},
+                "status": "success",
+                "message": "money_spent_retrieved"
+            })
 
         # computes and returns the money spent for each model for each date
         elif type == "money_usage":
@@ -226,9 +240,11 @@ class UserUsageView(ListAPIView):
                     )
                     total += date[model_name]
                 date["total"] = total
-            return Response(
-                data={"money_usage": response_data}, status=status.HTTP_200_OK
-            )
+            return Response({
+                "data": {"money_usage": response_data},
+                "status": "success",
+                "message": "money_usage_retrieved"
+            })
 
         # computes and returns the token usage for each model for each date
         elif type == "token_usage":
@@ -242,11 +258,13 @@ class UserUsageView(ListAPIView):
                     )
                     total += date[model_name]
                 date["total"] = total
-            return Response(
-                data={"token_usage": response_data}, status=status.HTTP_200_OK
-            )
+            return Response({
+                "data": {"token_usage": response_data},
+                "status": "success",
+                "message": "token_usage_retrieved"
+            })
         else:
-            return Response(
-                {"error": "Invalid type", "status": "error"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({
+                "status": "error",
+                "message": "invalid_type"
+            }, status=status.HTTP_400_BAD_REQUEST)
