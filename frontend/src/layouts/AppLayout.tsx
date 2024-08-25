@@ -36,15 +36,15 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <>
+      <div className="absolute top-0 right-0 z-50 flex flex-col space-y-2 p-4">
+        {notifications.map((notification, index) => (
+          <Alert key={index} notification={notification} />
+        ))}
+      </div>
       {needLayout ? (
         <>
           <CompleteProfileModal open={showCPM} setOpen={setShowCPM} />
           <div className="flex h-screen">
-            <div className="absolute top-0 right-0 z-50 flex flex-col space-y-2 p-4">
-              {notifications.map((notification, index) => (
-                <Alert key={index} notification={notification} />
-              ))}
-            </div>
             <SideBar />
             <main className="flex-1">
               {children}
