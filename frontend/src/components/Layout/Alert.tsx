@@ -16,7 +16,6 @@ const Alert: React.FC<AlertProps> = ({ notification }) => {
 
     
     useEffect(() => {
-        console.log(notification)
         setTimeout(() => {
             setShow(false)
             removeNotification(notification.message ?? '');
