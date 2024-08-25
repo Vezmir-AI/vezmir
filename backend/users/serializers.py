@@ -45,6 +45,8 @@ class UserInfosSerializer(serializers.ModelSerializer):
     preferred_model = serializers.PrimaryKeyRelatedField(
         queryset=AIModel.objects.all(), required=False
     )
+    stripe_payment_method_id = serializers.CharField(read_only=True)
+    email_verified = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = User
@@ -54,4 +56,6 @@ class UserInfosSerializer(serializers.ModelSerializer):
             "last_name",
             "first_name",
             "preferred_model",
+            "email_verified",
+            "stripe_payment_method_id",
         )

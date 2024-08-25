@@ -17,33 +17,31 @@ import './index.css'
 
 function App() {
   return (
-    <ThemeProvider>
+    <Router>
       <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/setup-payment" element={<SetupPayment />} />
-            <Route path="/setup-payment-success" element={<ConfirmPayment />} />
-            <Route element={<PrivateRoute />}>
-              <Route path="/resend-verification-email" element={<ResendVerificationEmail />} />
-              <Route element={
-                <ConversationProvider>
-                  <ProfileProvider>
-                    <AppLayout />
-                  </ProfileProvider>
-                </ConversationProvider>
-              }>
-                <Route path="/" element={<ChatComponent />} />
-                <Route path="/chat/:chatId" element={<ChatComponent />} />
-                <Route path="/dashboard/:section" element={<Dashboard />} />
-              </Route>
-            </Route>
-          </Routes>
-        </Router>
+        <ThemeProvider>
+          <ProfileProvider>
+            <ConversationProvider>
+              <AppLayout>
+                <Routes>
+                  <Route path="/verify-email" element={<VerifyEmail />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route element={<PrivateRoute />}>
+                    <Route path="/setup-payment" element={<SetupPayment />} />
+                    <Route path="/setup-payment-success" element={<ConfirmPayment />} />
+                    <Route path="/resend-verification-email" element={<ResendVerificationEmail />} />
+                    <Route path="/" element={<ChatComponent />} />
+                    <Route path="/chat/:chatId" element={<ChatComponent />} />
+                    <Route path="/dashboard/:section" element={<Dashboard />} />
+                  </Route>
+                </Routes>
+              </AppLayout>
+            </ConversationProvider>
+          </ProfileProvider>
+        </ThemeProvider>
       </AuthProvider>
-    </ThemeProvider>
+    </Router>
   );
 }
 

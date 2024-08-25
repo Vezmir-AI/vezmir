@@ -1,10 +1,13 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 import api from '@/api';
 import { serverResponse, profileUpdate, passwordUpdate, userProfile, userUsage } from '@/types';
+import { useAuth } from './AuthContext';
+import { useTheme } from './ThemeContext';
 
 interface ProfileContextType {
     user: userProfile,
     usage: userUsage,
+    profileComplete: boolean,
     updateProfile: (userChange: profileUpdate) => Promise<serverResponse>,
     updatePassword: (passwordChange: passwordUpdate) => Promise<serverResponse>,
     deleteAccount: () => Promise<serverResponse>,
@@ -15,22 +18,34 @@ interface ProfileContextType {
 
 const ProfileContext = createContext<ProfileContextType | null>(null);
 export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<userProfile>({ email: '', first_name: '', last_name: '', preferred_model: '' });
+    const [user, setUser] = useState<userProfile>({ email: '', first_name: '', last_name: '', preferred_model: '', email_verified: false, stripe_payment_method_id: '' });
     const [usage, setUsage] = useState<userUsage>({});
+    const [profileComplete, setProfileComplete] = useState(false);
+    const { isAuthenticated } = useAuth();
+    const { setShowCompleteProfileModal } = useTheme();
 
     const getUser = async () => {
         const response = await api.get('/user/me/');
         setUser(response);
     }
     useEffect(() => {
-        getUser();
-    }, []);
+        if (isAuthenticated) {
+            getUser();
+        }
+    }, [isAuthenticated]);
+
+    useEffect(() => {
+        setProfileComplete(Boolean(user.first_name && user.last_name && user.preferred_model && user.email_verified && user.stripe_payment_method_id));
+        if (!profileComplete) {
+            setShowCompleteProfileModal(true);
+        }
+    }, [user]);
 
     const updateProfile = async (userChange: profileUpdate) => {
         const data = { "action": "update_info", ...userChange };
         const response = await api.put('/user/me/', data);
         if (response.status === 200) {
-            setUser({ ...user, ...response.data });
+            setUser({ ...user, ...response });
         }
         return response;
     }
@@ -68,6 +83,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
 
     return <ProfileContext.Provider value={{
         user,
+        profileComplete,
         updateProfile,
         updatePassword,
         deleteAccount,
