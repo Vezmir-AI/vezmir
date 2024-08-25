@@ -9,7 +9,7 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login, hasAccessToken } = useAuth();
+  const { login, hasAccessToken, googleLogin } = useAuth();
   const { locale } = useTheme();
 
   useEffect(() => {
@@ -32,7 +32,8 @@ const Login: React.FC = () => {
   };
 
   const responseMessage = (response: CredentialResponse) => {
-    console.log(response);
+    googleLogin(response);
+    navigate('/');
   };
   const errorMessage = () => {
     console.error('Google login error occurred');
@@ -40,7 +41,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="relative flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-md p-6 rounded-lg">
+      <div className="max-w-md p-6 rounded-lg">
         <div className="mt-24 h-36 w-full bg-cover mb-8">
           <img
             src={"/assets/white.svg"}
@@ -110,6 +111,7 @@ const Login: React.FC = () => {
           <GoogleLogin
             onSuccess={responseMessage}
             onError={errorMessage}
+            width={350}
           />
         </div>
         <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
