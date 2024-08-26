@@ -19,9 +19,7 @@ class UserInfosView(RetrieveUpdateDestroyAPIView):
     def get(self, request):
         user = request.user
         serializer = self.serializer_class(user)
-        return Response({
-            "data": serializer.data,
-        })
+        return Response({"data": serializer.data})
 
     def put(self, request):
         user = request.user
@@ -32,38 +30,42 @@ class UserInfosView(RetrieveUpdateDestroyAPIView):
             new_password = request.data.get("new_password")
 
             if not user.check_password(old_password):
-                return Response({
-                    "status": "error",
-                    "message": "incorrect_current_password"
-                }, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"status": "error", "message": "incorrect_current_password"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             user.set_password(new_password)
             user.save()
-            return Response({
-                "status": "success",
-                "message": "password_changed_successfully"
-            })
+            return Response(
+                {"status": "success", "message": "password_changed_successfully"}
+            )
 
         elif action == "update_info":
             serializer = self.serializer_class(user, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response({
-                    "data": serializer.data,
-                    "status": "success",
-                    "message": "user_info_updated"
-                })
-            return Response({
-                "status": "error",
-                "message": "invalid_user_data",
-                "data": serializer.errors, # helps the frontend to know what is wrong
-            }, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {
+                        "data": serializer.data,
+                        "status": "success",
+                        "message": "user_info_updated",
+                    }
+                )
+            return Response(
+                {
+                    "status": "error",
+                    "message": "invalid_user_data",
+                    "data": serializer.errors,  # helps the frontend to know what is wrong
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         else:
-            return Response({
-                "status": "error",
-                "message": "invalid_action"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"status": "error", "message": "invalid_action"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     def delete(self, request):
         user = request.user
@@ -78,39 +80,41 @@ class VerifyEmailView(APIView):
     def post(self, request):
         token = request.data.get("token")
         if not token:
-            return Response({
-                "status": "error",
-                "message": "token_required"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"status": "error", "message": "token_required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             user = User.objects.get(email_verification_token=token)
         except User.DoesNotExist:
-            return Response({
-                "status": "error",
-                "message": "invalid_verification_token"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"status": "error", "message": "invalid_verification_token"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if user.email_verified:
-            return Response({
-                "status": "error",
-                "message": "email_already_verified"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"status": "error", "message": "email_already_verified"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        if (user.email_verification_token_created_at
-                < timezone.now() - timezone.timedelta(minutes=1)):
-            return Response({
-                "status": "error",
-                "message": "token_expired"
-            }, status=status.HTTP_400_BAD_REQUEST)
+        if (
+            user.email_verification_token_created_at
+            < timezone.now() - timezone.timedelta(minutes=1)
+        ):
+            return Response(
+                {"status": "error", "message": "token_expired"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         user.email_verified = True
         user.save()
 
-        return Response({
-            "status": "success",
-            "message": "email_verified_successfully"
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {"status": "success", "message": "email_verified_successfully"},
+            status=status.HTTP_200_OK,
+        )
 
 
 class ResendEmailVerificationView(APIView):
@@ -119,16 +123,19 @@ class ResendEmailVerificationView(APIView):
     def post(self, request):
         user = request.user
         if user.email_verified:
-            return Response({
-                "data": {"message": "email_already_verified"},
-                "status": "error",
-                "message": "email_already_verified"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "data": {"message": "email_already_verified"},
+                    "status": "error",
+                    "message": "email_already_verified",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         send_verification_email(user)
-        return Response({
-            "status": "success",
-            "message": "verification_email_sent"
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {"status": "success", "message": "verification_email_sent"},
+            status=status.HTTP_200_OK,
+        )
 
 
 class UserUsageView(ListAPIView):
@@ -221,11 +228,7 @@ class UserUsageView(ListAPIView):
                         date[model_name]["price_in"] + date[model_name]["price_out"]
                     )
 
-            return Response({
-                "data": {"money_spent": money_spent},
-                "status": "success",
-                "message": "money_spent_retrieved"
-            })
+            return Response({"data": {"money_spent": money_spent}})
 
         # computes and returns the money spent for each model for each date
         elif type == "money_usage":
@@ -240,11 +243,7 @@ class UserUsageView(ListAPIView):
                     )
                     total += date[model_name]
                 date["total"] = total
-            return Response({
-                "data": {"money_usage": response_data},
-                "status": "success",
-                "message": "money_usage_retrieved"
-            })
+            return Response({"data": {"money_usage": response_data}})
 
         # computes and returns the token usage for each model for each date
         elif type == "token_usage":
@@ -258,13 +257,9 @@ class UserUsageView(ListAPIView):
                     )
                     total += date[model_name]
                 date["total"] = total
-            return Response({
-                "data": {"token_usage": response_data},
-                "status": "success",
-                "message": "token_usage_retrieved"
-            })
+            return Response({"data": {"token_usage": response_data}})
         else:
-            return Response({
-                "status": "error",
-                "message": "invalid_type"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"status": "error", "message": "invalid_type"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
