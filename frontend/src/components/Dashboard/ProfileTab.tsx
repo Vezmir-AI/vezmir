@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { CheckIcon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/context/AuthContext';
 import { useConversation } from '@/context/ConversationContext';
 import { useProfile } from '@/context/ProfileContext';
@@ -84,38 +84,6 @@ const ProfileTab: React.FC = () => {
                 {/* PERSONAL INFORMATION */}
                 <form className="w-full" onSubmit={handleSubmitProfile}>
                   <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    {/* <div className="col-span-full flex items-center gap-x-8">
-                      <div className="h-24 w-24">
-                        {avatarPreview ? (
-                          <img src={avatarPreview} alt="Avatar" className="h-24 w-24 rounded-full object-cover" />
-                        ) : user.avatar ? (
-                          <img src={user.avatar} alt="Avatar" className="h-24 w-24 rounded-full object-cover" />
-                        ) : (
-                          <AvatarPlaceholder />
-                        )}                      </div>
-                      <div>
-                        <input
-                          type="file"
-                          id="avatar"
-                          name="avatar"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleAvatarChange}
-                          ref={fileInputRef}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20"
-                        >
-                          Change avatar
-                        </button>
-                        <p className="mt-2 text-xs leading-5 text-gray-400">JPG, GIF or PNG. 1MB max.</p>
-                        {!avatarPreview && !user.avatar && (
-                          <p className="mt-2 text-xs leading-5 text-gray-400">No avatar currently set</p>
-                        )}
-                      </div>
-                    </div> */}
 
                     <div className="sm:col-span-3">
                       <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-white">
@@ -188,34 +156,44 @@ const ProfileTab: React.FC = () => {
                       </label>
                       <div className="mt-2">
                         {user ? (
-                          <select
-                            id="preferred-model"
-                            name="preferred_model"
-                            className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 px-3"
-                            value={preferredModel}
-                            onChange={(e) => {
-                              setPreferredModel(e.target.value);
-                            }}
-                          >
-                            <option key={-1} value="automatic">Automatic</option>
-                            {aiModels.map((model) => (
-                              <option key={model.id} value={model.name}>
-                                {model.display_name}
-                              </option>
-                            ))}
-                          </select>
+                          <div className="relative">
+                            <select
+                              id="preferred-model"
+                              name="preferred_model"
+                              className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 pl-3 pr-10 appearance-none"
+                              value={preferredModel}
+                              onChange={(e) => {
+                                setPreferredModel(e.target.value);
+                              }}
+                            >
+                              {aiModels.map((model) => (
+                                <option key={model.id} value={model.name}>
+                                  {model.display_name}
+                                </option>
+                              ))}
+                            </select>
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                              <ChevronDownIcon className="h-4 w-4" />
+                            </div>
+                          </div>
                         ) : (
                           <div className="animate-pulse bg-white/5 h-9 rounded-md"></div>
                         )}
                       </div>
-                      <p className="mt-2 text-xs leading-5 text-gray-400 italic">This will be the default model used in new chats.</p>
+                      <div className="mt-2 flex">
+                        <p className="mt-2 text-xs leading-5 text-gray-400 italic">This will be the default model used in new chats.</p>
+                        <span className="ml-2" />
+                        <p className="mt-2 text-xs leading-5 text-[var(--bordeaux-clear)] italic">
+                          The Automatic model refers to the last model used in the conversation.
+                        </p>
+                      </div>
                     </div>
                   </div>
 
                   <div className="mt-8 flex">
                     <button
                       type="submit"
-                      className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                      className="rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                     >
                       Save
                     </button>
@@ -281,7 +259,7 @@ const ProfileTab: React.FC = () => {
                   <div className="mt-8 flex">
                     <button
                       type="submit"
-                      className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                      className="rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                     >
                       Save
                     </button>
