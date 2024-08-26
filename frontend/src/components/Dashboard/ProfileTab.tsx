@@ -69,7 +69,7 @@ const ProfileTab: React.FC = () => {
           setOpen={setShowConfirmationDelete}
           onConfirm={handleConfirmDelete}
         />
-        <div className="xl:pl-72">
+        <div className="xl:px-16">
           <main>
             <h1 className="sr-only">Account Settings</h1>
 
