@@ -5,18 +5,18 @@ import {
   Bars3Icon,
   ChevronLeftIcon,
   ArrowLeftEndOnRectangleIcon,
+  CogIcon,
 } from '@heroicons/react/24/outline'
 import { useAuth } from '@/context/AuthContext';
 import { useProfile } from '@/context/ProfileContext';
 import NewChatButton from '../Chat/NewChat';
 import ChatHistory from '../Chat/ChatHistory';
-import AvatarPlaceholder from '../Dashboard/AvatarPlaceholder';
-
 
 export default function SideBar() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [userName, setUserName] = useState('')
+  const [textSize, setTextSize] = useState('sm')
   const { logout } = useAuth();
   const { user } = useProfile()
   const navigate = useNavigate();
@@ -29,10 +29,11 @@ export default function SideBar() {
     if (isDashboard) {
       setIsCollapsed(false);
     }
-    setUserName(`${user.first_name} ${user.last_name}`)
-    if (!user.first_name || !user.last_name) {
+    setUserName([user?.first_name, user?.last_name].join(' ').trim())
+    if (!user.first_name && !user.last_name) {
       setUserName("Your Profile")
     }
+    setTextSize(userName.length > 10 ? 'xs' : 'sm')
   }, [isDashboard, user]);
 
 
@@ -64,7 +65,7 @@ export default function SideBar() {
                     <ChevronLeftIcon aria-hidden="true" className="h-6 w-6" />
                   </button>
                 </div>
-                <nav className="flex flex-1 flex-col">
+                <nav className="flex flex-1 flex-col" onClick={() => setSidebarOpen(false)} >
                   <NewChatButton />
                   <ul role="list" className="flex flex-1 flex-col gap-y-7">
                     <li className="mt-4">
@@ -73,16 +74,17 @@ export default function SideBar() {
                     <li className="mt-auto pr-2">
                       <div
                         ref={profileRef}
-                        onClick={() => navigate('/dashboard/profile')}
                         className="relative rounded-lg shadow-md bg-[var(--gray-800)] hover:bg-[var(--gray-700)] transition-colors duration-200 cursor-pointer"
                       >
                         <div className="flex items-center gap-x-4 px-4 py-3">
-                          <AvatarPlaceholder />
-                          <div className="flex flex-col">
-                            <span className="text-sm font-semibold text-white">{userName}</span>
-                            <span className="sr-only">Your profile</span>
+                          <div onClick={() => navigate('/dashboard/profile')} className="flex items-center gap-x-4 flex-grow">
+                            <CogIcon className="h-8 w-8 text-gray-400" />
+                            <div className="flex flex-col">
+                              <span className={`text-${textSize} font-semibold text-white`}>{userName}</span>
+                              <span className="sr-only">Your profile</span>
+                            </div>
                           </div>
-                          <div className="ml-auto p-2 rounded-lg bg-[var(--gray-900)]">
+                          <div className="ml-auto p-2 rounded-lg">
                             <ArrowLeftEndOnRectangleIcon
                               className="h-5 w-5 text-gray-400"
                               onClick={(e) => {
@@ -140,20 +142,24 @@ export default function SideBar() {
                       ref={profileRef}
                       className="relative rounded-lg shadow-md bg-[var(--gray-800)] transition-colors duration-200"
                     >
-                      <div
-                        onClick={() => navigate('/dashboard/profile')}
-                        className="flex items-center gap-x-4 px-4 py-3 hover:bg-[var(--gray-700)] rounded-lg cursor-pointer"
-                      >
-                        <AvatarPlaceholder />
-                        <span className="sr-only">Your profile</span>
-                        <span aria-hidden="true">{userName}</span>
-                        <div className="p-3 rounded-lg hover:bg-[var(--gray-800)]">
+                      <div className="flex items-center gap-x-4 px-2 py-3 hover:bg-[var(--gray-700)] rounded-lg">
+                        <div 
+                          onClick={() => navigate('/dashboard/profile')} 
+                          className="flex items-center gap-x-4 flex-grow cursor-pointer"
+                        >
+                          <CogIcon className="h-8 w-8 text-gray-400" />
+                          <span aria-hidden="true" className={`text-${textSize} font-semibold text-white`}>{userName}</span>
+                          <span className="sr-only">Your profile</span>
+                        </div>
+                        <div
+                          className="p-2 overflow-hidden rounded-lg hover:bg-[var(--gray-800)]"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            logout();
+                          }}
+                        >
                           <ArrowLeftEndOnRectangleIcon
                             className="h-5 w-5 text-gray-400 hover:text-white cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              logout();
-                            }}
                           />
                         </div>
                       </div>
