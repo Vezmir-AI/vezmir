@@ -44,9 +44,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
     const updateProfile = async (userChange: profileUpdate) => {
         const data = { "action": "update_info", ...userChange };
         const response = await api.put('/user/me/', data);
-        if (response.status === 200) {
-            setUser({ ...user, ...response });
-        }
+        setUser({ ...user, ...response });
         return response;
     }
 
