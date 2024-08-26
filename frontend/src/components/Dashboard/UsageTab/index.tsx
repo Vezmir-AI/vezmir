@@ -1,6 +1,6 @@
 import React from 'react';
 import UsageConsumptionArea from './UsageConsumptionArea';
-import UsageHistoryBar from './UsageHistroryBar';
+import UsageHistoryBar from './UsageHistoryBar';
 import UsageProgressionBar from './UsageProgressionBar';
 
 
