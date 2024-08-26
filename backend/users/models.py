@@ -44,7 +44,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     preferred_model = models.ForeignKey(
-        AIModel, on_delete=models.SET_NULL, null=True, blank=True
+        AIModel, on_delete=models.SET_NULL, null=True, default=1
     )
     stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
     stripe_payment_method_id = models.CharField(max_length=50, blank=True, null=True)

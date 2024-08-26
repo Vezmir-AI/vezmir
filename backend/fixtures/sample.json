@@ -23,7 +23,7 @@
     },
     {
         "model": "chat.aimodelprovider",
-        "pk": "sample",
+        "pk": "Vezmir",
         "fields": {}
     },
     {
@@ -40,10 +40,10 @@
         "model": "chat.aimodel",
         "pk": 1,
         "fields": {
-            "name": "sample",
-            "display_name": "Sample response",
-            "provider": "sample",
-            "hint": "This is a sample response",
+            "name": "vezmir",
+            "display_name": "Automatic",
+            "provider": "Vezmir",
+            "hint": "Uses the last model used in the conversation",
             "is_active": true,
             "price_per_1K_token_input": 0.0,
             "price_per_1K_token_output": 0.0

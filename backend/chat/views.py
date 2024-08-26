@@ -96,13 +96,29 @@ class ChatMessageView(APIView):
 
         # Query model name and its provider
         model_name = request.data.get("model_name")
+        if model_name == "vezmir":
+            try:
+                # uses the conversation last message, if any
+                if conversation.messages.last():
+                    model_name = conversation.messages.last().model_name
+                # uses the user's last absolute message, if any
+                # it is indeed first, not last (implementation detail ig)
+                elif request.user.messages.first():
+                    model_name = request.user.messages.first().model_name
+                else:
+                    model_name = "gpt-4o"
+            except Exception:
+                return Response(
+                    {"message": "model_not_found", "status": "error"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
         try:
             model = AIModel.objects.select_related("provider").get(name=model_name)
             model_provider = model.provider.name
         except AIModel.DoesNotExist:
             return Response(
-                {"message": "server_error", "status": "error"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                {"message": "model_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         # creates the user message
