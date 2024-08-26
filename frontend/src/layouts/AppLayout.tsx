@@ -4,6 +4,7 @@ import { useTheme } from '@/context/ThemeContext';
 import Alert from '@/components/Layout/Alert';
 import CompleteProfileModal from '@/components/Layout/CompleteProfileModal';
 import SideBar from '@/components/Layout/SideBar';
+import DashboardHeader from '@/components/Layout/DashboardHeader';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -47,6 +48,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <div className="flex h-screen">
             <SideBar />
             <main className="flex-1">
+              {dashboardLayout && <DashboardHeader />}
               {children}
             </main>
           </div>
