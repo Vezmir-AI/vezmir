@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { CreditCardIcon, ChartPieIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
 import { useConversation } from '@/context/ConversationContext';
 import { Message } from '@/types';
@@ -146,9 +147,32 @@ const ChatComponent: React.FC = () => {
   return (
     <div className="flex h-screen bg-[var(--gray-800)]">
       <div className="flex-1 flex flex-col bg-[var(--gray-800)] pl-4">
-        {/* Model Selector - Fixed at the top */}
-        <div className="p-4 bg-[var(--gray-800)] sticky top-0 z-10">
-          <ModelSelector/>
+
+        {/* Model Selector + buttons - Fixed at the top */}
+        <div className="sticky top-0 z-10 bg-[var(--gray-800)] shadow-sm w-full">
+          <div className="flex items-center p-4">
+            {/* Model Selector */}
+            <div className="flex-grow">
+              <ModelSelector />
+            </div>
+            <div className="flex space-x-2 ml-4">
+              <Link to="/dashboard/billing">
+                <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
+                  <CreditCardIcon className="w-6 h-6 text-[var(--bordeaux-clear)]" />
+                </div>
+              </Link>
+              <Link to="/dashboard/usage">
+                <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
+                  <ChartPieIcon className="w-6 h-6 text-[var(--bordeaux-clear)]" />
+                </div>
+              </Link>
+              <Link to="/" className="md:hidden">
+                <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
+                  <PencilSquareIcon className="w-6 h-6 text-[var(--bordeaux-clear)]" />
+                </div>
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Messages - Scrollable area */}
