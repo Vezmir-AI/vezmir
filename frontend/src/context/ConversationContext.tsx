@@ -64,7 +64,9 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
     const addConversation = async () => {
         const newConversation = await api.post('/chat/conversations/');
-        setConversations([...conversations, newConversation]);
+        // removed because it was causing a re-render of the conversations
+        // will refetch conversations in the Chat component when title is generated
+        // setConversations([...conversations, newConversation]);
         navigate(`/chat/${newConversation.id}`);
         return newConversation;
     }

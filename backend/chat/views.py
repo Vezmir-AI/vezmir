@@ -1,9 +1,9 @@
+import time
 from django.http import StreamingHttpResponse
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from groq import Groq
 
 from chat.models import ChatConversation, ChatMessage, AIModel, AIModelProvider
 from chat.serializers import (
@@ -14,7 +14,7 @@ from chat.serializers import (
     FormattedMessageSerializer,
 )
 from utils.permissions import IsOwner
-from utils.chatbots import get_api_response
+from utils.chatbots import get_api_response, generate_title
 
 
 # class to get all the models
@@ -246,3 +246,21 @@ class ChatMessageView(APIView):
         )
 
 
+class ChatConversationTitleView(APIView):
+    permission_classes = (IsAuthenticated, IsOwner)
+
+    def post(self, request, conv_id, _retry=True):
+        try:
+            conversation = ChatConversation.objects.get(id=conv_id, user=request.user)
+        except ChatConversation.DoesNotExist:
+            if _retry:
+                time.sleep(1)
+                return self.post(request, conv_id, _retry=False)
+            return Response(
+                {"message": "conversation_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        title = generate_title(request.data.get("user_message"))
+        conversation.name = title
+        conversation.save()
+        return Response({"data": {"title": title}})
