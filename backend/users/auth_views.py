@@ -88,6 +88,9 @@ class CustomTokenRefreshView(TokenViewBase):
         try:
             response = super().post(request, *args, **kwargs)
         except Exception as e:
+            print(e)
+            # no response status/message as refresh is a background process
+            # and the user should not be aware of it
             return Response(status=status.HTTP_400_BAD_REQUEST)
         custom_response = {
             "data": response.data,

@@ -144,6 +144,8 @@ class UserUsageView(ListAPIView):
     def get(self, request: Request, type: str):
         user = request.user
 
+        # TODO: money_spent is not computed correctly, need to take the past month and it is default value below, so no params is passed
+        # but JB let the possiblity to make so getting usage for a specific period is possible, so will fix it later
         params = request.query_params
         start_date, end_date = params.get("start_date"), params.get("end_date")
         if not end_date:
@@ -224,6 +226,8 @@ class UserUsageView(ListAPIView):
             money_spent = 0
             for date in response_data:
                 for model_name in date:
+                    if model_name == "date":
+                        continue
                     money_spent += (
                         date[model_name]["price_in"] + date[model_name]["price_out"]
                     )
