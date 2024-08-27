@@ -11,14 +11,14 @@ interface ProfileContextType {
     updateProfile: (userChange: profileUpdate) => Promise<serverResponse>,
     updatePassword: (passwordChange: passwordUpdate) => Promise<serverResponse>,
     deleteAccount: () => Promise<serverResponse>,
-    getMoneySaved: () => void,
+    getMoneySpent: () => void,
     getMoneyUsage: (startDate: string, endDate: string) => void,
     getTokenUsage: (startDate: string, endDate: string | null) => void,
 }
 
 const ProfileContext = createContext<ProfileContextType | null>(null);
 export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<userProfile>({ email: '', first_name: '', last_name: '', preferred_model: '', email_verified: false, stripe_payment_method_id: '' });
+    const [user, setUser] = useState<userProfile>({ email: '', first_name: '', last_name: '', preferred_model: '', email_verified: false, stripe_payment_method_id: '', balance: 0 });
     const [usage, setUsage] = useState<userUsage>({});
     const [profileComplete, setProfileComplete] = useState(false);
     const { isAuthenticated } = useAuth();
@@ -32,7 +32,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
         if (isAuthenticated) {
             getUser();
         } else {
-            setUser({ email: '', first_name: '', last_name: '', preferred_model: '', email_verified: false, stripe_payment_method_id: '' });
+            setUser({ email: '', first_name: '', last_name: '', preferred_model: '', email_verified: false, stripe_payment_method_id: '', balance: 0 });
         }
     }, [isAuthenticated]);
 
@@ -44,9 +44,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
     const updateProfile = async (userChange: profileUpdate) => {
         const data = { "action": "update_info", ...userChange };
         const response = await api.put('/user/me/', data);
-        if (response.status === 200) {
-            setUser({ ...user, ...response });
-        }
+        setUser({ ...user, ...response });
         return response;
     }
 
@@ -61,8 +59,8 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
         return response;
     }
 
-    const getMoneySaved = () => {
-        api.get('/user/usage/money_saved/').then(({ money_spent }) => {
+    const getMoneySpent= () => {
+        api.get('/user/usage/money_spent/').then(({ money_spent }) => {
             setUsage({ ...usage, money_spent });
         });
     }
@@ -88,7 +86,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
         updatePassword,
         deleteAccount,
         usage,
-        getMoneySaved,
+        getMoneySpent,
         getMoneyUsage,
         getTokenUsage
     }}>

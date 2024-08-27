@@ -1,35 +1,26 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessui/react'
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import {
   Bars3Icon,
-  ChartPieIcon,
-  XMarkIcon,
   ChevronLeftIcon,
-  UserIcon,
-  CreditCardIcon,
-  ArrowRightEndOnRectangleIcon,
+  ArrowLeftEndOnRectangleIcon,
+  CogIcon,
 } from '@heroicons/react/24/outline'
 import { useAuth } from '@/context/AuthContext';
 import { useProfile } from '@/context/ProfileContext';
 import NewChatButton from '../Chat/NewChat';
 import ChatHistory from '../Chat/ChatHistory';
-import AvatarPlaceholder from '../Dashboard/AvatarPlaceholder';
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
 
 export default function SideBar() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
   const [userName, setUserName] = useState('')
+  const [textSize, setTextSize] = useState('sm')
   const { logout } = useAuth();
   const { user } = useProfile()
   const navigate = useNavigate();
   const location = useLocation();
-  const settingsRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
   const isDashboard = location.pathname.startsWith('/dashboard');
@@ -37,105 +28,73 @@ export default function SideBar() {
   useEffect(() => {
     if (isDashboard) {
       setIsCollapsed(false);
-      setShowSettings(true);
     }
-    setUserName(`${user.first_name} ${user.last_name}`)
-    if (!user.first_name || !user.last_name) {
+    setUserName([user?.first_name, user?.last_name].join(' ').trim())
+    if (!user.first_name && !user.last_name) {
       setUserName("Your Profile")
     }
+    setTextSize(userName.length > 10 ? 'xs' : 'sm')
   }, [isDashboard, user]);
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (location.pathname.startsWith('/dashboard') &&
-        settingsRef.current && !settingsRef.current.contains(event.target as Node) &&
-        profileRef.current && !profileRef.current.contains(event.target as Node)) {
-        setShowSettings(false);
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [location.pathname]);
-
-  const handleMouseEnter = () => {
-    if (!isDashboard) {
-      setShowSettings(true);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (!isDashboard) {
-      setShowSettings(false);
-    }
-  };
-
-  const settings = [
-    { id: 1, name: 'Profile', action: () => { navigate('/dashboard/profile') }, icon: UserIcon },
-    { id: 2, name: 'Usage', action: () => { navigate('/dashboard/usage') }, icon: ChartPieIcon },
-    { id: 3, name: 'Billing', action: () => { navigate('/dashboard/billing') }, icon: CreditCardIcon },
-    { id: 4, name: 'Logout', action: () => { logout() }, icon: ArrowRightEndOnRectangleIcon },
-  ]
 
   return (
     <>
       <div>
+        {/* Mobile sidebar */}
         <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
           <DialogBackdrop
             transition
             className="fixed inset-0 bg-gray-900/80 transition-opacity duration-300 ease-linear data-[closed]:opacity-0"
           />
 
-          <div className="fixed inset-0 flex">
+          <div className="fixed inset-0 flex h-full">
             <DialogPanel
               transition
               className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full"
             >
-              <TransitionChild>
-                <div className="absolute left-full top-0 flex w-16 justify-center pt-5 duration-300 ease-in-out data-[closed]:opacity-0">
-                  <button type="button" onClick={() => setSidebarOpen(false)} className="-m-2.5 p-2.5">
-                    <span className="sr-only">Close sidebar</span>
-                    <XMarkIcon aria-hidden="true" className="h-6 w-6 text-white" />
-                  </button>
-                </div>
-              </TransitionChild>
               {/* Sidebar component for mobile */}
-              <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
-                <div className="flex h-16 shrink-0 items-center">
+              <div className="flex h-screen grow flex-col gap-y-5 overflow-y-auto bg-[var(--gray-900)] px-6 pb-2 ring-1 ring-white/10">
+                <div className="flex h-16 shrink-0 items-center justify-between">
                   <img
                     alt="vezmir-logo"
                     src="/assets/white.svg"
                     className="h-8 w-auto"
                   />
+                  <button type="button" onClick={() => setSidebarOpen(false)} className="p-2 rounded-md bg-[var(--gray-700)] hover:bg-[var(--gray-600)] text-gray-400 hover:text-white">
+                    <span className="sr-only">Close sidebar</span>
+                    <ChevronLeftIcon aria-hidden="true" className="h-6 w-6" />
+                  </button>
                 </div>
-                <nav className="flex flex-1 flex-col">
+                <nav className="flex flex-1 flex-col" onClick={() => setSidebarOpen(false)} >
                   <NewChatButton />
                   <ul role="list" className="flex flex-1 flex-col gap-y-7">
                     <li className="mt-4">
                       <ChatHistory />
                     </li>
-                    <li>
-                      <div className="text-xs font-semibold leading-6 text-gray-400">Settings</div>
-                      <ul role="list" className="-mx-2 mt-2 space-y-1">
-                        {settings.map((option) => (
-                          <li key={option.name}>
-                            <button
-                              onClick={option.action}
-                              className={classNames(
-                                'text-gray-400 hover:bg-gray-800 hover:text-white',
-                                'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 w-full',
-                              )}
-                            >
-                              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white">
-                                <option.icon className="h-4 w-4" aria-hidden="true" />
-                              </span>
-                              <span className="truncate">{option.name}</span>
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
+                    <li className="mt-auto pr-2">
+                      <div
+                        ref={profileRef}
+                        className="relative rounded-lg shadow-md bg-[var(--gray-800)] hover:bg-[var(--gray-700)] transition-colors duration-200 cursor-pointer"
+                      >
+                        <div className="flex items-center gap-x-4 px-4 py-3">
+                          <div onClick={() => navigate('/dashboard/profile')} className="flex items-center gap-x-4 flex-grow">
+                            <CogIcon className="h-8 w-8 text-gray-400" />
+                            <div className="flex flex-col">
+                              <span className={`text-${textSize} font-semibold text-white`}>{userName}</span>
+                              <span className="sr-only">Your profile</span>
+                            </div>
+                          </div>
+                          <div className="ml-auto p-2 rounded-lg">
+                            <ArrowLeftEndOnRectangleIcon
+                              className="h-5 w-5 text-gray-400"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                logout();
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </li>
                   </ul>
                 </nav>
@@ -181,41 +140,29 @@ export default function SideBar() {
                   <li className="mt-auto pr-2">
                     <div
                       ref={profileRef}
-                      className={`relative rounded-md -mx-6 ${showSettings ? 'bg-[var(--gray-800)]' : ''}`}
-                      onMouseEnter={handleMouseEnter}
-                      onMouseLeave={handleMouseLeave}
+                      className="relative rounded-lg shadow-md bg-[var(--gray-800)] transition-colors duration-200"
                     >
-                      <div className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-[var(--gray-800)] cursor-pointer">
-                        <AvatarPlaceholder />
-                        <span className="sr-only">Your profile</span>
-                        <span aria-hidden="true">{userName}</span>
-                      </div>
-                      {showSettings && (
-                        <div
-                          ref={settingsRef}
-                          className="absolute bottom-full left-0 w-full bg-[var(--gray-900)] py-2"
+                      <div className="flex items-center gap-x-4 px-2 py-3 hover:bg-[var(--gray-700)] rounded-lg">
+                        <div 
+                          onClick={() => navigate('/dashboard/profile')} 
+                          className="flex items-center gap-x-4 flex-grow cursor-pointer"
                         >
-                          <div className="text-xs font-semibold leading-6 text-gray-400 px-6 mb-2">Settings</div>
-                          <ul role="list">
-                            {settings.map((option) => (
-                              <li key={option.name}>
-                                <button
-                                  onClick={option.action}
-                                  className={classNames(
-                                    'text-gray-400 hover:bg-[var(--gray-800)] hover:text-white',
-                                    'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 w-full px-6 bg-[var(--gray-900)]',
-                                  )}
-                                >
-                                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-[var(--gray-700)] text-[0.625rem] font-medium text-gray-400 group-hover:text-white">
-                                    <option.icon className="h-4 w-4" aria-hidden="true" />
-                                  </span>
-                                  <span className="truncate">{option.name}</span>
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
+                          <CogIcon className="h-8 w-8 text-gray-400" />
+                          <span aria-hidden="true" className={`text-${textSize} font-semibold text-white`}>{userName}</span>
+                          <span className="sr-only">Your profile</span>
                         </div>
-                      )}
+                        <div
+                          className="p-2 overflow-hidden rounded-lg hover:bg-[var(--gray-800)]"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            logout();
+                          }}
+                        >
+                          <ArrowLeftEndOnRectangleIcon
+                            className="h-5 w-5 text-gray-400 hover:text-white cursor-pointer"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </li>
                 </ul>
@@ -224,17 +171,19 @@ export default function SideBar() {
           )}
         </div>
 
-        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
-          <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400 lg:hidden">
+        {/* Mobile toggle button */}
+        <div className={`sticky top-0 z-40 flex items-center gap-x-6 ${isDashboard ? 'bg-[var(--gray-900)]' : 'bg-[var(--gray-800)]'} px-4 py-4 shadow-sm sm:px-6 lg:hidden`}>
+          <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400 lg:hidden bg-[var(--gray-700)] hover:bg-[var(--gray-600)]">
             <span className="sr-only">Open sidebar</span>
             <Bars3Icon aria-hidden="true" className="h-6 w-6" />
           </button>
         </div>
 
-        <div className={`py-10 ${isCollapsed ? 'lg:pl-4' : 'lg:pl-60'} transition-all duration-300`}>
+        {/* Desktop sidebar buffer for layout, do not remove */}
+        <div className={`py-10 ${isCollapsed ? 'lg:pl-4' : 'lg:pl-60'} ${isDashboard ? '' : 'bg-[var(--gray-800)]'} hidden sm:block sm:h-full transition-all duration-0`}>
           <div className="px-4 sm:px-6 lg:px-8"></div>
         </div>
-      </div>
+      </div >
     </>
   )
 }

@@ -1,7 +1,7 @@
 import OpenAILogo from '@/assets/openai.svg';
 import AnthropicLogo from '@/assets/anthropic.svg';
-import React from '@/assets/react.svg';
 import GoogleLogo from '@/assets/google.svg';
+import VezmirLogo from '@/assets/vezmir.svg';
 
 export const getProviderLogo = (provider: string): string => {
   switch (provider.toLowerCase()) {
@@ -12,7 +12,7 @@ export const getProviderLogo = (provider: string): string => {
     case 'google':
       return GoogleLogo;
     default:
-      return React;
+      return VezmirLogo;
   }
 };
 
@@ -25,6 +25,6 @@ export const getProviderColor = (provider: string): string => {
     case 'google':
       return 'bg-[#4285F4] text-white';
     default:
-      return 'bg-gray-600 text-white';
+      return 'bg-[var(--bordeaux-clear)] text-white';
   }
 };

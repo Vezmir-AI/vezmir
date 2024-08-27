@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { CheckIcon, ClockIcon } from '@heroicons/react/20/solid'
 import { useProfile } from '@/context/ProfileContext';
@@ -9,6 +10,7 @@ interface CompleteProfileModalProps {
 }
 
 const CompleteProfileModal: React.FC<CompleteProfileModalProps> = ({ open, setOpen }) => {
+  const navigate = useNavigate();
   const { user } = useProfile();
   const [profileSteps, setProfileSteps] = useState<{ action: string, completed: boolean, link: string }[]>([]);
   const [progress, setProgress] = useState(0);
@@ -25,14 +27,19 @@ const CompleteProfileModal: React.FC<CompleteProfileModalProps> = ({ open, setOp
     setProfileSteps(profileSteps);
   }, [user]);
 
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setOpen(false);
+  };
+
   return (
-    <Dialog open={open} onClose={setOpen} className="relative z-100">
+    <Dialog open={open} onClose={setOpen} className="relative z-[100]">
       <DialogBackdrop
         transition
         className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
       />
 
-      <div className="fixed inset-0 z-100 w-screen overflow-y-auto">
+      <div className="fixed inset-0 z-[100] w-screen overflow-y-auto">
         <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
           <DialogPanel
             transition
@@ -59,7 +66,7 @@ const CompleteProfileModal: React.FC<CompleteProfileModalProps> = ({ open, setOp
               </div>
               <ul className="mt-4 space-y-2">
                 {profileSteps.map((step, index) => (
-                  <li key={index} className={`flex items-center justify-between p-2 rounded ${!step.completed ? 'cursor-pointer hover:bg-gray-100' : ''}`} onClick={() => !step.completed && (window.location.href = step.link)}>
+                  <li key={index} className={`flex items-center justify-between p-2 rounded ${!step.completed ? 'cursor-pointer hover:bg-gray-100' : ''}`} onClick={() => !step.completed && (handleNavigation(step.link))}>
                     <span className={`text-sm ${step.completed ? 'text-gray-700' : 'text-gray-500'}`}>{step.action}</span>
                     {step.completed ? (
                       <CheckIcon aria-hidden="true" className="h-5 w-5 text-green-600 outline outline-green-300 rounded-full bg-green-100" />

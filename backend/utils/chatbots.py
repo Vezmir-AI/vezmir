@@ -8,8 +8,6 @@ def get_api_response(model_name: str, model_provider: str, messages: list[dict])
             yield from OpenAIAPI.get_response(formatted_messages, model_name)
         case "Anthropic":
             yield from AnthropicAPI.get_response(formatted_messages, model_name)
-        case "sample":
-            yield from SampleAPI.get_response(formatted_messages, model_name)
         case "Google":
             yield from GoogleAPI.get_response(formatted_messages, model_name)
 

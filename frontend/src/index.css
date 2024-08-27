@@ -133,6 +133,7 @@
   --bordeaux-hover: #521A8B;
   --bordeaux-clear: #B469FF;
   --background-dark: var(--gray-800);
+  --bite: #6D071A;
 }
 
 body {
@@ -162,6 +163,26 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+  outline-color: var(--bordeaux-clear);
+}
+
+/* Override global button styles for usage switches */
+.usage-switch {
+  padding: 0;
+  background-color: var(--gray-400);
+}
+.usage-switch:hover {
+  background-color: var(--bordeaux-hover);
+}
+.usage-switch:focus {
+  outline: 4px auto -webkit-focus-ring-color;
+  outline-color: var(--bordeaux-clear);
+}
+.usage-switch:focus-visible {
+  outline-color: var(--bordeaux-clear);
+}
+.usage-switch[aria-checked="true"] {
+  background-color: var(--bordeaux);
 }
 
 .input-field {

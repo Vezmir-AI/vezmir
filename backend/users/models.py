@@ -1,4 +1,5 @@
 from django.db import models
+from decimal import Decimal
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
@@ -42,10 +43,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # App related fields
     is_active = models.BooleanField(default=True)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    preferred_model = models.ForeignKey(
-        AIModel, on_delete=models.SET_NULL, null=True, blank=True
-    )
+    balance = models.DecimalField(max_digits=100, decimal_places=10, default=0)
+    preferred_model = models.ForeignKey(AIModel, on_delete=models.SET_NULL, null=True)
     stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
     stripe_payment_method_id = models.CharField(max_length=50, blank=True, null=True)
 
@@ -57,3 +56,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         """Return string representation of our user"""
         return self.email
+
+    def calculate_message_cost(self, num_tokens, model, is_input):
+        price_per_1k = (
+            model.price_per_1K_token_input
+            if is_input
+            else model.price_per_1K_token_output
+        )
+        return (num_tokens / 1000) * price_per_1k
+
+    def update_balance(self, cost):
+        print("Updating balance", cost)
+        self.balance -= Decimal(str(cost))
+        self.save()

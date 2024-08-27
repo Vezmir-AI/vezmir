@@ -1,30 +1,25 @@
 import React from 'react';
 import UsageConsumptionArea from './UsageConsumptionArea';
-import UsageHistoryBar from './UsageHistroryBar';
-import UsageProgressionBar from './UsageProgressionBar';
-
+import UsageHistoryBar from './UsageHistoryBar';
+import UsageSummaryCard from './UsageSummaryCard';
 
 const UsageTab: React.FC = () => {
   return (
-    <div>
-      <div className="bg-gray-900 text-white p-6 space-y-6">
-        <h1 className="text-2xl font-bold">Uzage tab</h1>
-        <p className="text-gray-400">Here you will find all the information related to your usage</p>
+    <div className="bg-[var(--gray-900)] text-white p-4 md:p-6 space-y-6">
+      <h1 className="text-2xl font-bold">Usage</h1>
+      <p className="text-[var(--gray-400)]">Here you will find all the information related to your usage</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2 bg-gray-800">
-            <UsageProgressionBar desc='over the last 30 days' stat='12.3' previousStat='20' change='7.7' changeType='increase' />
-          </div>
-          <div className="bg-gray-800">
-            <div>
-              <UsageConsumptionArea />
-            </div>
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-[var(--gray-800)] rounded-lg p-4">
+          <UsageSummaryCard />
         </div>
+        <div className="bg-[var(--gray-800)] rounded-lg p-4">
+          <UsageConsumptionArea />
+        </div>
+      </div>
 
-        <div className="space-y-2  bg-gray-800">
-          <UsageHistoryBar />
-        </div>
+      <div className="bg-[var(--gray-800)] rounded-lg p-4">
+        <UsageHistoryBar />
       </div>
     </div>
   );
