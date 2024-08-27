@@ -6,6 +6,7 @@ import {
     CreditCardIcon,
     ChevronUpDownIcon,
     CheckIcon,
+    PencilSquareIcon,
 } from '@heroicons/react/24/outline'
 
 function classNames(...classes: string[]) {
@@ -41,8 +42,8 @@ const DashboardHeader: React.FC = () => {
     }, [isMenuOpen]);
 
     return (
-        <div className="sticky top-0 z-20 bg-[var(--gray-900)]">
-            <div className="md:hidden flex items-center h-14">
+        <div className="sticky top-0 z-20 bg-[var(--gray-900)] w-auto m-1">
+            <div className="md:hidden flex items-center h-14 ">
                 <div className="relative flex-grow px-4">
                     <button
                         id="settings-button"
@@ -87,6 +88,9 @@ const DashboardHeader: React.FC = () => {
                             ))}
                         </ul>
                     )}
+                </div>
+                <div className="mx-2 mr-4">
+                    <PencilSquareIcon className="w-6 h-6 text-[var(--bordeaux-clear)]" onClick={() => navigate('/')} />
                 </div>
             </div>
             <div className="hidden md:block w-full px-4">
