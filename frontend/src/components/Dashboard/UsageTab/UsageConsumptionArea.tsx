@@ -86,20 +86,20 @@ const UsageConsumptionArea: React.FC = () => {
 
 
     return (
-        <div className={`${loading ? 'bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 animate-gradient-loading' : ''}`}>
+        <div className={`${loading ? 'bg-gradient-to-r from-[var(--gray-800) via-[var(--gray-600) to-[var(--gray-800) animate-gradient-loading' : ''}`}>
             <div className="flex justify-between items-center p-2">
                 <h2 className="text-lg font-semibold">Models used</h2>
                 <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-400">Show Details</span>
+                    <span className="text-sm text-[var(--gray-400)">Show Details</span>
                     <Switch
                         checked={showDetails}
                         onChange={() => setShowDetails(!showDetails)}
-                        className="group relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-vezmir focus:ring-offset-2 data-[checked]:bg-vezmir"
+                        className="usage-switch group relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out "
                     >
                         <span className="sr-only">Use setting</span>
                         <span
-                            aria-hidden="true"
-                            className="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out group-data-[checked]:translate-x-5"
+                            className={`${showDetails ? 'translate-x-5' : 'translate-x-0'
+                                } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
                         />
                     </Switch>
                 </div>
@@ -127,7 +127,7 @@ const UsageConsumptionArea: React.FC = () => {
                                     <Tooltip
                                         contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', border: 'none' }}
                                         labelStyle={{ color: '#333' }}
-                                        itemStyle={{ color: '#6D071A' }}
+                                        itemStyle={{ color: '#8F22FC' }}
                                         formatter={(value, name) => [`${value} tokens`, name]}
                                     />
                                 )}
@@ -138,7 +138,7 @@ const UsageConsumptionArea: React.FC = () => {
                                         <Area type="monotone" dataKey="gemini" stackId="1" stroke="#4C9EDD" fill="#4C9EDD" animationDuration={500} />
                                     </>
                                 ) : (
-                                    <Area type="monotone" dataKey="total" stroke="#FFF" fill="#6D071A" animationDuration={500} />
+                                    <Area type="monotone" dataKey="total" stroke="#FFF" fill="#8F22FC" animationDuration={500} />
                                 )}
                                 {!hasData && (
                                     <text x="50%" y="30%" textAnchor="middle" dominantBaseline="middle" fill="#888" fontSize="14">
@@ -153,7 +153,7 @@ const UsageConsumptionArea: React.FC = () => {
             <div className="flex justify-between items-center">
                 <button
                     onClick={handlePreviousWeek}
-                    className={`p-2 sm:p-3 flex items-center rounded-md ${loading ? 'bg-transparent' : 'bg-gray-500 sm:bg-gray-800'}`}
+                    className={`p-2 sm:pr-3 flex items-center rounded-md ${loading ? 'bg-transparent' : 'bg-[var(--gray-500) sm:bg-[var(--gray-800)'}`}
                     disabled={loading}
                 >
                     <ChevronLeftIcon className="h-6 w-6 sm:h-5 sm:w-5" />
@@ -162,7 +162,7 @@ const UsageConsumptionArea: React.FC = () => {
                 <span className="text-sm font-medium">{formatWeekRange(currentWeek)}</span>
                 <button
                     onClick={handleNextWeek}
-                    className={`p-2 sm:p-3 flex items-center rounded-md ${loading ? 'bg-transparent' : 'bg-gray-500 sm:bg-gray-800'} ${futureWeekDisabled ? 'text-gray-600' : ''}`}
+                    className={`p-2 sm:pl-3 flex items-center rounded-md ${loading ? 'bg-transparent' : 'bg-[var(--gray-500) sm:bg-[var(--gray-800)'} ${futureWeekDisabled ? 'text-[var(--gray-600) bg-[var(--gray-600)] hover:bg-[var(--gray-600)]' : ''}`}
                     disabled={futureWeekDisabled || loading}
                 >
                     <span className="mr-1 text-sm hidden sm:inline">Next</span>

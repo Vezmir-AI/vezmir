@@ -11,6 +11,7 @@ export interface userProfile {
     email: string;
     email_verified: boolean;
     stripe_payment_method_id: string;
+    balance: number;
 }
 
 export interface profileUpdate {
@@ -37,7 +38,7 @@ export type usageSpendings = {
 }
 
 export interface userUsage {
-    money_spent?: usageSpendings;
+    money_spent?: number;
     money_usage?: usageData[];
     token_usage?: usageData[];
 }

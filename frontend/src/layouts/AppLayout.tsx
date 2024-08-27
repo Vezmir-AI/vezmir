@@ -47,7 +47,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <CompleteProfileModal open={showCPM} setOpen={setShowCPM} />
           <div className="flex h-screen">
             <SideBar />
-            <main className="flex-1">
+            <main className="flex-1 overflow-y-auto">
               {dashboardLayout && <DashboardHeader />}
               {children}
             </main>

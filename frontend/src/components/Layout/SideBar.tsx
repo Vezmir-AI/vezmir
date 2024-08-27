@@ -47,13 +47,13 @@ export default function SideBar() {
             className="fixed inset-0 bg-gray-900/80 transition-opacity duration-300 ease-linear data-[closed]:opacity-0"
           />
 
-          <div className="fixed inset-0 flex">
+          <div className="fixed inset-0 flex h-full">
             <DialogPanel
               transition
               className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full"
             >
               {/* Sidebar component for mobile */}
-              <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[var(--gray-900)] px-6 pb-2 ring-1 ring-white/10">
+              <div className="flex h-screen grow flex-col gap-y-5 overflow-y-auto bg-[var(--gray-900)] px-6 pb-2 ring-1 ring-white/10">
                 <div className="flex h-16 shrink-0 items-center justify-between">
                   <img
                     alt="vezmir-logo"
