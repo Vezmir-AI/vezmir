@@ -1,6 +1,7 @@
 import React from 'react';
 import renderCodeBlock from './renderCodeBlock';
 import processLatex from './processLatex';
+import renderMarkdown from './renderMarkdown';
 
 const renderContent = (
   content: string,
@@ -8,7 +9,7 @@ const renderContent = (
   copiedStates: { [key: string]: boolean },
   setCopiedStates: React.Dispatch<React.SetStateAction<{ [key: string]: boolean }>>
 ) => {
-  const parts = [];
+  const parts: React.ReactNode[] = [];
   let lastIndex = 0;
 
   // Regular expression for code blocks
@@ -26,7 +27,7 @@ const renderContent = (
 
     const language = match[1] || 'text';
     const code = match[2].trim();
-    const codeBlockIndex = parts.length;
+    const codeBlockIndex: number = parts.length;
     const codeBlockKey = `${messageIndex}-${codeBlockIndex}`;
 
     parts.push(renderCodeBlock(language, code, codeBlockKey, copiedStates, setCopiedStates));
@@ -40,7 +41,8 @@ const renderContent = (
     parts.push(...processLatex(remainingText, messageIndex, parts.length));
   }
 
-  return parts;
+  // Render the entire content as Markdown
+  return renderMarkdown(parts);
 };
 
 export default renderContent;

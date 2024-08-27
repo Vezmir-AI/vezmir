@@ -70,7 +70,7 @@
     "react-hook-form": "^7.43.9",
     "react-katex": "^3.0.1",
     "react-lazy-load-image-component": "^1.6.0",
-    "react-markdown": "^8.0.6",
+    "react-markdown": "^8.0.7",
     "react-resizable-panels": "^1.0.9",
     "react-router-dom": "^6.11.2",
     "react-speech-recognition": "^3.10.0",
