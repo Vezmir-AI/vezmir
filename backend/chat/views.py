@@ -13,7 +13,7 @@ from chat.serializers import (
     AIModelProviderSerializer,
     FormattedMessageSerializer,
 )
-from utils.permissions import IsOwner
+from utils.permissions import IsOwner, HasPositiveBalance
 from utils.chatbots import get_api_response, generate_title
 
 
@@ -64,7 +64,7 @@ class UserConversationView(generics.ListCreateAPIView):
 
 
 class ChatMessageView(APIView):
-    permission_classes = (IsAuthenticated, IsOwner)
+    permission_classes = (IsAuthenticated, IsOwner, HasPositiveBalance)
 
     # get all the messages in a conversation, in chronological order
     def get(self, request, conv_id):
