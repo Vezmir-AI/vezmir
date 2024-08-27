@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 import api from '@/api';
-import { serverResponse, profileUpdate, passwordUpdate, userProfile, userUsage } from '@/types';
+import { serverResponse, profileUpdate, passwordUpdate, userProfile, userUsage, usageData } from '@/types';
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
 
@@ -65,17 +65,37 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
         });
     }
 
-    const getMoneyUsage = (startDate: string, endDate: string | null = null) => {
-        const prevUsage = usage.money_usage ?? [];
-        api.get('/user/usage/money_usage/', { start_date: startDate, ...(endDate && { end_date: endDate }) }).then(({ money_usage }) => {
-            setUsage({ ...usage, money_usage: [...prevUsage, ...money_usage] });
+    const getMoneyUsage = (startDate: string, endDate: string) => {
+        api.get('/user/usage/money_usage/', { start_date: startDate, end_date: endDate }).then(({ money_usage }) => {
+            setUsage(prevUsage => {
+                const newMoneyUsage = [...(prevUsage.money_usage || [])];
+                money_usage.forEach((newEntry: usageData) => {
+                    const index = newMoneyUsage.findIndex(entry => entry.date === newEntry.date);
+                    if (index !== -1) {
+                        newMoneyUsage[index] = newEntry;
+                    } else {
+                        newMoneyUsage.push(newEntry);
+                    }
+                });
+                return { ...prevUsage, money_usage: newMoneyUsage };
+            });
         });
     }
 
     const getTokenUsage = (startDate: string, endDate: string | null = null) => {
-        const prevUsage = usage.token_usage ?? [];
         api.get('/user/usage/token_usage/', { start_date: startDate, ...(endDate && { end_date: endDate }) }).then(({ token_usage }) => {
-            setUsage({ ...usage, token_usage: [...prevUsage, ...token_usage] });
+            setUsage(prevUsage => {
+                const newTokenUsage = [...(prevUsage.token_usage || [])];
+                token_usage.forEach((newEntry: usageData) => {
+                    const index = newTokenUsage.findIndex(entry => entry.date === newEntry.date);
+                    if (index !== -1) {
+                        newTokenUsage[index] = newEntry;
+                    } else {
+                        newTokenUsage.push(newEntry);
+                    }
+                });
+                return { ...prevUsage, token_usage: newTokenUsage };
+            });
         });
     }
 
