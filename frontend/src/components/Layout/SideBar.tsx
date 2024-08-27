@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { useAuth } from '@/context/AuthContext';
 import { useProfile } from '@/context/ProfileContext';
-import NewChatButton from '../Chat/NewChat';
+import NewChatButton from '../Chat/NewChatButton';
 import ChatHistory from '../Chat/ChatHistory';
 
 export default function SideBar() {
