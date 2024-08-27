@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { TrashIcon, ChevronDownIcon, ChevronUpIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { useConversation } from '@/context/ConversationContext';
 
 const ChatHistory: React.FC = () => {
     const navigate = useNavigate();
-    const { chatId } = useParams<{ chatId: string }>();
+    const location = useLocation();
+    const [chatId, setChatId] = useState<string|null>(null);
     const { conversations, deleteConversation } = useConversation();
     const [showAllConversations, setShowAllConversations] = useState(false);
     const [showConfirmationDelete, setShowConfirmationDelete] = useState(false);
     const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
     const [animatedNames, setAnimatedNames] = useState<{ [key: string]: string }>({});
+
+    useEffect(() => {
+        setChatId(location.pathname.split('/').pop() || null);
+    }, [location.pathname]);
 
     useEffect(() => {
         conversations.forEach(item => {
@@ -37,6 +42,7 @@ const ChatHistory: React.FC = () => {
     };
 
     const handleDeleteConversation = (id: string, event: React.MouseEvent) => {
+        console.log('delete conversation', id, chatId);
         event.preventDefault();
         event.stopPropagation();
         deleteConversation(id);
@@ -92,6 +98,7 @@ const ChatHistory: React.FC = () => {
                                 </button>
                                 <button
                                     onClick={(e) => handleDeleteConversation(item.id, e)}
+                                    
                                     className="p-2 text-[var(--gray-400)] hover:text-white bg-[var(--gray-900)] hover:bg-[var(--gray-800)]"
                                     title="Confirm delete"
                                 >

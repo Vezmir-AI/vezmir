@@ -12,7 +12,7 @@ class AbstractAPI(ABC):
     @classmethod
     def get_response(cls, messages: list[dict], model_name: str) -> str:
         # adds "be concise" to the last message
-        messages[-1]["content"] = messages[-1]["content"] + "\n\nBe concise."
+        # messages[-1]["content"] = messages[-1]["content"] + "\n\nBe concise."
         yield from cls._get_response(messages, model_name)
 
     @classmethod
