@@ -15,7 +15,7 @@ const ChatComponent: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { addConversation, selectedAIModel } = useConversation();
+  const { addConversation, fetchConversation, selectedAIModel, updateConversation } = useConversation();
 
   useEffect(() => {
     if (!chatId) {
@@ -79,11 +79,11 @@ const ChatComponent: React.FC = () => {
         }
         newChatId = newConversationResponse.id;
         navigate(`/chat/${newChatId}`, { state: { userMessage: message } });
-        navigate(`/chat/${newChatId}`, { state: { userMessage: message } });
         url = `/chat/conversations/${newChatId}/`;
         await new Promise(resolve => setTimeout(resolve, 500));
       } else {
         url = `/chat/conversations/${chatId}/`;
+        newChatId = chatId;
       }
 
       setIsStreaming(true);
@@ -103,6 +103,9 @@ const ChatComponent: React.FC = () => {
       const reader = response.getReader();
       const decoder = new TextDecoder('utf-8');
 
+      let isTitle = false;
+      let title = '';
+
       const processText = async ({ done, value }: ReadableStreamReadResult<Uint8Array>): Promise<void> => {
         if (done) {
           setIsStreaming(false);
@@ -110,11 +113,24 @@ const ChatComponent: React.FC = () => {
         }
 
         const chunk = decoder.decode(value, { stream: true });
-        assistantMessage += chunk;
-        setMessages(prevMessages => [
-          ...prevMessages.slice(0, -1),
-          { role: 'assistant', content: assistantMessage }
-        ]);
+        
+        if (chunk.startsWith('TITLE:')) {
+          isTitle = true;
+          title = chunk.slice(6);
+        } else if (isTitle) {
+          if (chunk.includes('\n')) {
+            isTitle = false;
+            updateConversation(newChatId, title.trim());
+          } else {
+            title += chunk;
+          }
+        } else {
+          assistantMessage += chunk;
+          setMessages(prevMessages => [
+            ...prevMessages.slice(0, -1),
+            { role: 'assistant', content: assistantMessage }
+          ]);
+        }
 
         return reader.read().then(processText);
       };
