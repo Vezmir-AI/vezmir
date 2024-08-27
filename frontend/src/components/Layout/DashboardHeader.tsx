@@ -89,9 +89,11 @@ const DashboardHeader: React.FC = () => {
                         </ul>
                     )}
                 </div>
-                <div className="mx-2 mr-4">
-                    <PencilSquareIcon className="w-6 h-6 text-[var(--bordeaux-clear)]" onClick={() => navigate('/')} />
-                </div>
+                <Link to="/" className="mr-2">
+                    <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
+                        <PencilSquareIcon className="w-6 h-6 text-[var(--bordeaux-clear)]" />
+                    </div>
+                </Link>
             </div>
             <div className="hidden md:block w-full px-4">
                 <div className="border-b border-white">

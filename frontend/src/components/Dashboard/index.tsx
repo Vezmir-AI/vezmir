@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ProfileTab from "./ProfileTab";
 import UsageTab from './UsageTab';
 import BillingTab from './BillingTab';
+import DashboardHeader from '../Layout/DashboardHeader';
 
 const Dashboard: React.FC = () => {
   const { section } = useParams<{ section: string }>();
@@ -26,6 +27,7 @@ const Dashboard: React.FC = () => {
   }
   return (
     <div>
+      <DashboardHeader />
       <Component />
     </div>
   );
