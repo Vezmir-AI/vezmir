@@ -8,4 +8,5 @@ urlpatterns = [
     path("ai_models/providers/", views.AIModelProviderView.as_view()),
     path("chat/conversations/", views.UserConversationView.as_view()),
     path("chat/conversations/<uuid:conv_id>/", views.ChatMessageView.as_view()),
+    path("chat/conversations/<uuid:conv_id>/title/", views.ChatConversationTitleView.as_view()),
 ]

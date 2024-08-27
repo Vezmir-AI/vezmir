@@ -14,9 +14,8 @@ const ChatComponent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
-  const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { addConversation, selectedAIModel, resetSelectedAIModel } = useConversation();
+  const { addConversation, selectedAIModel, resetSelectedAIModel, fetchConversations } = useConversation();
 
   useEffect(() => {
     if (!chatId) {
@@ -82,7 +81,10 @@ const ChatComponent: React.FC = () => {
           throw new Error('Failed to create a new conversation');
         }
         newChatId = newConversationResponse.id;
-        navigate(`/chat/${newChatId}`, { state: { userMessage: message } });
+        // fetch the new conversation title
+        api.post(`/chat/conversations/${newChatId}/title/`, { user_message: message })
+          .then(fetchConversations)
+          .catch(fetchConversations);
         url = `/chat/conversations/${newChatId}/`;
         await new Promise(resolve => setTimeout(resolve, 500));
       } else {
