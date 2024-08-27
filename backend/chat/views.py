@@ -182,6 +182,16 @@ class ChatMessageView(APIView):
                 num_tokens=token_in
             )
 
+            # updates the user's balance
+            user_message_cost = request.user.calculate_message_cost(
+                token_in, model, is_input=True
+            )
+            ai_message_cost = request.user.calculate_message_cost(
+                token_out, model, is_input=False
+            )
+            total_cost = user_message_cost + ai_message_cost
+            request.user.update_balance(total_cost)
+
         response = StreamingHttpResponse(
             stream_and_save(), content_type="text/event-stream"
         )

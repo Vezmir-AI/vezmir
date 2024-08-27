@@ -47,6 +47,7 @@ class UserInfosSerializer(serializers.ModelSerializer):
     )
     stripe_payment_method_id = serializers.CharField(read_only=True)
     email_verified = serializers.BooleanField(read_only=True)
+    balance = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
     class Meta:
         model = User
@@ -58,4 +59,5 @@ class UserInfosSerializer(serializers.ModelSerializer):
             "preferred_model",
             "email_verified",
             "stripe_payment_method_id",
+            "balance",
         )

@@ -66,7 +66,6 @@ class GetStripeInfo(APIView):
             payment_methods = stripe.PaymentMethod.list(
                 customer=user.stripe_customer_id, type="card"
             )
-            print(payment_methods)
             formatted_methods = [
                 {
                     "type": pm.type,
