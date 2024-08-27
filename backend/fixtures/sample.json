@@ -19,22 +19,30 @@
     {
         "model": "chat.aimodelprovider",
         "pk": "OpenAI",
-        "fields": {}
+        "fields": {
+            "display_name": "ChatGPT"
+        }
     },
     {
         "model": "chat.aimodelprovider",
         "pk": "Vezmir",
-        "fields": {}
+        "fields": {
+            "display_name": "Vezmir"
+        }
     },
     {
         "model": "chat.aimodelprovider",
         "pk": "Anthropic",
-        "fields": {}
+        "fields": {
+            "display_name": "Claude"
+        }
     },
     {
         "model": "chat.aimodelprovider",
         "pk": "Google",
-        "fields": {}
+        "fields": {
+            "display_name": "Gemini"
+        }
     },
     {
         "model": "chat.aimodel",

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { TrashIcon, ChevronDownIcon, ChevronUpIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { useConversation } from '@/context/ConversationContext';
@@ -10,6 +10,27 @@ const ChatHistory: React.FC = () => {
     const [showAllConversations, setShowAllConversations] = useState(false);
     const [showConfirmationDelete, setShowConfirmationDelete] = useState(false);
     const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
+    const [animatedNames, setAnimatedNames] = useState<{ [key: string]: string }>({});
+
+    useEffect(() => {
+        conversations.forEach(item => {
+            if (!animatedNames[item.id] || animatedNames[item.id] !== item.name) {
+                setAnimatedNames(prev => ({ ...prev, [item.id]: '' }));
+                let i = 0;
+                const intervalId = setInterval(() => {
+                    if (i < item.name.length) {
+                        setAnimatedNames(prev => ({
+                            ...prev,
+                            [item.id]: item.name.slice(0, i + 1)
+                        }));
+                        i++;
+                    } else {
+                        clearInterval(intervalId);
+                    }
+                }, 50); // Adjust timing as needed
+            }
+        });
+    }, [conversations]);
 
     const toggleAllConversations = () => {
         setShowAllConversations(!showAllConversations);
@@ -36,7 +57,9 @@ const ChatHistory: React.FC = () => {
                             className="text-[var(--gray-400)] hover:bg-[var(--gray-800)] hover:text-white group flex-grow flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                             title={item.name}
                         >
-                            {item.name}
+                            <span className="typing-animation">
+                                {animatedNames[item.id]}
+                            </span>
                         </Link>
                         {(item.id !== conversationToDelete || !showConfirmationDelete) ? (
                             <>
@@ -107,7 +130,9 @@ const ChatHistory: React.FC = () => {
                             className="text-gray-400 hover:bg-gray-800 hover:text-white group flex-grow flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                             title={item.name}
                         >
-                            {item.name}
+                            <span className="typing-animation">
+                                {animatedNames[item.id]}
+                            </span>
                         </Link>
                         <button
                             onClick={(e) => handleDeleteConversation(item.id, e)}

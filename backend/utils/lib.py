@@ -5,6 +5,8 @@ from django.conf import settings
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
+
 
 class AbstractAPI(ABC):
     @classmethod
@@ -43,7 +45,8 @@ class AnthropicAPI(AbstractAPI):
         )
         for chunk in chat.stream(messages, stream_usage=True):
             yield chunk
-            
+
+
 class GoogleAPI(AbstractAPI):
     API_KEY = settings.GOOGLE_API_KEY
 
@@ -56,30 +59,14 @@ class GoogleAPI(AbstractAPI):
         for chunk in chat.stream(messages):
             yield chunk
 
-class SampleAPI(AbstractAPI):
-    RESPONSE = (
-        "_This is a sample response._ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy "
-        "eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua."
-    )
+
+class GroqAPI():
+    API_KEY = settings.GROQ_API_KEY
 
     @classmethod
-    def _get_response(cls, messages: list[dict], model_name: str) -> str:
-        import time
-        from collections import namedtuple
-
-        message = namedtuple(
-            "Message",
-            ["content", "usage_metadata", "response_metadata"],
-            defaults=[None, None, None],
+    def get_response(cls, messages: list[dict], model_name: str) -> str:
+        completion = ChatGroq(
+            api_key=cls.API_KEY,
+            model=model_name,
         )
-        for word in cls.RESPONSE.split():
-            time.sleep(0.1)
-            yield message(content=word + " ")
-            yield message(content=" ")
-        usage = {
-            "input_tokens": sum(
-                map(len, map(lambda x: x["content"].split(), messages))
-            ),
-            "output_tokens": len(cls.RESPONSE.split()),
-        }
-        yield message(usage_metadata=usage)
+        return completion.invoke(messages)
