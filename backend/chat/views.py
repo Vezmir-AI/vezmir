@@ -96,13 +96,29 @@ class ChatMessageView(APIView):
 
         # Query model name and its provider
         model_name = request.data.get("model_name")
+        if model_name == "vezmir":
+            try:
+                # uses the conversation last message, if any
+                if conversation.messages.last():
+                    model_name = conversation.messages.last().model_name
+                # uses the user's last absolute message, if any
+                # it is indeed first, not last (implementation detail ig)
+                elif request.user.messages.first():
+                    model_name = request.user.messages.first().model_name
+                else:
+                    model_name = "gpt-4o"
+            except Exception:
+                return Response(
+                    {"message": "model_not_found", "status": "error"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
         try:
             model = AIModel.objects.select_related("provider").get(name=model_name)
             model_provider = model.provider.name
         except AIModel.DoesNotExist:
             return Response(
-                {"message": "server_error", "status": "error"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                {"message": "model_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         # creates the user message
@@ -165,6 +181,16 @@ class ChatMessageView(APIView):
             ChatMessage.objects.filter(id=user_message_serializer.data["id"]).update(
                 num_tokens=token_in
             )
+
+            # updates the user's balance
+            user_message_cost = request.user.calculate_message_cost(
+                token_in, model, is_input=True
+            )
+            ai_message_cost = request.user.calculate_message_cost(
+                token_out, model, is_input=False
+            )
+            total_cost = user_message_cost + ai_message_cost
+            request.user.update_balance(total_cost)
 
         response = StreamingHttpResponse(
             stream_and_save(), content_type="text/event-stream"

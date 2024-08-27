@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
+import { ChartPieIcon, CreditCardIcon } from '@heroicons/react/20/solid'
 import { useTheme } from '@/context/ThemeContext';
 import Alert from '@/components/Layout/Alert';
 import CompleteProfileModal from '@/components/Layout/CompleteProfileModal';
 import SideBar from '@/components/Layout/SideBar';
+import DashboardHeader from '@/components/Layout/DashboardHeader';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -46,7 +48,22 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <CompleteProfileModal open={showCPM} setOpen={setShowCPM} />
           <div className="flex h-screen">
             <SideBar />
-            <main className="flex-1">
+            <main className="flex-1 overflow-y-auto relative">
+              {dashboardLayout && <DashboardHeader />}
+              {chatLayout && (
+                <div className="absolute top-4 right-4 flex space-x-2">
+                  <Link to="/dashboard/billing">
+                    <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
+                      <CreditCardIcon className="w-6 h-6 text-[var(--bordeaux-clear)]" />
+                    </div>
+                  </Link>
+                  <Link to="/dashboard/usage">
+                    <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
+                      <ChartPieIcon className="w-6 h-6 text-[var(--bordeaux-clear)]" />
+                    </div>
+                  </Link>
+                </div>
+              )}
               {children}
             </main>
           </div>

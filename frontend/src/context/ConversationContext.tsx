@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '@/api';
 import { Conversation, AIModel } from '@/types';
 import { useAuth } from './AuthContext';
+import { useProfile } from './ProfileContext';
 
 interface ConversationContext {
     conversations: Conversation[];
@@ -18,6 +19,7 @@ const ConversationContext = createContext<ConversationContext | null>(null);
 export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
+    const { user } = useProfile();
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [aiModels, setAiModels] = useState<AIModel[]>([]);
     const [selectedAIModel, setSelectedAIModel] = useState<AIModel | null>(null);
@@ -35,7 +37,7 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
     useEffect(() => {
         if (aiModels.length > 0) {
-            const defaultModel = aiModels.find(model => model.name === 'gpt-4o') || aiModels[0];
+            const defaultModel = aiModels.find(model => model.name === user?.preferred_model) || aiModels[0];
             setSelectedAIModel(defaultModel);
         }
     }, [aiModels]);
