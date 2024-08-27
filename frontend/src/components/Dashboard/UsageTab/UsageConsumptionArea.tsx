@@ -17,13 +17,13 @@ const UsageConsumptionArea: React.FC = () => {
     const { usage, getTokenUsage } = useProfile();
 
     // reloads data on route change
-    useEffect(()=>{
-        if (usage.money_usage){
+    useEffect(() => {
+        if (usage.token_usage) {
             const weekStart = getWeekStart(currentWeek);
             const weekEnd = getWeekEnd(weekStart);
             getTokenUsage(formatDate(weekStart), formatDate(weekEnd));
         }
-    },[])
+    }, [])
 
     useEffect(() => {
         setFutureWeekDisabled(formatDate(currentWeek) === formatDate(thisWeek))

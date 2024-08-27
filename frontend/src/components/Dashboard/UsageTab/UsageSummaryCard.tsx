@@ -6,11 +6,18 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
 }
 
-const UsageProgressionBar: React.FC = () => {
+const UsageSummaryCard: React.FC = () => {
     const { usage, getMoneySpent } = useProfile();
     const [currentSpending, setCurrentSpending] = useState(0);
     const [moneySaved, setMoneySaved] = useState(0);
     const [changeType, setChangeType] = useState<'increase' | 'decrease'>('increase');
+
+    // relaods data on route change
+    useEffect(() => {
+        if (usage.money_usage) {
+            getMoneySpent();
+        }
+    }, [])
 
     useEffect(() => {
         if (usage.money_spent === undefined) {
@@ -64,4 +71,4 @@ const UsageProgressionBar: React.FC = () => {
     )
 };
 
-export default UsageProgressionBar;
+export default UsageSummaryCard;
