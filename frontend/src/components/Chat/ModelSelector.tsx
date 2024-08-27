@@ -30,20 +30,22 @@ const ModelSelector: React.FC = () => {
   };
 
   return (
-    <div className="relative inline-block text-left w-72 z-50" ref={dropdownRef}>
+    <div className="relative inline-block text-left w-full sm:w-72 z-50" ref={dropdownRef}>
       <div>
         <button
           type="button"
-          className={`inline-flex justify-between w-full rounded-xl shadow-sm px-5 py-3 text-lg font-medium text-gray-300 bg-[var(--gray-700)] hover:bg-[var(--gray-600)] focus:outline-none focus:ring-0`}
+          className={`inline-flex justify-between w-full rounded-xl shadow-sm px-3 py-2 sm:px-5 sm:py-3 text-sm sm:text-lg font-medium text-gray-300 bg-[var(--gray-700)] hover:bg-[var(--gray-600)] focus:outline-none focus:ring-0`}
           onClick={() => setIsOpen(!isOpen)}
         >
-          {aiModels.find(model => model.name === selectedAIModel?.name)?.display_name || 'Select a model'}
-          <ChevronDown className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
+          <span className="truncate">
+            {aiModels.find(model => model.name === selectedAIModel?.name)?.display_name || 'Select a model'}
+          </span>
+          <ChevronDown className="ml-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
         </button>
       </div>
 
       {isOpen && (
-        <div className="origin-top-right absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-[var(--gray-700)] z-50">
+        <div className="origin-top-right absolute right-0 mt-2 w-full sm:w-72 rounded-md shadow-lg bg-[var(--gray-700)] z-50">
           <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
             {aiModels.map((model) => (
               <button
