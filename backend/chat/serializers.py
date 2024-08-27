@@ -27,7 +27,7 @@ class AIModelProviderSerializer(serializers.ModelSerializer):
 class ChatConversationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatConversation
-        fields = ("id", "name", "user", "date_updated")
+        fields = ("id", "name", "user", "date_updated", "ai_model")
 
 
 class ChatMessageSerializer(serializers.ModelSerializer):
