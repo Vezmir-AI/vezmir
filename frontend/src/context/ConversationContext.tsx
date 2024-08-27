@@ -13,6 +13,7 @@ interface ConversationContext {
     deleteConversation: (id: string) => void;
     fetchConversations: () => Promise<void>;
     setSelectedAIModel: (model: AIModel) => void;
+    updateConversation: (id: string, name: string) => void;
 }
 
 const ConversationContext = createContext<ConversationContext | null>(null);
@@ -68,6 +69,15 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
         }
     }
 
+
+    const updateConversation = (id: string, name: string) => {
+        setConversations(prevConversations => 
+            prevConversations.map(conv => 
+                conv.id === id ? { ...conv, name } : conv
+            )
+        );
+    };
+
     return (
         <ConversationContext.Provider value={{
             conversations,
@@ -76,6 +86,7 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
             addConversation,
             deleteConversation,
             fetchConversations,
+            updateConversation,
             setSelectedAIModel
         }}>
             {children}
