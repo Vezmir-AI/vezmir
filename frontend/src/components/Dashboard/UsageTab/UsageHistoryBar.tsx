@@ -17,17 +17,25 @@ const UsageHistoryBar: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [hasData, setHasData] = useState(false);
     const [futureMonthDisabled, setFutureMonthDisabled] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     const { usage, getMoneyUsage } = useProfile();
 
     // relaods data on route change
-    useEffect(()=>{
-        if (usage.money_usage){
+    useEffect(() => {
+        if (usage.money_usage) {
             const startDate = new Date(currentYear, currentMonth, 1);
             const endDate = new Date(currentYear, currentMonth + 1, 0);
             getMoneyUsage(formatDate(startDate), formatDate(endDate));
         }
-    },[])
+    }, [])
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         const today = new Date();
@@ -96,38 +104,52 @@ const UsageHistoryBar: React.FC = () => {
     };
 
     const tickFormatter = (value: string, index: number) => {
-        // Display only every 5th tick
-        if (index % 5 === 0) {
-            return value;
+        if (isMobile) {
+            // Display only every 10th tick on mobile
+            return index % 10 === 0 ? value : '';
         }
-        return '';
+        // Display only every 5th tick on desktop
+        return index % 5 === 0 ? value : '';
     };
 
     return (
-        <div className={`${loading ? 'bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 animate-gradient-loading' : ''}`}>
-            <div className="flex items-center justify-between p-2">
+        <div className={`${loading ? 'bg-gradient-to-r from-[var(--gray-800) via-[var(--gray-600) to-[var(--gray-800) animate-gradient-loading' : ''}`}>
+            <div className="flex flex-col items-center justify-between p-2 space-y-4 sm:space-y-0 sm:flex-row">
                 <h2 className="text-lg font-semibold">Usage</h2>
-                <div className="flex items-center justify-center flex-1">
-                    <div className="flex items-center justify-between w-64">
-                        <button onClick={handlePreviousMonth} className="p-1 rounded-full hover:bg-gray-200" disabled={loading}>
-                            <ChevronLeftIcon className="w-5 h-5" />
+                <div className="flex items-center justify-center w-full sm:flex-1">
+                    <div className="flex items-center justify-between w-full max-w-[280px] sm:w-64">
+                        <button 
+                            onClick={handlePreviousMonth} 
+                            className="p-2 rounded-full transition-colors duration-200 hover:bg-[var(--bordeaux-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--bordeaux-hover)] focus:ring-opacity-50" 
+                            disabled={loading}
+                        >
+                            <ChevronLeftIcon className="w-6 h-6 sm:w-5 sm:h-5" />
                         </button>
-                        <span className="text-center">{new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
-                        <button onClick={handleNextMonth} className={`p-1 rounded-full ${futureMonthDisabled ? 'text-gray-600' : 'hover:bg-gray-200'}`} disabled={futureMonthDisabled || loading}>
-                            <ChevronRightIcon className="w-5 h-5" />
+                        <span className="text-center text-base sm:text-sm font-medium">
+                            {new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
+                        </span>
+                        <button 
+                            onClick={handleNextMonth} 
+                            className={`p-2 rounded-full transition-colors duration-200 hover:bg-[var(--bordeaux-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--bordeaux-hover)] focus:ring-opacity-50 ${
+                                futureMonthDisabled 
+                                    ? 'text-[var(--gray-500)] bg-[var(--gray-600)] hover:bg-[var(--gray-600)]' 
+                                    : ''
+                            }`} 
+                            disabled={futureMonthDisabled || loading}
+                        >
+                            <ChevronRightIcon className="w-6 h-6 sm:w-5 sm:h-5" />
                         </button>
                     </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-400">Show Details</span>
+                    <span className="text-sm text-[var(--gray-400)]">Show Details</span>
                     <Switch
                         checked={showDetails}
                         onChange={() => setShowDetails(!showDetails)}
-                        className="group relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-vezmir focus:ring-offset-2 data-[checked]:bg-vezmir"
+                        className="usage-switch group relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out"
                     >
                         <span className="sr-only">Use setting</span>
                         <span
-                            aria-hidden="true"
                             className="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out group-data-[checked]:translate-x-5"
                         />
                     </Switch>
@@ -137,18 +159,18 @@ const UsageHistoryBar: React.FC = () => {
                 {loading ? (
                     <div className="h-[300px] flex justify-center items-center px-10" />
                 ) : (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={isMobile ? 200 : 300}>
                         <BarChart
                             data={displayedData}
                             margin={{
                                 top: 20,
-                                right: 30,
-                                left: 20,
+                                right: 10,
+                                left: 10,
                                 bottom: 5,
                             }}
                             onMouseMove={(state) => {
                                 if (hasData && state.isTooltipActive) {
-(state.activeTooltipIndex ?? -1);
+                                    setActiveIndex(state.activeTooltipIndex ?? -1);
                                 } else {
                                     setActiveIndex(-1);
                                 }
@@ -162,12 +184,13 @@ const UsageHistoryBar: React.FC = () => {
                                 allowDataOverflow={true}
                                 scale="band"
                                 type="category"
-                                tick={{ fill: 'white' }}
+                                tick={{ fill: 'white', fontSize: isMobile ? 8 : 12 }}
                             />
-                            <YAxis 
-                                tickFormatter={(value) => `$${value}`} 
-                                tick={{ fill: 'white' }} 
+                            <YAxis
+                                tickFormatter={(value) => `$${value}`}
+                                tick={{ fill: 'white', fontSize: isMobile ? 8 : 9 }}
                                 domain={[0.01, 'dataMax']}
+                                width={40}
                             />
                             {hasData && (
                                 <Tooltip
@@ -179,12 +202,12 @@ const UsageHistoryBar: React.FC = () => {
                             )}
                             <Legend />
                             {!showDetails ? (
-                                <Bar dataKey="total" fill="#6D071A" stroke="#FFF" radius={[10, 10, 0, 0]}>
+                                <Bar dataKey="total" fill="#8F22FC" stroke="#FFF" radius={[10, 10, 0, 0]}>
                                     {displayedData.map((_, index) => (
                                         <Cell
                                             key={`cell-${index}`}
                                             accentHeight={0.01}
-                                            fill={activeIndex === index ? '#8B0000' : '#6D071A'}
+                                            fill={activeIndex === index ? '#B469FF' : '#8F22FC'}
                                             stroke="#FFF"
                                             opacity={!hasData || activeIndex === -1 || activeIndex === index ? 1 : 0.3}
                                         />
