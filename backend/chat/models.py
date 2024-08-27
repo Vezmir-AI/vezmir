@@ -25,6 +25,8 @@ class ChatConversation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name = models.CharField(max_length=100, default="New Chat", null=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    ai_model = models.ForeignKey(AIModel, on_delete=models.SET_NULL, null=True)
+    is_active = models.BooleanField(default=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 

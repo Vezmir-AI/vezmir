@@ -1,6 +1,7 @@
 interface Conversation {
     id: string;
     name: string;
+    ai_model: string;
 }
 
 interface ChatHistoryProps {

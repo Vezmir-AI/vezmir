@@ -14,6 +14,7 @@ interface ConversationContext {
     fetchConversations: () => Promise<void>;
     setSelectedAIModel: (model: AIModel) => void;
     updateConversation: (id: string, name: string) => void;
+    resetSelectedAIModel: (chatId?: string) => void;
 }
 
 const ConversationContext = createContext<ConversationContext | null>(null);
@@ -43,6 +44,19 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
         }
     }, [aiModels]);
 
+    const resetSelectedAIModel = (chatId: string = "") => {
+        if (chatId) {
+            const chat = conversations.find(conversation => conversation.id === chatId);
+            if (chat) {
+                const defaultModel = aiModels.find(model => model.id === chat.ai_model) || aiModels[0];
+                setSelectedAIModel(defaultModel);
+            }
+        } else {
+            const defaultModel = aiModels.find(model => model.id === user?.preferred_model) || aiModels[0];
+            setSelectedAIModel(defaultModel);
+        }
+    }
+
     const fetchConversations = async () => {
         const convs = await api.get('/chat/conversations/');
         setConversations(convs);
@@ -50,7 +64,9 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
     const addConversation = async () => {
         const newConversation = await api.post('/chat/conversations/');
-        setConversations([...conversations, newConversation]);
+        // removed because it was causing a re-render of the conversations
+        // will refetch conversations in the Chat component when title is generated
+        // setConversations([...conversations, newConversation]);
         navigate(`/chat/${newConversation.id}`);
         return newConversation;
     }
@@ -87,7 +103,8 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
             deleteConversation,
             fetchConversations,
             updateConversation,
-            setSelectedAIModel
+            setSelectedAIModel,
+            resetSelectedAIModel,
         }}>
             {children}
         </ConversationContext.Provider>

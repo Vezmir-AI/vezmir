@@ -187,7 +187,7 @@ const UsageHistoryBar: React.FC = () => {
                                 tick={{ fill: 'white', fontSize: isMobile ? 8 : 12 }}
                             />
                             <YAxis
-                                tickFormatter={(value) => `$${value}`}
+                                tickFormatter={(value) => `$${Number(value).toFixed(4)}`}
                                 tick={{ fill: 'white', fontSize: isMobile ? 8 : 9 }}
                                 domain={[0.01, 'dataMax']}
                                 width={40}

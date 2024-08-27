@@ -1,9 +1,9 @@
+import time
 from django.http import StreamingHttpResponse
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from groq import Groq
 
 from chat.models import ChatConversation, ChatMessage, AIModel, AIModelProvider
 from chat.serializers import (
@@ -13,8 +13,8 @@ from chat.serializers import (
     AIModelProviderSerializer,
     FormattedMessageSerializer,
 )
-from utils.permissions import IsOwner
-from utils.chatbots import get_api_response
+from utils.permissions import IsOwner, HasPositiveBalance
+from utils.chatbots import get_api_response, generate_title
 
 
 # class to get all the models
@@ -43,9 +43,9 @@ class UserConversationView(generics.ListCreateAPIView):
     # get all conversations for the user, last modified first
     def get(self, request):
         serializer = self.get_serializer(
-            ChatConversation.objects.filter(user=self.request.user).order_by(
-                "-date_updated"
-            ),
+            ChatConversation.objects.filter(
+                user=self.request.user, is_active=True
+            ).order_by("-date_updated"),
             many=True,
         )
         return Response({"data": serializer.data})
@@ -64,12 +64,17 @@ class UserConversationView(generics.ListCreateAPIView):
 
 
 class ChatMessageView(APIView):
-    permission_classes = (IsAuthenticated, IsOwner)
+    permission_classes = (IsAuthenticated, IsOwner, HasPositiveBalance)
 
     # get all the messages in a conversation, in chronological order
     def get(self, request, conv_id):
         try:
             conversation = ChatConversation.objects.get(id=conv_id, user=request.user)
+            if not conversation.is_active:
+                return Response(
+                    {"message": "conversation_not_found", "status": "error"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
         except ChatConversation.DoesNotExist:
             return Response(
                 {"message": "conversation_not_found", "status": "error"},
@@ -116,6 +121,8 @@ class ChatMessageView(APIView):
         try:
             model = AIModel.objects.select_related("provider").get(name=model_name)
             model_provider = model.provider.name
+            conversation.ai_model = model
+            conversation.save()
         except AIModel.DoesNotExist:
             return Response(
                 {"message": "model_not_found", "status": "error"},
@@ -183,14 +190,6 @@ class ChatMessageView(APIView):
                 num_tokens=token_in
             )
 
-            # Generate title and update conversation
-            if conversation.messages.count() == 2:  # First user message and first model response
-                user_message = user_message_serializer.data["content"]
-                title = self.generate_title(user_message, full_response)
-                print(title)
-                conversation.name = title
-                conversation.save()
-
             # updates the user's balance
             user_message_cost = request.user.calculate_message_cost(
                 token_in, model, is_input=True
@@ -239,28 +238,29 @@ class ChatMessageView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        conversation.delete()
+        conversation.is_active = False
+        conversation.save()
         return Response(
             {"message": "conversation_deleted", "status": "success"},
             status=status.HTTP_204_NO_CONTENT,
         )
 
-    def generate_title(self, user_message, model_response):
-        client = Groq()
-        prompt = f"Can you give me title to this chat conversation (just respond with the title in \"\") no mention of the model and no more than 4 words :\n\nMe : {user_message}\nModel : {model_response}"
-        
-        completion = client.chat.completions.create(
-            model="llama3-8b-8192",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=1,
-            max_tokens=1024,
-            top_p=1,
-            stream=True,
-            stop=None,
-        )
 
-        title = ""
-        for chunk in completion:
-            title += chunk.choices[0].delta.content or ""
-        
-        return title.strip('"')
+class ChatConversationTitleView(APIView):
+    permission_classes = (IsAuthenticated, IsOwner)
+
+    def post(self, request, conv_id, _retry=True):
+        try:
+            conversation = ChatConversation.objects.get(id=conv_id, user=request.user)
+        except ChatConversation.DoesNotExist:
+            if _retry:
+                time.sleep(1)
+                return self.post(request, conv_id, _retry=False)
+            return Response(
+                {"message": "conversation_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        title = generate_title(request.data.get("user_message"))
+        conversation.name = title
+        conversation.save()
+        return Response({"data": {"title": title}})
