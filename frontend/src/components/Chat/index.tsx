@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { CreditCardIcon, ChartPieIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
 import { useConversation } from '@/context/ConversationContext';
@@ -20,6 +20,7 @@ const ChatComponent: React.FC = () => {
   useEffect(() => {
     if (!chatId) {
       resetMessages();
+      console.log('resetting messages');
       resetSelectedAIModel();
     } else {
       resetSelectedAIModel(chatId);
