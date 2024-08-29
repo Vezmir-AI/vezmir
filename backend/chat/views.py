@@ -137,6 +137,7 @@ class ChatMessageView(APIView):
                 "content": request.data.get("content"),
                 "role": "user",
                 "model_name": model.name,
+                "provider": model_provider,
             }
         )
         user_message_serializer.is_valid(raise_exception=True)
@@ -180,6 +181,7 @@ class ChatMessageView(APIView):
                     "role": "assistant",
                     "model_name": model.name,
                     "num_tokens": token_out,
+                    "provider": model_provider,
                 }
             )
             ai_message_serializer.is_valid(
