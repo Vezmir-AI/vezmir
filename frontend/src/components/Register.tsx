@@ -188,7 +188,7 @@ const Register: React.FC = () => {
           </button>
         </form>
         <div className="relative mt-6 flex w-full items-center justify-center border border-t border-gray-300 uppercase dark:border-gray-600">
-          <div className="absolute bg-[var(--background-dark)] px-3 text-xs text-white dark:text-white">
+          <div className="absolute bg-[var(--black)] px-3 text-xs text-white dark:text-white">
             {locale('com_auth_or')}
           </div>
         </div>
