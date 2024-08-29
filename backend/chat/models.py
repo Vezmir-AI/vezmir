@@ -47,3 +47,4 @@ class ChatMessage(models.Model):
     completed = models.BooleanField(default=True)
     model_name = models.CharField(max_length=100, null=True)
     num_tokens = models.IntegerField(default=0)
+    provider = models.CharField(max_length=100, null=True)

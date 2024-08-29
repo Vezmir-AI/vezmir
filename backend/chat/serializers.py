@@ -43,6 +43,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             "date_created",
             "completed",
             "model_name",
+            "provider",
             "user",
             "num_tokens",
         )
