@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Message } from '@/types';
 import renderContent from './renderContent/renderContent';
 import { getProviderLogo, getProviderColor } from '@/utils/providerUtils';
@@ -9,6 +9,26 @@ interface ChatMessagesProps {
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+  const [animatedNames, setAnimatedNames] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    messages.forEach((msg, index) => {
+      if (msg.role !== 'user' && msg.model_name && !animatedNames[index]) {
+        let i = 0;
+        const intervalId = setInterval(() => {
+          if (i < msg.model_name.length) {
+            setAnimatedNames(prev => ({
+              ...prev,
+              [index]: msg.model_name.slice(0, i + 1)
+            }));
+            i++;
+          } else {
+            clearInterval(intervalId);
+          }
+        }, 50);
+      }
+    });
+  }, [messages]);
 
   return (
     <div className="flex-grow overflow-y-auto p-4 space-y-4 max-w-4xl mx-auto">
@@ -27,7 +47,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
             } px-3 py-2 text-base flex items-start`}
           >
             {msg.role !== 'user' && (
-              <div className="mr-3 flex-shrink-0 mt-1">
+              <div className="mr-3 flex-shrink-0 mt-1 relative group">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getProviderColor(msg.provider || 'vezmir')}`}>
                   <img
                     src={getProviderLogo(msg.provider || 'vezmir')}
@@ -35,6 +55,14 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                     className="w-6 h-6"
                   />
                 </div>
+                {msg.model_name && (
+                  <div 
+                    className={`absolute hidden group-hover:flex items-center h-6 bg-opacity-75 text-white text-xs px-2 py-1 rounded-md -top-7 left-full ml-2 whitespace-nowrap ${getProviderColor(msg.provider || 'vezmir')}`}
+                    style={{ width: 'max-content', transition: 'width 0.3s ease-out' }}
+                  >
+                    {animatedNames[index]}
+                  </div>
+                )}
               </div>
             )}
             <div className="relative group flex-grow">
