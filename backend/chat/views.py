@@ -14,7 +14,7 @@ from chat.serializers import (
     ChatMessageSerializer,
     FormattedMessageSerializer,
 )
-from utils.chatbots import generate_title, get_api_response
+from utils.chatbots import generate_title, get_api_response, choose_model
 from utils.permissions import HasPositiveBalance, IsOwner
 
 
@@ -249,3 +249,15 @@ class ChatConversationTitleView(APIView):
         conversation.name = title
         conversation.save()
         return Response({"data": {"title": title}})
+
+
+class ChooseModelView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        user_message = request.data.get('user_message')
+        if not user_message:
+            return Response({"error": "User message is required"}, status=400)
+        
+        chosen_model = choose_model(user_message)
+        return Response({"model": chosen_model})

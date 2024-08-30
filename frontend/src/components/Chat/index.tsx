@@ -8,7 +8,8 @@ import { getProviderLogo } from '@/utils';
 import ModelSelector from './ModelSelector';
 import ChatMessages from './ChatMessages';
 import InputMessage from './InputMessage';
-
+import { Switch } from '@headlessui/react';
+import VezmirLogo from '@/assets/vezmir.svg';
 
 const ChatComponent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -16,6 +17,10 @@ const ChatComponent: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { addConversation, selectedAIModel, resetSelectedAIModel, fetchConversations } = useConversation();
+  const [isVezmirIntelligence, setIsVezmirIntelligence] = useState(() => {
+    const saved = localStorage.getItem('isVezmirIntelligence');
+    return saved ? JSON.parse(saved) : false;
+  });
 
   useEffect(() => {
     if (!chatId) {
@@ -68,13 +73,11 @@ const ChatComponent: React.FC = () => {
     }
   };
 
-
-
   const handleSendMessageToStream = async (message: string): Promise<void> => {
     if (!selectedAIModel) return;
 
     try {
-      let url, newChatId;
+      let url, newChatId, modelName;
 
       if (!chatId) {
         const newConversationResponse = await addConversation();
@@ -82,7 +85,6 @@ const ChatComponent: React.FC = () => {
           throw new Error('Failed to create a new conversation');
         }
         newChatId = newConversationResponse.id;
-        // fetch the new conversation title
         api.post(`/chat/conversations/${newChatId}/title/`, { user_message: message })
           .then(fetchConversations)
           .catch(fetchConversations);
@@ -100,7 +102,15 @@ const ChatComponent: React.FC = () => {
       let assistantMessage = '';
       setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage }]);
 
-      const payload = { content: message, model_name: selectedAIModel?.name || '' };
+      if (isVezmirIntelligence) {
+        const response = await api.post(`/chat/choose_model/`, { user_message: message });
+        modelName = response.model;
+        console.log(modelName);
+      } else {
+        modelName = selectedAIModel.name;
+      }
+
+      const payload = { content: message, model_name: modelName };
       const response = await api.post(url, payload, true);
 
       if (!response) {
@@ -139,25 +149,45 @@ const ChatComponent: React.FC = () => {
 
         {/* Model Selector + buttons - Fixed at the top */}
         <div className="sticky top-0 z-10 bg-[var(--gray-800)] shadow-sm w-full">
-          <div className="flex items-center p-4">
+          <div className="flex items-center p-4 h-20"> {/* Set a fixed height */}
             {/* Model Selector */}
-            <div className="flex-grow">
-              <ModelSelector />
+            <div className="flex-grow flex items-center h-full"> {/* Add h-full */}
+              <div className="flex items-center h-full"> {/* Add h-full */}
+                <label className="inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={isVezmirIntelligence}
+                    onChange={() => {
+                      const newValue = !isVezmirIntelligence;
+                      setIsVezmirIntelligence(newValue);
+                      localStorage.setItem('isVezmirIntelligence', JSON.stringify(newValue));
+                    }}
+                  />
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-[var(--bordeaux)] dark:peer-focus:ring-[var(--bordeaux)] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[var(--bordeaux)]"></div>
+                </label>
+                <div className="flex items-center ml-4 mr-4 h-10 relative group">
+                  <img src={VezmirLogo} alt="Vezmir Logo" className="w-8 h-8 mr-2 invert" />
+                </div>
+              </div>
+              <div className="flex-grow">
+                {!isVezmirIntelligence && <ModelSelector />}
+              </div>
             </div>
             <div className="flex space-x-2 ml-4">
               <Link to="/dashboard/billing">
                 <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
-                  <CreditCardIcon className="w-6 h-6 text-[var(--bordeaux-clear)]" />
+                  <CreditCardIcon className="w-6 h-6 text-[var(--bordeaux)]" />
                 </div>
               </Link>
               <Link to="/dashboard/usage">
                 <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
-                  <ChartPieIcon className="w-6 h-6 text-[var(--bordeaux-clear)]" />
+                  <ChartPieIcon className="w-6 h-6 text-[var(--bordeaux)]" />
                 </div>
               </Link>
               <Link to="/" className="md:hidden">
                 <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
-                  <PencilSquareIcon className="w-6 h-6 text-[var(--bordeaux-clear)]" />
+                  <PencilSquareIcon className="w-6 h-6 text-[var(--bordeaux)]" />
                 </div>
               </Link>
             </div>
