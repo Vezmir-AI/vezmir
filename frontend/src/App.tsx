@@ -32,7 +32,7 @@ function App() {
                 <Routes>
                   <Route path="/verify-email" element={<VerifyEmail />} />
                   <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
+                  {/* <Route path="/register" element={<Register />} /> */}
                   <Route element={<PrivateRoute />}>
                     <Route path="/resend-verification-email" element={<ResendVerificationEmail />} />
                     <Route path="/" element={<ChatComponent />} />
