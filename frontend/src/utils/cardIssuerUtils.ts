@@ -12,4 +12,3 @@ export const getIssuerLogo = (issuer: string): string => {
         return CreditCardLogo;
     }
   };
-  

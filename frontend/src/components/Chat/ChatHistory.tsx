@@ -98,7 +98,7 @@ const ChatHistory: React.FC = () => {
                                 </button>
                                 <button
                                     onClick={(e) => handleDeleteConversation(item.id, e)}
-                                    
+
                                     className="p-2 text-[var(--gray-400)] hover:text-white bg-[var(--gray-900)] hover:bg-[var(--gray-800)]"
                                     title="Confirm delete"
                                 >

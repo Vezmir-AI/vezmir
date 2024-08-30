@@ -16,22 +16,22 @@ const renderMarkdown = (content: string | React.ReactNode[]) => {
   };
 
   if (Array.isArray(content)) {
-    return content.map((item, index) => 
-      typeof item === 'string' ? 
-        <ReactMarkdown 
-          key={index} 
+    return content.map((item, index) =>
+      typeof item === 'string' ?
+        <ReactMarkdown
+          key={index}
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeRaw]}
           components={components}
         >
           {item}
-        </ReactMarkdown> : 
+        </ReactMarkdown> :
         item
     );
   }
-  
+
   return (
-    <ReactMarkdown 
+    <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeRaw]}
       components={components}
@@ -42,4 +42,3 @@ const renderMarkdown = (content: string | React.ReactNode[]) => {
 };
 
 export default renderMarkdown;
-

@@ -9,7 +9,7 @@ done
 echo "PostgreSQL started"
 
 # Uncomment below to flush db e.g. after running tests
-# Just make sure you really mean it 
+# Just make sure you really mean it
 # python manage.py flush --no-input
 
 # We have base custom user model so need to makemigrations out of box

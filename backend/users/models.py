@@ -1,10 +1,12 @@
-from django.db import models
 from decimal import Decimal
+
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    PermissionsMixin,
     BaseUserManager,
+    PermissionsMixin,
 )
+from django.db import models
+
 from chat.models import AIModel
 
 
@@ -58,11 +60,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def calculate_message_cost(self, num_tokens, model, is_input):
-        price_per_1k = (
-            model.price_per_1K_token_input
-            if is_input
-            else model.price_per_1K_token_output
-        )
+        price_per_1k = model.price_per_1K_token_input if is_input else model.price_per_1K_token_output
         return (num_tokens / 1000) * price_per_1k
 
     def update_balance(self, cost):

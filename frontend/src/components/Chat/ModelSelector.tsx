@@ -59,7 +59,7 @@ const ModelSelector: React.FC = () => {
                     <span className="font-medium">{model.display_name || model.name}</span>
                     <div className="flex items-center text-xs text-gray-400">
                       <span>{model.provider}</span>
-                      <span 
+                      <span
                         className="ml-2 cursor-help underline"
                         onMouseEnter={() => setHoveredHint(model.display_name)}
                         onMouseLeave={() => setHoveredHint(null)}

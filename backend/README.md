@@ -17,5 +17,5 @@ Go to the [app main README.md](../README.md) and follow the instructions to run 
 
 ## How authentication works
 
-We use [Simple JWT](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/) for authentication. Once the frontend sent username/password to the backend, the backend will return a token. The frontend will then use the token to authenticate the user. There is a Access token and a Refresh token. The Access token is used to authenticate the user and the Refresh token is used to get a new Access token. The access token is valid for 15 minutes and the refresh token is valid for 7 days. 
+We use [Simple JWT](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/) for authentication. Once the frontend sent username/password to the backend, the backend will return a token. The frontend will then use the token to authenticate the user. There is a Access token and a Refresh token. The Access token is used to authenticate the user and the Refresh token is used to get a new Access token. The access token is valid for 15 minutes and the refresh token is valid for 7 days.
 > The access token should be passed in the header of the request as `Authorization: Bearer <access_token>`.

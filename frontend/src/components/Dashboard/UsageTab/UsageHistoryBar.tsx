@@ -118,9 +118,9 @@ const UsageHistoryBar: React.FC = () => {
                 <h2 className="text-lg font-semibold">Usage</h2>
                 <div className="flex items-center justify-center w-full sm:flex-1">
                     <div className="flex items-center justify-between w-full max-w-[280px] sm:w-64">
-                        <button 
-                            onClick={handlePreviousMonth} 
-                            className="p-2 rounded-full transition-colors duration-200 hover:bg-[var(--bordeaux-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--bordeaux-hover)] focus:ring-opacity-50" 
+                        <button
+                            onClick={handlePreviousMonth}
+                            className="p-2 rounded-full transition-colors duration-200 hover:bg-[var(--bordeaux-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--bordeaux-hover)] focus:ring-opacity-50"
                             disabled={loading}
                         >
                             <ChevronLeftIcon className="w-6 h-6 sm:w-5 sm:h-5" />
@@ -128,13 +128,13 @@ const UsageHistoryBar: React.FC = () => {
                         <span className="text-center text-base sm:text-sm font-medium">
                             {new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
                         </span>
-                        <button 
-                            onClick={handleNextMonth} 
+                        <button
+                            onClick={handleNextMonth}
                             className={`p-2 rounded-full transition-colors duration-200 hover:bg-[var(--bordeaux-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--bordeaux-hover)] focus:ring-opacity-50 ${
-                                futureMonthDisabled 
-                                    ? 'text-[var(--gray-500)] bg-[var(--gray-600)] hover:bg-[var(--gray-600)]' 
+                                futureMonthDisabled
+                                    ? 'text-[var(--gray-500)] bg-[var(--gray-600)] hover:bg-[var(--gray-600)]'
                                     : ''
-                            }`} 
+                            }`}
                             disabled={futureMonthDisabled || loading}
                         >
                             <ChevronRightIcon className="w-6 h-6 sm:w-5 sm:h-5" />

@@ -1,6 +1,6 @@
 from django.conf import settings
-from google.oauth2 import id_token
 from google.auth.transport import requests
+from google.oauth2 import id_token
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -8,10 +8,10 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenViewBase
 
+from utils.mail import send_verification_email
 
 from .models import User
-from .serializers import UserSerializer, CustomTokenObtainPairSerializer
-from utils.mail import send_verification_email
+from .serializers import CustomTokenObtainPairSerializer, UserSerializer
 
 
 class UserRegistrationView(APIView):
@@ -23,7 +23,6 @@ class UserRegistrationView(APIView):
     serializer_class = UserSerializer
 
     def post(self, request):
-
         if request.user.is_authenticated:
             return Response(
                 {"status": "error", "message": "user_already_exists"},

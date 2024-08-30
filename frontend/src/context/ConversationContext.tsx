@@ -87,8 +87,8 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
 
     const updateConversation = (id: string, name: string) => {
-        setConversations(prevConversations => 
-            prevConversations.map(conv => 
+        setConversations(prevConversations =>
+            prevConversations.map(conv =>
                 conv.id === id ? { ...conv, name } : conv
             )
         );
