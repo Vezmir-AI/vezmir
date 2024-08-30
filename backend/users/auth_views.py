@@ -11,7 +11,7 @@ from rest_framework_simplejwt.views import TokenViewBase
 from utils.mail import send_verification_email
 
 from .models import User
-from .serializers import CustomTokenObtainPairSerializer, UserSerializer
+from .serializers import CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer, UserSerializer
 
 
 class UserRegistrationView(APIView):
@@ -83,6 +83,8 @@ class CustomTokenObtainPairView(TokenViewBase):
 
 
 class CustomTokenRefreshView(TokenViewBase):
+    serializer_class = CustomTokenRefreshSerializer
+
     def post(self, request, *args, **kwargs):
         try:
             response = super().post(request, *args, **kwargs)
