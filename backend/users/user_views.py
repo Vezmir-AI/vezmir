@@ -1,15 +1,17 @@
 from django.utils import timezone
-from rest_framework import status, generics
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import status
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.request import Request
-from .models import User
-from .serializers import UserInfosSerializer
-from utils.mail import send_verification_email
+
 from chat.models import AIModel
 from chat.serializers import ChatMessageSerializer
+from utils.mail import send_verification_email
+
+from .models import User
+from .serializers import UserInfosSerializer
 
 
 class UserInfosView(RetrieveUpdateDestroyAPIView):
@@ -37,9 +39,7 @@ class UserInfosView(RetrieveUpdateDestroyAPIView):
 
             user.set_password(new_password)
             user.save()
-            return Response(
-                {"status": "success", "message": "password_changed_successfully"}
-            )
+            return Response({"status": "success", "message": "password_changed_successfully"})
 
         elif action == "update_info":
             serializer = self.serializer_class(user, data=request.data, partial=True)
@@ -99,10 +99,7 @@ class VerifyEmailView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if (
-            user.email_verification_token_created_at
-            < timezone.now() - timezone.timedelta(minutes=1)
-        ):
+        if user.email_verification_token_created_at < timezone.now() - timezone.timedelta(minutes=1):
             return Response(
                 {"status": "error", "message": "token_expired"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -144,8 +141,9 @@ class UserUsageView(ListAPIView):
     def get(self, request: Request, type: str):
         user = request.user
 
-        # TODO: money_spent is not computed correctly, need to take the past month and it is default value below, so no params is passed
-        # but JB let the possiblity to make so getting usage for a specific period is possible, so will fix it later
+        # TODO: money_spent is not computed correctly, need to take the past month and it is default value below,
+        # so no params is passed but JB let the possiblity to make so getting usage for a specific period is possible
+        # will fix/refactor it later
         params = request.query_params
         start_date, end_date = params.get("start_date"), params.get("end_date")
         if not end_date:
@@ -172,10 +170,7 @@ class UserUsageView(ListAPIView):
 
         date_range = [
             date.strftime("%Y-%m-%d")
-            for date in (
-                start_date + timezone.timedelta(days=n)
-                for n in range((end_date - start_date).days + 1)
-            )
+            for date in (start_date + timezone.timedelta(days=n) for n in range((end_date - start_date).days + 1))
         ]
         response_data = [
             {
@@ -217,9 +212,7 @@ class UserUsageView(ListAPIView):
             price = model_info["price_input"] if is_user else model_info["price_output"]
 
             response_data[date_index][model_name][token_key] += num_tokens
-            response_data[date_index][model_name][price_key] += (
-                num_tokens / 1000
-            ) * price
+            response_data[date_index][model_name][price_key] += (num_tokens / 1000) * price
 
         # computes and returns the total money spent for the user
         if type == "money_spent":
@@ -228,9 +221,7 @@ class UserUsageView(ListAPIView):
                 for model_name in date:
                     if model_name == "date":
                         continue
-                    money_spent += (
-                        date[model_name]["price_in"] + date[model_name]["price_out"]
-                    )
+                    money_spent += date[model_name]["price_in"] + date[model_name]["price_out"]
 
             return Response({"data": {"money_spent": money_spent}})
 
@@ -242,9 +233,7 @@ class UserUsageView(ListAPIView):
                 for model_name in date:
                     if model_name == "date":
                         continue
-                    date[model_name] = (
-                        date[model_name]["price_in"] + date[model_name]["price_out"]
-                    )
+                    date[model_name] = date[model_name]["price_in"] + date[model_name]["price_out"]
                     total += date[model_name]
                 date["total"] = total
             return Response({"data": {"money_usage": response_data}})
@@ -256,9 +245,7 @@ class UserUsageView(ListAPIView):
                 for model_name in date:
                     if model_name == "date":
                         continue
-                    date[model_name] = (
-                        date[model_name]["tokens_in"] + date[model_name]["tokens_out"]
-                    )
+                    date[model_name] = date[model_name]["tokens_in"] + date[model_name]["tokens_out"]
                     total += date[model_name]
                 date["total"] = total
             return Response({"data": {"token_usage": response_data}})

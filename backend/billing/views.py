@@ -1,10 +1,10 @@
+import stripe
 from django.conf import settings
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import stripe
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -34,7 +34,9 @@ class CreateCheckoutSessionView(APIView):
             return Response({"message": "stripe_error", "status": "error"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             print(e)
-            return Response({"message": "server_error", "status": "error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"message": "server_error", "status": "error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class ConfirmCheckoutSessionView(APIView):
@@ -42,18 +44,16 @@ class ConfirmCheckoutSessionView(APIView):
 
     def post(self, request: Request):
         session_id = request.data.get("session_id")
-        session = stripe.checkout.Session.retrieve(
-            session_id, expand=["setup_intent.payment_method"]
-        )
+        session = stripe.checkout.Session.retrieve(session_id, expand=["setup_intent.payment_method"])
         if session.setup_intent.status == "succeeded":
             user = request.user
             user.stripe_payment_method_id = session.setup_intent.payment_method.id
             user.save()
-            return Response(
-                {"message": "payment_method_confirmed", "status": "success"}
-            )
+            return Response({"message": "payment_method_confirmed", "status": "success"})
         else:
-            return Response({"message": "setup_intent_not_successful", "status": "error"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "setup_intent_not_successful", "status": "error"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class GetStripeInfo(APIView):
@@ -63,9 +63,7 @@ class GetStripeInfo(APIView):
         user = request.user
 
         try:
-            payment_methods = stripe.PaymentMethod.list(
-                customer=user.stripe_customer_id, type="card"
-            )
+            payment_methods = stripe.PaymentMethod.list(customer=user.stripe_customer_id, type="card")
             formatted_methods = [
                 {
                     "type": pm.type,

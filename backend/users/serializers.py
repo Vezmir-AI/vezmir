@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import User
 from chat.models import AIModel
+
+from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -42,9 +43,7 @@ class UserInfosSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
     last_name = serializers.CharField(required=False, allow_blank=True)
     first_name = serializers.CharField(required=False, allow_blank=True)
-    preferred_model = serializers.PrimaryKeyRelatedField(
-        queryset=AIModel.objects.all(), required=False
-    )
+    preferred_model = serializers.PrimaryKeyRelatedField(queryset=AIModel.objects.all(), required=False)
     stripe_payment_method_id = serializers.CharField(read_only=True)
     email_verified = serializers.BooleanField(read_only=True)
     balance = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)

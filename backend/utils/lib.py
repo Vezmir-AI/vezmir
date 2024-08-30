@@ -1,11 +1,10 @@
-import os
 from abc import ABC, abstractmethod
 
 from django.conf import settings
-from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 
 
 class AbstractAPI(ABC):
@@ -60,7 +59,7 @@ class GoogleAPI(AbstractAPI):
             yield chunk
 
 
-class GroqAPI():
+class GroqAPI:
     API_KEY = settings.GROQ_API_KEY
 
     @classmethod

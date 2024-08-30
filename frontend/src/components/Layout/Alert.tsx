@@ -14,7 +14,7 @@ const Alert: React.FC<AlertProps> = ({ notification }) => {
     const icon = notification.status === 'success' ? <CheckCircleIcon aria-hidden="true" className="h-6 w-6 text-green-400" /> : <ExclamationTriangleIcon aria-hidden="true" className="h-6 w-6 text-red-400" />
     const { removeNotification } = useTheme();
 
-    
+
     useEffect(() => {
         setTimeout(() => {
             setShow(false)

@@ -1,4 +1,4 @@
-from .lib import OpenAIAPI, AnthropicAPI, GoogleAPI, GroqAPI
+from .lib import AnthropicAPI, GoogleAPI, GroqAPI, OpenAIAPI
 
 
 def get_api_response(model_name: str, model_provider: str, messages: list[dict]):
@@ -17,7 +17,8 @@ def generate_title(user_message):
         {
             "role": "user",
             "content": f"""
-    You are an AI assistant. Generate a title for the following conversation. The title should be a really short summary of the conversation.
+    You are an AI assistant. Generate a title for the following conversation.
+    The title should be a really short summary of the conversation.
     Conversation: \n{user_message}\n\n
     Please respond with the title only, in the same language as the conversation.
     """,

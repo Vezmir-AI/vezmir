@@ -58,7 +58,8 @@ max-complexity = 10
 [tool.ruff.per-file-ignores]
 # Ignore `E402` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
 "__init__.py" = ["E402"]
-# "path/to/file.py" = ["E402"]
+# Ignore `E501` (line too long) in all `users/migrations/*.py` files.
+"users/migrations/*.py" = ["E501"]
 
 [tool.ruff.format]
 # Like Black, use double quotes for strings.

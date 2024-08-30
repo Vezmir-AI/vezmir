@@ -1,20 +1,21 @@
 import time
-from django.http import StreamingHttpResponse
-from rest_framework import status, generics
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 
-from chat.models import ChatConversation, ChatMessage, AIModel, AIModelProvider
+from django.http import StreamingHttpResponse
+from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from chat.models import AIModel, AIModelProvider, ChatConversation, ChatMessage
 from chat.serializers import (
+    AIModelProviderSerializer,
+    AIModelSerializer,
     ChatConversationSerializer,
     ChatMessageSerializer,
-    AIModelSerializer,
-    AIModelProviderSerializer,
     FormattedMessageSerializer,
 )
-from utils.permissions import IsOwner, HasPositiveBalance
-from utils.chatbots import get_api_response, generate_title
+from utils.chatbots import generate_title, get_api_response
+from utils.permissions import HasPositiveBalance, IsOwner
 
 
 # class to get all the models
@@ -43,9 +44,7 @@ class UserConversationView(generics.ListCreateAPIView):
     # get all conversations for the user, last modified first
     def get(self, request):
         serializer = self.get_serializer(
-            ChatConversation.objects.filter(
-                user=self.request.user, is_active=True
-            ).order_by("-date_updated"),
+            ChatConversation.objects.filter(user=self.request.user, is_active=True).order_by("-date_updated"),
             many=True,
         )
         return Response({"data": serializer.data})
@@ -81,9 +80,7 @@ class ChatMessageView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        messages = ChatMessage.objects.filter(chat_conversation=conversation).order_by(
-            "date_created"
-        )
+        messages = ChatMessage.objects.filter(chat_conversation=conversation).order_by("date_created")
         serializer = ChatMessageSerializer(messages, many=True)
         return Response({"data": serializer.data})
 
@@ -91,9 +88,7 @@ class ChatMessageView(APIView):
     def post(self, request, conv_id):
         # verify that the conversation exists
         try:
-            conversation = ChatConversation.objects.get(
-                id=conv_id, user=request.user.id
-            )
+            conversation = ChatConversation.objects.get(id=conv_id, user=request.user.id)
         except ChatConversation.DoesNotExist:
             return Response(
                 {"message": "conversation_not_found", "status": "error"},
@@ -145,9 +140,7 @@ class ChatMessageView(APIView):
         # get the whole conversation to pass to the model
         # TODO: Use self.get? or a serializer?
         conv_messages = FormattedMessageSerializer(
-            ChatMessage.objects.filter(chat_conversation=conversation).order_by(
-                "date_created"
-            ),
+            ChatMessage.objects.filter(chat_conversation=conversation).order_by("date_created"),
             many=True,
         ).data
 
@@ -168,7 +161,7 @@ class ChatMessageView(APIView):
                         user_message_serializer.num_tokens = token_in
                     if token_out := usage.get("output_tokens"):
                         pass
-                if response := chunk.response_metadata:
+                if response := chunk.response_metadata:  # noqa: F841
                     # TODO implement response metadata, e.g. stop reason
                     pass
 
@@ -188,23 +181,15 @@ class ChatMessageView(APIView):
                 raise_exception=True
             )  # TODO: handle API problems, like stop generation (i.e. data.completed=False)
             ai_message_serializer.save()
-            ChatMessage.objects.filter(id=user_message_serializer.data["id"]).update(
-                num_tokens=token_in
-            )
+            ChatMessage.objects.filter(id=user_message_serializer.data["id"]).update(num_tokens=token_in)
 
             # updates the user's balance
-            user_message_cost = request.user.calculate_message_cost(
-                token_in, model, is_input=True
-            )
-            ai_message_cost = request.user.calculate_message_cost(
-                token_out, model, is_input=False
-            )
+            user_message_cost = request.user.calculate_message_cost(token_in, model, is_input=True)
+            ai_message_cost = request.user.calculate_message_cost(token_out, model, is_input=False)
             total_cost = user_message_cost + ai_message_cost
             request.user.update_balance(total_cost)
 
-        response = StreamingHttpResponse(
-            stream_and_save(), content_type="text/event-stream"
-        )
+        response = StreamingHttpResponse(stream_and_save(), content_type="text/event-stream")
         # do not remove this, it is used by nginx to stream the response
         # https://discovergen.ai/article/creating-a-streaming-chat-application-with-django/
         response["X-Accel-Buffering"] = "no"
@@ -219,9 +204,7 @@ class ChatMessageView(APIView):
                 {"message": "conversation_not_found", "status": "error"},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        serializer = ChatConversationSerializer(
-            conversation, data=request.data, partial=True
-        )
+        serializer = ChatConversationSerializer(conversation, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({"data": serializer.data})

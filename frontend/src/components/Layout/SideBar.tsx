@@ -143,8 +143,8 @@ export default function SideBar() {
                       className="relative rounded-lg shadow-md bg-[var(--gray-800)] transition-colors duration-200"
                     >
                       <div className="flex items-center gap-x-4 px-2 py-3 hover:bg-[var(--gray-700)] rounded-lg">
-                        <div 
-                          onClick={() => navigate('/dashboard/profile')} 
+                        <div
+                          onClick={() => navigate('/dashboard/profile')}
                           className="flex items-center gap-x-4 flex-grow cursor-pointer"
                         >
                           <CogIcon className="h-8 w-8 text-gray-400" />

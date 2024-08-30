@@ -21,6 +21,6 @@ interface Message {
     role: 'user' | 'assistant';
     content: string;
 }
-// TODO add Message? api request and response schema, 
+// TODO add Message? api request and response schema,
 
 export type { Conversation, ChatHistoryProps, AIModel, Message };
