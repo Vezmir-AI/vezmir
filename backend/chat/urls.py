@@ -9,4 +9,5 @@ urlpatterns = [
     path("chat/conversations/", views.UserConversationView.as_view()),
     path("chat/conversations/<uuid:conv_id>/", views.ChatMessageView.as_view()),
     path("chat/conversations/<uuid:conv_id>/title/", views.ChatConversationTitleView.as_view()),
+    path('chat/choose_model/', views.ChooseModelView.as_view(), name='choose-model'),
 ]

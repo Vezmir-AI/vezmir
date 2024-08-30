@@ -106,7 +106,7 @@ export default function SideBar() {
         {/* Collapsible sidebar for desktop */}
         <div className={`hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col ${isCollapsed ? 'lg:w-16' : 'lg:w-72'} transition-all duration-300`}>
           {isCollapsed ? (
-            <div className="flex h-16 shrink-0 items-center justify-center mt-3 ml-3">
+            <div className="flex h-16 shrink-0 items-center justify-center mt-2 ml-3">
               <button
                 onClick={() => setIsCollapsed(false)}
                 className="p-2 rounded-md text-gray-400 bg-[var(--gray-700)] hover:bg-[var(--gray-600)]"
@@ -116,7 +116,7 @@ export default function SideBar() {
             </div>
           ) : (
             <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[var(--gray-900)] px-6">
-              <div className="flex h-16 shrink-0 items-center justify-between mt-2">
+              <div className="flex h-16 shrink-0 items-center justify-between mt-1">
                 <img
                   alt="vezmir-logo"
                   src="/assets/white.svg"

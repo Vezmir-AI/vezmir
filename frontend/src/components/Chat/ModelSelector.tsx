@@ -34,7 +34,7 @@ const ModelSelector: React.FC = () => {
       <div>
         <button
           type="button"
-          className={`inline-flex justify-between w-full rounded-xl shadow-sm px-3 py-2 sm:px-5 sm:py-3 text-sm sm:text-lg font-medium text-gray-300 bg-[var(--gray-700)] hover:bg-[var(--gray-600)] focus:outline-none focus:ring-0`}
+          className={`inline-flex justify-between w-full rounded-xl shadow-sm px-3 sm:px-5 text-sm sm:text-lg font-medium text-gray-300 bg-[var(--gray-700)] hover:bg-[var(--gray-600)] focus:outline-none focus:ring-0`}
           onClick={() => setIsOpen(!isOpen)}
         >
           <span className="truncate">
@@ -45,12 +45,12 @@ const ModelSelector: React.FC = () => {
       </div>
 
       {isOpen && (
-        <div className="origin-top-right absolute right-0 mt-2 w-full sm:w-72 rounded-md shadow-lg bg-[var(--gray-700)] z-50">
-          <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+        <div className="origin-top-right absolute right-0 w-full sm:w-72 rounded-md shadow-lg bg-[var(--gray-700)] z-50">
+          <div role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
             {aiModels.map((model) => (
               <button
                 key={model.display_name}
-                className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 bg-[var(--gray-700)] hover:bg-[var(--gray-800)] hover:text-gray-100"
+                className="flex items-center w-full text-left px-4 text-sm text-gray-300 bg-[var(--gray-700)] hover:bg-[var(--gray-800)] hover:text-gray-100"
                 role="menuitem"
                 onClick={() => handleModelChange(model)}
               >
@@ -68,7 +68,7 @@ const ModelSelector: React.FC = () => {
                       </span>
                     </div>
                     {hoveredHint === model.display_name && (
-                      <div className="absolute z-10 p-2 left-0 top-full mt-1 text-sm text-white bg-[var(--gray-700)] rounded-md shadow-lg whitespace-nowrap">
+                      <div className="absolute z-10 p-2 left-0 top-full text-sm text-white bg-[var(--gray-700)] rounded-md shadow-lg whitespace-nowrap">
                         {model.hint}
                       </div>
                     )}
