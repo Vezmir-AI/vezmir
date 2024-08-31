@@ -16,7 +16,7 @@ const ChatComponent: React.FC = () => {
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { addConversation, selectedAIModel, resetSelectedAIModel, fetchConversations } = useConversation();
+  const { addConversation, selectedAIModel, resetSelectedAIModel, fetchConversations, conversations } = useConversation();
   const [isVezmirIntelligence, setIsVezmirIntelligence] = useState(() => {
     const saved = localStorage.getItem('isVezmirIntelligence');
     return saved ? JSON.parse(saved) : false;
@@ -25,12 +25,11 @@ const ChatComponent: React.FC = () => {
   useEffect(() => {
     if (!chatId) {
       resetMessages();
-      console.log('resetting messages');
       resetSelectedAIModel();
     } else {
       resetSelectedAIModel(chatId);
     }
-  }, [chatId]);
+  }, [chatId, conversations]);
 
   const resetMessages = useCallback(() => {
     setMessages([]);
@@ -96,11 +95,11 @@ const ChatComponent: React.FC = () => {
 
       setIsStreaming(true);
 
-      const userMessage = { role: 'user' as const, content: message };
+      const userMessage = { role: 'user' as const, content: message, ai_model_details: selectedAIModel };
       setMessages(prevMessages => [...prevMessages, userMessage]);
 
       let assistantMessage = '';
-      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage }]);
+      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: selectedAIModel }]);
 
       if (isVezmirIntelligence) {
         const response = await api.post(`/chat/choose_model/`, { user_message: message });
@@ -112,6 +111,16 @@ const ChatComponent: React.FC = () => {
 
       const payload = { content: message, model_name: modelName };
       const response = await api.post(url, payload, true);
+      if (selectedAIModel.name == "vezmir") {
+        await fetchConversations();
+        // fetch the conversation new ai model
+        resetSelectedAIModel(chatId);
+        console.log("resetSelectedAIModel",selectedAIModel)
+        setMessages(prevMessages => [
+          ...prevMessages.slice(0, -1),
+          { role: 'assistant', content: assistantMessage, ai_model_details: selectedAIModel }
+        ]);
+      }
 
       if (!response) {
         throw new Error('Response body is null');
@@ -129,8 +138,9 @@ const ChatComponent: React.FC = () => {
         assistantMessage += chunk;
         setMessages(prevMessages => [
           ...prevMessages.slice(0, -1),
-          { role: 'assistant', content: assistantMessage }
+          { role: 'assistant', content: assistantMessage, ai_model_details: selectedAIModel }
         ]);
+        console.log("ehhheooo", selectedAIModel)
 
         return reader.read().then(processText);
       };

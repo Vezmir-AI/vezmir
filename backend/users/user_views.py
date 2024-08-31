@@ -202,7 +202,7 @@ class UserUsageView(ListAPIView):
             date = message["date_created"].split("T")[0]
             date_index = date_range.index(date)
 
-            model_info = ai_model_cache[message["model_name"]]
+            model_info = ai_model_cache[message["ai_model_details"]["name"]]
             model_name = model_info["provider_name"]
             is_user = message["role"] == "user"
             num_tokens = message["num_tokens"]

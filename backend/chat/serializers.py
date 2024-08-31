@@ -32,6 +32,8 @@ class ChatConversationSerializer(serializers.ModelSerializer):
 
 class ChatMessageSerializer(serializers.ModelSerializer):
     content = serializers.CharField(max_length=10000, required=True)
+    ai_model = serializers.PrimaryKeyRelatedField(queryset=AIModel.objects.all(), write_only=True)
+    ai_model_details = AIModelSerializer(source="ai_model", read_only=True)
 
     class Meta:
         model = ChatMessage
@@ -42,8 +44,8 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             "content",
             "date_created",
             "completed",
-            "model_name",
-            "provider",
+            "ai_model",
+            "ai_model_details",
             "user",
             "num_tokens",
         )
