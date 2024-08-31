@@ -38,6 +38,5 @@ class ChatMessage(models.Model):
     content = models.TextField()
     date_created = models.DateTimeField(auto_now_add=True)
     completed = models.BooleanField(default=True)
-    model_name = models.CharField(max_length=100, null=True)
+    ai_model = models.ForeignKey(AIModel, on_delete=models.SET_NULL, null=True)
     num_tokens = models.IntegerField(default=0)
-    provider = models.CharField(max_length=100, null=True)

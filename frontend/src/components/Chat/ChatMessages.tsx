@@ -9,25 +9,8 @@ interface ChatMessagesProps {
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
-  const [animatedNames, setAnimatedNames] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    messages.forEach((msg, index) => {
-      if (msg.role !== 'user' && msg.model_name && !animatedNames[index]) {
-        let i = 0;
-        const intervalId = setInterval(() => {
-          if (i < msg.model_name.length) {
-            setAnimatedNames(prev => ({
-              ...prev,
-              [index]: msg.model_name.slice(0, i + 1)
-            }));
-            i++;
-          } else {
-            clearInterval(intervalId);
-          }
-        }, 50);
-      }
-    });
   }, [messages]);
 
   return (
@@ -48,19 +31,19 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
           >
             {msg.role !== 'user' && (
               <div className="mr-3 flex-shrink-0 mt-1 relative group">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getProviderColor(msg.provider || 'vezmir')}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getProviderColor(msg.ai_model_details?.provider || 'vezmir')}`}>
                   <img
-                    src={getProviderLogo(msg.provider || 'vezmir')}
-                    alt={`${msg.provider || 'AI'} logo`}
+                    src={getProviderLogo(msg.ai_model_details?.provider || 'vezmir')}
+                    alt={`${msg.ai_model_details?.provider || 'AI'} logo`}
                     className="w-6 h-6"
                   />
                 </div>
-                {msg.model_name && (
-                  <div 
-                    className={`absolute hidden group-hover:flex items-center h-6 bg-opacity-75 text-white text-xs px-2 py-1 rounded-md -top-7 left-full ml-2 whitespace-nowrap ${getProviderColor(msg.provider || 'vezmir')}`}
+                {msg.ai_model_details?.name && (
+                  <div
+                    className={`absolute hidden group-hover:flex items-center h-6 bg-opacity-75 text-white text-xs px-2 py-1 rounded-md -top-7 left-full ml-2 whitespace-nowrap ${getProviderColor(msg.ai_model_details?.provider || 'vezmir')}`}
                     style={{ width: 'max-content', transition: 'width 0.3s ease-out' }}
                   >
-                    {animatedNames[index]}
+                    {messages[index].ai_model_details?.name}
                   </div>
                 )}
               </div>

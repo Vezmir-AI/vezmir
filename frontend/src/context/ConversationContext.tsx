@@ -28,21 +28,14 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
     useEffect(() => {
         const initializeData = async () => {
-            await fetchConversations();
             await fetchAiModels();
+            await fetchConversations();
         };
 
         if (isAuthenticated) {
             initializeData();
         }
     }, [isAuthenticated]);
-
-    useEffect(() => {
-        if (aiModels.length > 0) {
-            const defaultModel = aiModels.find(model => model.name === user?.preferred_model) || aiModels[0];
-            setSelectedAIModel(defaultModel);
-        }
-    }, [aiModels]);
 
     const resetSelectedAIModel = (chatId: string = "") => {
         if (chatId) {
