@@ -23,3 +23,13 @@ def send_verification_email(user):
     )
     email.content_subtype = "html"
     email.send()
+
+
+def send_feedback_email(feedback_message):
+    email = EmailMessage(
+        "New Feedback Received",
+        feedback_message,
+        "Vezmir AI <no-reply@vezmir.com>",
+        ["antoine@vezmir.com"],
+    )
+    email.send()
