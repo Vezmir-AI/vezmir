@@ -133,9 +133,11 @@ export default function SideBar() {
               </div>
               <nav className="flex flex-1 flex-col">
                 <NewChatButton />
-                <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                  <li className="mt-4">
-                    <ChatHistory />
+                  <ul role="list" className="flex flex-col h-[calc(100vh-150px)] gap-y-7">                
+                  <li className="mt-4 flex-grow overflow-hidden flex flex-col">
+                    <div className="flex-grow overflow-y-auto">
+                      <ChatHistory />
+                    </div>
                   </li>
                   <li className="mt-auto pr-2">
                     <div

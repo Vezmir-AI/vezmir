@@ -54,8 +54,8 @@ const ChatHistory: React.FC = () => {
     };
 
     return (
-        <ul role="list" className="-mx-2 space-y-1">
-            {conversations.slice(0, 3).map((item) => (
+        <ul role="list" className="-mx-2 space-y-1 overflow-y-auto">
+            {conversations.map((item) => (
                 <li key={item.id}>
                     <div className="flex items-center justify-between bg-[var(--gray-900)]">
                         <Link
@@ -106,48 +106,6 @@ const ChatHistory: React.FC = () => {
                                 </button>
                             </div>
                         )}
-                    </div>
-                </li>
-            ))}
-            {conversations.length > 3 && (
-                <li>
-                    <button
-                        onClick={toggleAllConversations}
-                        className="flex items-center w-full text-gray-400 hover:bg-gray-800 hover:text-white group gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
-                    >
-                        {showAllConversations ? (
-                            <>
-                                <ChevronUpIcon className="h-5 w-5" />
-                                Show less
-                            </>
-                        ) : (
-                            <>
-                                <ChevronDownIcon className="h-5 w-5" />
-                                Show all ({conversations.length - 3})
-                            </>
-                        )}
-                    </button>
-                </li>
-            )}
-            {showAllConversations && conversations.slice(3).map((item) => (
-                <li key={item.id}>
-                    <div className="flex items-center justify-between">
-                        <Link
-                            to={`/chat/${item.id}`}
-                            className="text-gray-400 hover:bg-gray-800 hover:text-white group flex-grow flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
-                            title={item.name}
-                        >
-                            <span className="typing-animation">
-                                {animatedNames[item.id]}
-                            </span>
-                        </Link>
-                        <button
-                            onClick={(e) => handleDeleteConversation(item.id, e)}
-                            className="p-2 text-gray-400 hover:text-white bg-[var(--gray-900)] hover:bg-[var(--gray-800)]"
-                            title="Delete conversation"
-                        >
-                            <TrashIcon className="h-4 w-4" />
-                        </button>
                     </div>
                 </li>
             ))}
