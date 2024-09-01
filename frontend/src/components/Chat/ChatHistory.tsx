@@ -11,31 +11,32 @@ const ChatHistory: React.FC = () => {
     const [showAllConversations, setShowAllConversations] = useState(false);
     const [showConfirmationDelete, setShowConfirmationDelete] = useState(false);
     const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
-    const [animatedNames, setAnimatedNames] = useState<{ [key: string]: string }>({});
+    const [animatedName, setAnimatedName] = useState<string>('');
+    const [activeChat, setActiveChat] = useState<string | null>(null);
 
     useEffect(() => {
-        setChatId(location.pathname.split('/').pop() || null);
+        const currentChatId = location.pathname.split('/').pop() || null;
+        setChatId(currentChatId);
+        setActiveChat(currentChatId);
     }, [location.pathname]);
 
     useEffect(() => {
-        conversations.forEach(item => {
-            if (!animatedNames[item.id] || animatedNames[item.id] !== item.name) {
-                setAnimatedNames(prev => ({ ...prev, [item.id]: '' }));
+        if (activeChat) {
+            const chat = conversations.find(item => item.id === activeChat);
+            if (chat) {
                 let i = 0;
+                setAnimatedName('');
                 const intervalId = setInterval(() => {
-                    if (i < item.name.length) {
-                        setAnimatedNames(prev => ({
-                            ...prev,
-                            [item.id]: item.name.slice(0, i + 1)
-                        }));
+                    if (i < chat.name.length) {
+                        setAnimatedName(prev => chat.name.slice(0, i + 1));
                         i++;
                     } else {
                         clearInterval(intervalId);
                     }
-                }, 50); // Adjust timing as needed
+                }, 50);
             }
-        });
-    }, [conversations]);
+        }
+    }, [activeChat, conversations]);
 
     const toggleAllConversations = () => {
         setShowAllConversations(!showAllConversations);
@@ -63,8 +64,8 @@ const ChatHistory: React.FC = () => {
                             className="text-[var(--gray-400)] hover:bg-[var(--gray-800)] hover:text-white group flex-grow flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                             title={item.name}
                         >
-                            <span className="typing-animation">
-                                {animatedNames[item.id]}
+                            <span className={item.id === activeChat ? "typing-animation" : ""}>
+                                {item.id === activeChat ? animatedName : item.name}
                             </span>
                         </Link>
                         {(item.id !== conversationToDelete || !showConfirmationDelete) ? (
