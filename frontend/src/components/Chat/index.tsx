@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CreditCardIcon, ChartPieIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
+import { CreditCardIcon, ChartPieIcon, PencilSquareIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
 import { useConversation } from '@/context/ConversationContext';
 import { Message } from '@/types';
@@ -9,6 +9,7 @@ import ModelSelector from './ModelSelector';
 import ChatMessages from './ChatMessages';
 import InputMessage from './InputMessage';
 import VezmirLogo from '@/assets/vezmir.svg';
+import FeedbackForm from './FeedbackForm';
 
 const ChatComponent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -20,6 +21,7 @@ const ChatComponent: React.FC = () => {
     const saved = localStorage.getItem('isVezmirIntelligence');
     return saved ? JSON.parse(saved) : false;
   });
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
 
   useEffect(() => {
     if (!chatId) {
@@ -234,6 +236,16 @@ const ChatComponent: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Feedback Button */}
+        <div className="fixed bottom-10 right-4 z-20">
+          <button
+            onClick={() => setShowFeedbackForm(true)}
+            className="p-2 rounded-full bg-[var(--bordeaux)] hover:bg-[var(--bordeaux-hover)] transition-colors duration-200"
+          >
+            <ChatBubbleLeftIcon className="w-8 h-8 text-white" />
+          </button>
+        </div>
+
         {/* Input Area - Fixed at the bottom */}
         <div className="p-4 bg-[var(--gray-800)] sticky bottom-0 z-10">
           <InputMessage
@@ -243,6 +255,7 @@ const ChatComponent: React.FC = () => {
           />
         </div>
       </div>
+      <FeedbackForm isOpen={showFeedbackForm} onClose={() => setShowFeedbackForm(false)} />
     </div>
   );
 };

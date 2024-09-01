@@ -14,7 +14,8 @@ from chat.serializers import (
     ChatMessageSerializer,
     FormattedMessageSerializer,
 )
-from utils.chatbots import generate_title, get_api_response, choose_model
+from utils.chatbots import generate_title, get_api_response
+from utils.mail import send_feedback_email
 from utils.permissions import HasPositiveBalance, IsOwner
 
 
@@ -100,29 +101,30 @@ class ChatMessageView(APIView):
         if model_name == "vezmir":
             try:
                 # uses the conversation last message, if any
-                if message := conversation.messages.last():
-                    model = message.ai_model
+                if conversation.messages.last():
+                    model_name = conversation.messages.last().model_name
                 # uses the user's last absolute message, if any
-                elif message := request.user.messages.first():
-                    model = message.ai_model
+                # it is indeed first, not last (implementation detail ig)
+                elif request.user.messages.first():
+                    model_name = request.user.messages.first().model_name
                 else:
-                    model = AIModel.objects.get(name="gpt-4o")
+                    model_name = "gpt-4o"
             except Exception:
                 return Response(
                     {"message": "model_not_found", "status": "error"},
                     status=status.HTTP_404_NOT_FOUND,
                 )
-        else:
-            try:
-                model = AIModel.objects.get(name=str(model_name))
-            except AIModel.DoesNotExist:
-                return Response(
-                    {"message": "model_not_found", "status": "error"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+        try:
+            model = AIModel.objects.select_related("provider").get(name=model_name)
+            model_provider = model.provider.name
+            conversation.ai_model = model
+            conversation.save()
+        except AIModel.DoesNotExist:
+            return Response(
+                {"message": "model_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
-        conversation.ai_model = model
-        conversation.save()
         # creates the user message
         user_message_serializer = ChatMessageSerializer(
             data={
@@ -130,13 +132,14 @@ class ChatMessageView(APIView):
                 "chat_conversation": conv_id,
                 "content": request.data.get("content"),
                 "role": "user",
-                "ai_model": model.id,
+                "model_name": model.name,
+                "provider": model_provider,
             }
         )
         user_message_serializer.is_valid(raise_exception=True)
+        user_message_serializer.save()
         # get the whole conversation to pass to the model
-        user_message = user_message_serializer.save()
-
+        # TODO: Use self.get? or a serializer?
         conv_messages = FormattedMessageSerializer(
             ChatMessage.objects.filter(chat_conversation=conversation).order_by("date_created"),
             many=True,
@@ -146,8 +149,8 @@ class ChatMessageView(APIView):
             full_response = ""
             token_in = token_out = None
             for chunk in get_api_response(
-                model_name=model.name,
-                model_provider=model.provider.name,
+                model_name=model_name,
+                model_provider=model_provider,
                 messages=conv_messages,
             ):
                 # this allows to send the response to the client as it is being generated
@@ -170,15 +173,16 @@ class ChatMessageView(APIView):
                     "chat_conversation": conv_id,
                     "content": full_response,
                     "role": "assistant",
-                    "ai_model": model.id,
+                    "model_name": model.name,
                     "num_tokens": token_out,
+                    "provider": model_provider,
                 }
             )
             ai_message_serializer.is_valid(
                 raise_exception=True
             )  # TODO: handle API problems, like stop generation (i.e. data.completed=False)
             ai_message_serializer.save()
-            ChatMessage.objects.filter(id=user_message.id).update(num_tokens=token_in)
+            ChatMessage.objects.filter(id=user_message_serializer.data["id"]).update(num_tokens=token_in)
 
             # updates the user's balance
             user_message_cost = request.user.calculate_message_cost(token_in, model, is_input=True)
@@ -258,3 +262,17 @@ class ChooseModelView(APIView):
         
         chosen_model = choose_model(user_message)
         return Response({"model": chosen_model})
+
+class FeedbackView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        feedback_message = request.data.get('message')
+        if not feedback_message:
+            return Response({"error": "Feedback message is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            send_feedback_email(feedback_message)
+            return Response({"message": "Feedback sent successfully"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
