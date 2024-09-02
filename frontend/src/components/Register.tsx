@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import api from '@/api';
 import { useAuth } from '@/context/AuthContext';
@@ -202,9 +202,9 @@ const Register: React.FC = () => {
         </div>
         <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
           {locale('com_auth_already_have_account')}{' '}
-          <a href="/login" aria-label="Login" className="p-1 text-[var(--bordeaux-clear)]">
+          <Link to="/login" aria-label="Login" className="p-1 text-[var(--bordeaux-clear)]">
             {locale('com_auth_login')}
-          </a>
+          </Link>
         </p>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
@@ -102,7 +102,7 @@ const Login: React.FC = () => {
             {locale('com_auth_login')}
           </button>
         </form>
-        {/* <div className="relative mt-6 flex w-full items-center justify-center border border-t border-gray-300 uppercase dark:border-gray-600">
+        <div className="relative mt-6 flex w-full items-center justify-center border border-t border-gray-300 uppercase dark:border-gray-600">
           <div className="absolute bg-[var(--black)] px-3 text-xs text-white dark:text-white">
             {locale('com_auth_or')}
           </div>
@@ -113,14 +113,14 @@ const Login: React.FC = () => {
             onError={errorMessage}
             width={350}
           />
-        </div> */}
+        </div>
         <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
           {' '}
           {locale('com_auth_no_account')}{' '}
-          {/* <a href="/register" className="p-1 text-[var(--bordeaux-clear)]"> */}
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfzyV-GXIeiBWBkDuV2rNGQCfue6wJPSXAIFP2rx_w78N8fWA/viewform" className="p-1 text-[var(--bordeaux-clear)]">
+          <Link to="/register" className="p-1 text-[var(--bordeaux-clear)]">
+          {/* <a href="https://docs.google.com/forms/d/e/1FAIpQLSfzyV-GXIeiBWBkDuV2rNGQCfue6wJPSXAIFP2rx_w78N8fWA/viewform" className="p-1 text-[var(--bordeaux-clear)]"> */}
           {locale('com_auth_sign_up')}
-          </a>
+          </Link>
         </p>
       </div>
     </div>
