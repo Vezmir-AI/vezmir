@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { TrashIcon, ChevronDownIcon, ChevronUpIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { useConversation } from '@/context/ConversationContext';
 
 const ChatHistory: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [chatId, setChatId] = useState<string|null>(null);
+    const [chatId, setChatId] = useState<string | null>(null);
     const { conversations, deleteConversation } = useConversation();
-    const [showAllConversations, setShowAllConversations] = useState(false);
     const [showConfirmationDelete, setShowConfirmationDelete] = useState(false);
     const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
     const [animatedName, setAnimatedName] = useState<string>('');
@@ -28,7 +27,7 @@ const ChatHistory: React.FC = () => {
                 setAnimatedName('');
                 const intervalId = setInterval(() => {
                     if (i < chat.name.length) {
-                        setAnimatedName(prev => chat.name.slice(0, i + 1));
+                        setAnimatedName(() => chat.name.slice(0, i + 1));
                         i++;
                     } else {
                         clearInterval(intervalId);
@@ -38,9 +37,6 @@ const ChatHistory: React.FC = () => {
         }
     }, [activeChat, conversations]);
 
-    const toggleAllConversations = () => {
-        setShowAllConversations(!showAllConversations);
-    };
 
     const handleDeleteConversation = (id: string, event: React.MouseEvent) => {
         console.log('delete conversation', id, chatId);
