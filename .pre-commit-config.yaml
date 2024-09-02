@@ -1,69 +1,24 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-
-fail_fast: true
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
-      - id: check-added-large-files
-        args: ["--maxkb=500"]
-        exclude: >
-          (?x)^(
-              package-lock\.json
-          )$
-      - id: fix-byte-order-marker
-      - id: check-case-conflict
-      - id: check-merge-conflict
-      - id: check-symlinks
-      - id: debug-statements
-      - id: detect-private-key
-  - repo: https://github.com/psf/black
-    rev: 23.7.0
-    hooks:
-      - id: black
-        language_version: python3
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-  - repo: https://github.com/adamchainz/django-upgrade
-    rev: "1.15.0"
-    hooks:
-      - id: django-upgrade
-        args: [--target-version, "5.0"]
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    # Ruff version.
-    rev: v0.1.6
+    rev: v0.6.3
     hooks:
-      # Run the linter.
       - id: ruff
-        args: [--fix]
-      # Run the formatter.
+        args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
-  - repo: local
+
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.9.1
     hooks:
-      - id: missing-migrations
-        name: missing-migrations-local
-        entry: poetry run python backend/manage.py makemigrations --check
-        language: system
-        # Only run missing migration check if migration-generating files have changed:
-        files: (.*/?(settings|migrations|models)/.+|.+models\.py|.+constants\.py|.+choices\.py|.+pyproject\.toml)
-        pass_filenames: false
-      # - id: backend-schema
-      #   name: backend-schema-local
-      #   entry: poetry run python backend/manage.py spectacular --color --file backend/schema.yml
-      #   language: system
-      #   files: ^backend/
-      #   pass_filenames: false
-      - id: frontend-api
-        name: frontend-api-local
-        entry: ./docker-npm.sh run openapi-ts
-        language: system
-        files: backend/schema\.yml$
-        pass_filenames: false
-      - id: frontend-lint
-        name: frontend-lint-local
-        entry: ./docker-npm.sh run lint:fix
-        language: system
+      - id: eslint
         files: ^frontend/
+        types: [file, javascript, jsx, ts, tsx]
+        args: [--fix]

@@ -6,7 +6,7 @@ services:
     ports:
       - 8000:8000
     env_file:
-      - ./.env
+      - ./backend/.env
     volumes:
       - ./backend/:/code
     depends_on:
@@ -17,7 +17,7 @@ services:
     ports:
       - 3000:3000
     env_file:
-      - ./.env
+      - ./frontend/.env
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -28,7 +28,8 @@ services:
     container_name: dev-db
     ports:
       - 5432:5432
-    env_file: ./.env
+    env_file: ./backend/.env
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 

@@ -1,40 +1,55 @@
 from rest_framework import serializers
 
-from .models import ChatConversation, AIModel, AIModelProvider, ChatMessage
+from .models import AIModel, AIModelProvider, ChatConversation, ChatMessage
 
 
 class AIModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = AIModel
-        fields = ("name", "provider", "is_active", "price_per_1K_token")
+        fields = (
+            "id",
+            "name",
+            "display_name",
+            "provider",
+            "is_active",
+            "hint",
+        )
 
 
 class AIModelProviderSerializer(serializers.ModelSerializer):
+    models = AIModelSerializer(many=True, read_only=True)
+
     class Meta:
         model = AIModelProvider
-        fields = ("name",)
+        fields = ("name", "models")
 
 
 class ChatConversationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatConversation
-        fields = ("id", "name", "user", "date_updated")
+        fields = ("id", "name", "user", "date_updated", "ai_model")
 
 
 class ChatMessageSerializer(serializers.ModelSerializer):
     content = serializers.CharField(max_length=10000, required=True)
+    ai_model = serializers.PrimaryKeyRelatedField(queryset=AIModel.objects.all(), write_only=True)
+    ai_model_details = AIModelSerializer(source="ai_model", read_only=True)
 
     class Meta:
         model = ChatMessage
         fields = (
+            "id",
             "chat_conversation",
             "role",
             "content",
             "date_created",
             "completed",
-            "model_name",
+            "ai_model",
+            "ai_model_details",
             "user",
+            "num_tokens",
         )
+
 
 # serializer for chat conversation, having a list of chat messages
 # each chat message is a dict {"role": role, "content": content}

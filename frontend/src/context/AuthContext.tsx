@@ -1,16 +1,23 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
-import api from '../api';
+import { GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
+import api from '@/api';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   login: (accessToken: string, refreshToken: string) => void;
   logout: () => void;
+  hasAccessToken: () => boolean;
+  googleLogin: (response: CredentialResponse) => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    return !!accessToken;
+  });
 
   const login = (newAccessToken: string, newRefreshToken: string) => {
     localStorage.setItem('accessToken', newAccessToken);
@@ -18,19 +25,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsAuthenticated(true);
   };
 
+  const googleLogin = async (credentials: CredentialResponse) => {
+    console.log('googleLogin', credentials);
+    const { credential } = credentials;
+    const { access, refresh } = await api.post('/auth/google/', { credential });
+    login(access, refresh);
+  };
+
   const logout = async () => {
     const refresh_token = localStorage.getItem('refreshToken');
-    if (refresh_token) {
-        await api.post('/auth/logout/', { refresh: refresh_token });
-    }
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     setIsAuthenticated(false);
+    if (refresh_token) {
+      await api.post('/auth/logout/', { refresh: refresh_token });
+    }
+  };
+
+  const hasAccessToken = () => {
+    return !!localStorage.getItem('accessToken');
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
-      {children}
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, hasAccessToken, googleLogin }}>
+      <GoogleOAuthProvider clientId={clientId}>
+        {children}
+      </GoogleOAuthProvider>
     </AuthContext.Provider>
   );
 };
