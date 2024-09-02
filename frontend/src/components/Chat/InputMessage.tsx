@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ArrowUpIcon } from '@heroicons/react/24/outline';
 
 interface InputMessageProps {
-  selectedModel: { display_name: string } | null;
+  selectedModel: string | null;
   isStreaming: boolean;
   onSendMessage: (message: string) => void;
 }
@@ -45,7 +45,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           className="flex-grow p-4 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none overflow-hidden"
-          placeholder={`Message ${selectedModel?.display_name || ''}`}
+          placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel}`}
           rows={1}
           style={{ minHeight: '56px', maxHeight: '200px' }}
         />
