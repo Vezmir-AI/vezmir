@@ -30,6 +30,6 @@ def send_feedback_email(feedback_message):
         "New Feedback Received",
         feedback_message,
         "Vezmir AI <no-reply@vezmir.com>",
-        ["antoine@vezmir.com"],
+        ["antoine@vezmir.com", "jb@vezmir.com"],
     )
     email.send()
