@@ -5,14 +5,14 @@ import rehypeRaw from 'rehype-raw';
 
 const renderMarkdown = (content: string | React.ReactNode[]) => {
   const components = {
-    ol: ({node, ...props}) => <ol className="list-decimal list-outside pl-6 my-2" {...props} />,
-    ul: ({node, ...props}) => <ul className="list-disc list-outside pl-6 my-2" {...props} />,
-    li: ({node, children, ...props}) => (
+    ol: ({...props}) => <ol className="list-decimal list-outside pl-6 my-2" {...props} />,
+    ul: ({...props}) => <ul className="list-disc list-outside pl-6 my-2" {...props} />,
+    li: ({children, ...props}: {children: React.ReactNode, [key: string]: any}) => (
       <li className="my-1" {...props}>
         <span className="inline">{children}</span>
       </li>
     ),
-    p: ({node, ...props}) => <p className="my-2" {...props} />
+    p: ({...props}) => <p className="my-2" {...props} />
   };
 
   if (Array.isArray(content)) {
