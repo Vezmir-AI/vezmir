@@ -10,38 +10,26 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from pathlib import Path
+import os
 from datetime import timedelta
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables
+load_dotenv(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "***REMOVED-DJANGO-SECRET-KEY***"
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ["*"]
-CORS_ORIGIN_ALLOW_ALL = True
-
-AUTH_USER_MODEL = "users.User"
-
-# Application definition
-SWAGGER_SETTINGS = {
-   'SECURITY_DEFINITIONS': {
-        'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header',
-            "description": "DO NOT FORGET TO ADD 'Bearer' BEFORE THE TOKEN"
-      }
-   }
-}
+DEBUG = os.getenv("DEV")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -50,14 +38,43 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # 3rd party
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
-    "drf_yasg",
+    # apps
     "users",
     "chat",
+    "billing",
 ]
+
+AUTH_USER_MODEL = "users.User"
+
+if DEBUG:
+    ALLOWED_HOSTS = ["*"]
+    CORS_ORIGIN_ALLOW_ALL = True
+
+    # adds swagger for development
+    INSTALLED_APPS.append("drf_yasg")
+    SWAGGER_SETTINGS = {
+        "SECURITY_DEFINITIONS": {
+            "Bearer": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "description": "DO NOT FORGET TO ADD 'Bearer' BEFORE THE TOKEN",
+            }
+        }
+    }
+else:
+    ALLOWED_HOSTS = ["*.vezmir.ai"]
+    CORS_ORIGIN_ALLOW_ALL = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+
+FRONTEND_URL = os.getenv("DJANGO_FRONTEND_URL")
+BACKEND_URL = os.getenv("DJANGO_BACKEND_URL")
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
@@ -69,7 +86,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
@@ -92,7 +109,7 @@ ROOT_URLCONF = "vesmir_app.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "users/template"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -113,12 +130,12 @@ WSGI_APPLICATION = "vesmir_app.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "vesmir",
-        "USER": "postgres",
-        "PASSWORD": "bite",
-        "HOST": "db",
-        "PORT": "5432",
+        "ENGINE": os.getenv("DJANGO_DATABSE_ENGINE"),
+        "NAME": os.getenv("DJANGO_DATABSE_NAME"),
+        "USER": os.getenv("DJANGO_DATABSE_USER"),
+        "PASSWORD": os.getenv("DJANGO_DATABSE_PASSWORD"),
+        "HOST": os.getenv("DJANGO_DATABSE_HOST"),
+        "PORT": os.getenv("DJANGO_DATABSE_PORT"),
     }
 }
 
@@ -141,6 +158,26 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# SERVICES API KEYS
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+
+GOOGLE_OAUTH2_CLIENT_ID = os.getenv("DJANGO_GOOGLE_OAUTH2_CLIENT_ID")
+GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv("DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET")
+GOOGLE_OAUTH2_PROJECT_ID = os.getenv("DJANGO_GOOGLE_OAUTH2_PROJECT_ID")
+
+# EMAIL CONFIG
+EMAIL_BACKEND = os.getenv("DJANGO_EMAIL_BACKEND")
+EMAIL_HOST = os.getenv("DJANGO_EMAIL_HOST")
+EMAIL_PORT = os.getenv("DJANGO_EMAIL_PORT")
+EMAIL_USE_TLS = os.getenv("DJANGO_EMAIL_USE_TLS")
+EMAIL_HOST_USER = os.getenv("DJANGO_EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.getenv("DJANGO_DEFAULT_FROM_EMAIL")
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -158,6 +195,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

@@ -1,22 +1,14 @@
-// const { fontFamily } = require('tailwindcss/defaultTheme');
-
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-    content: ['./src/**/*.{js,jsx,ts,tsx}'],
-    // darkMode: 'class',
-    darkMode: ['class'],
-    theme: {
-      // colors: {
-      //   'gpt-dark-gray': '#171717',
-      // },
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        mono: ['Roboto Mono', 'monospace'],
+        sans: ['Plus-Jakarta-Sans'],
       },
-      // fontFamily: {
-      //   sans: ['Söhne', 'sans-serif'],
-      //   mono: ['Söhne Mono', 'monospace'],
-      // },
       extend: {
         width: {
           'authPageWidth': '370px',
@@ -79,13 +71,10 @@ module.exports = {
           'border-medium-alt': 'var(--border-medium-alt)',
           'border-heavy': 'var(--gray-300)',
           'border-xheavy': 'var(--gray-400',
+          'vezmir': '#6D071A'
         },
       },
     },
-    plugins: [
-      require('tailwindcss-animate'),
-      require('tailwindcss-radix')(),
-      // require('@tailwindcss/typography'),
-    ],
-  };
-  
+  },
+  plugins: [],
+}
