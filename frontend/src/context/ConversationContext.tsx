@@ -8,12 +8,13 @@ import { useProfile } from './ProfileContext';
 interface ConversationContext {
     conversations: Conversation[];
     aiModels: AIModel[];
-    selectedAIModel: AIModel | null;
+    selectedAIModel: AIModel;
+    currentAIModel: string;
     addConversation: () => Promise<Conversation>;
     deleteConversation: (id: string) => void;
     fetchConversations: () => Promise<void>;
     setSelectedAIModel: (model: AIModel) => void;
-    updateConversation: (id: string, name: string) => void;
+    setCurrentAIModel: (model: string) => void;
     resetSelectedAIModel: (chatId?: string) => void;
 }
 
@@ -24,7 +25,8 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
     const { user } = useProfile();
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [aiModels, setAiModels] = useState<AIModel[]>([]);
-    const [selectedAIModel, setSelectedAIModel] = useState<AIModel | null>(null);
+    const [selectedAIModel, setSelectedAIModel] = useState<AIModel>(aiModels[0] as AIModel);
+    const [currentAIModel, setCurrentAIModel] = useState<string>("Vezmir Intelligence 🔮");
 
     useEffect(() => {
         const initializeData = async () => {
@@ -41,7 +43,7 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
         if (chatId) {
             const chat = conversations.find(conversation => conversation.id === chatId);
             if (chat) {
-                const defaultModel = aiModels.find(model => model.id === chat.ai_model) || aiModels[0];
+                const defaultModel = aiModels.find(model => model.id === chat.ai_model) || aiModels.find(model => model.id === user?.preferred_model) || aiModels[0];
                 setSelectedAIModel(defaultModel);
             }
         } else {
@@ -78,25 +80,17 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
         }
     }
 
-
-    const updateConversation = (id: string, name: string) => {
-        setConversations(prevConversations =>
-            prevConversations.map(conv =>
-                conv.id === id ? { ...conv, name } : conv
-            )
-        );
-    };
-
     return (
         <ConversationContext.Provider value={{
             conversations,
             aiModels,
             selectedAIModel,
+            currentAIModel,
             addConversation,
             deleteConversation,
             fetchConversations,
-            updateConversation,
             setSelectedAIModel,
+            setCurrentAIModel,
             resetSelectedAIModel,
         }}>
             {children}

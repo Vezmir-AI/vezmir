@@ -12,7 +12,7 @@ interface AlertProps {
 const Alert: React.FC<AlertProps> = ({ notification }) => {
     const [show, setShow] = useState(true)
     const icon = notification.status === 'success' ? <CheckCircleIcon aria-hidden="true" className="h-6 w-6 text-green-400" /> : <ExclamationTriangleIcon aria-hidden="true" className="h-6 w-6 text-red-400" />
-    const { removeNotification } = useTheme();
+    const { locale, removeNotification } = useTheme();
 
 
     useEffect(() => {
@@ -39,7 +39,7 @@ const Alert: React.FC<AlertProps> = ({ notification }) => {
                                         {icon}
                                     </div>
                                     <div className="ml-3 w-0 flex-1 pt-0.5">
-                                        <p className="text-sm font-medium text-gray-900">{notification.message}</p>
+                                        <p className="text-sm font-medium text-gray-900">{locale(notification.message ?? '')}</p>
                                     </div>
                                     <div className="ml-4 flex flex-shrink-0">
                                         <button

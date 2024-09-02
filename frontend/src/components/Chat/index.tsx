@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { CreditCardIcon, ChartPieIcon, PencilSquareIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
 import { useConversation } from '@/context/ConversationContext';
-import { Message } from '@/types';
+import { Message, AIModel } from '@/types';
 import { getProviderLogo } from '@/utils';
 import ModelSelector from './ModelSelector';
 import ChatMessages from './ChatMessages';
@@ -16,7 +16,7 @@ const ChatComponent: React.FC = () => {
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { aiModels, addConversation, selectedAIModel, setSelectedAIModel, resetSelectedAIModel, fetchConversations, conversations } = useConversation();
+  const { currentAIModel, addConversation, selectedAIModel, setCurrentAIModel, resetSelectedAIModel, fetchConversations, conversations } = useConversation();
   const [isVezmirIntelligence, setIsVezmirIntelligence] = useState(() => {
     const saved = localStorage.getItem('isVezmirIntelligence');
     return saved ? JSON.parse(saved) : false;
@@ -30,10 +30,13 @@ const ChatComponent: React.FC = () => {
     } else {
       resetSelectedAIModel(chatId);
     }
-    if (isVezmirIntelligence) {
-      setSelectedAIModel(aiModels.find(model => model.name === "vezmir"));
-    }
   }, [chatId, conversations]);
+
+  useEffect(() => {
+    if (!isStreaming) {
+      setCurrentAIModel(isVezmirIntelligence ? "Vezmir Intelligence 🔮" : selectedAIModel?.display_name);
+    }
+  }, [isStreaming, isVezmirIntelligence, selectedAIModel]);
 
   const resetMessages = useCallback(() => {
     setMessages([]);
@@ -77,25 +80,18 @@ const ChatComponent: React.FC = () => {
   };
 
   const handleSendMessageToStream = async (message: string): Promise<void> => {
-    if (!selectedAIModel) return;
 
     try {
-      let url, newChatId, modelName;
+      let url, newChatId, model: AIModel;
 
       if (isVezmirIntelligence) {
-        const response = await api.post(`/chat/choose_model/`, { user_message: message });
-        const chosenModelName = response.model;
-        console.log("chosenModelName", chosenModelName);
-        modelName = aiModels.find(model => model.name === chosenModelName) || null;
-        console.log("modelName", modelName);
-        if (!modelName) {
-          throw new Error(`Model ${chosenModelName} not found in available models`);
-        }
+        model = await api.post(`/chat/choose_model/`, { user_message: message });
       } else {
-        modelName = selectedAIModel;
+        model = selectedAIModel;
       }
-
-      console.log("selectedAIModel", selectedAIModel);
+      setIsStreaming(true);
+      setCurrentAIModel(model.display_name);
+      console.log("using model", model);
 
       if (!chatId) {
         const newConversationResponse = await addConversation();
@@ -112,15 +108,14 @@ const ChatComponent: React.FC = () => {
         url = `/chat/conversations/${chatId}/`;
       }
 
-      setIsStreaming(true);
 
-      const userMessage = { role: 'user' as const, content: message, ai_model_details: modelName };
+      const userMessage = { role: 'user' as const, content: message, ai_model_details: model };
       setMessages(prevMessages => [...prevMessages, userMessage]);
 
       let assistantMessage = '';
-      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: modelName }]);
+      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: model }]);
 
-      const payload = { content: message, model_name: modelName.name };
+      const payload = { content: message, model_name: model.name };
       const response = await api.post(url, payload, true);
       if (selectedAIModel.name == "vezmir") {
         await fetchConversations();
@@ -128,7 +123,7 @@ const ChatComponent: React.FC = () => {
         resetSelectedAIModel(chatId);
         setMessages(prevMessages => [
           ...prevMessages.slice(0, -1),
-          { role: 'assistant', content: assistantMessage, ai_model_details: modelName }
+          { role: 'assistant', content: assistantMessage, ai_model_details: model }
         ]);
       }
 
@@ -148,9 +143,9 @@ const ChatComponent: React.FC = () => {
         assistantMessage += chunk;
         setMessages(prevMessages => [
           ...prevMessages.slice(0, -1),
-          { role: 'assistant', content: assistantMessage, ai_model_details: modelName }
+          { role: 'assistant', content: assistantMessage, ai_model_details: model }
         ]);
-        console.log("ehhheooo", modelName)
+        console.log("ehhheooo", model)
 
         return reader.read().then(processText);
       };
@@ -179,13 +174,11 @@ const ChatComponent: React.FC = () => {
                     className="sr-only peer"
                     checked={isVezmirIntelligence}
                     onChange={() => {
-                      const newValue = !isVezmirIntelligence;
-                      setIsVezmirIntelligence(newValue);
-                      localStorage.setItem('isVezmirIntelligence', JSON.stringify(newValue));
-                      setSelectedAIModel(aiModels.find(model => model.name === (newValue ? "vezmir" : "gpt-4o")));
+                      setIsVezmirIntelligence(!isVezmirIntelligence);
+                      localStorage.setItem('isVezmirIntelligence', JSON.stringify(!isVezmirIntelligence));
                     }}
                   />
-                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-[var(--bordeaux)] dark:peer-focus:ring-[var(--bordeaux)] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[var(--bordeaux)]"></div>
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-2 peer-focus:ring-[var(--bordeaux-clear)] dark:peer-focus:ring-[var(--bordeaux)] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[var(--bordeaux)]"></div>
                 </label>
                 <div className="flex items-center ml-4 mr-4 h-10 relative group">
                   <img src={VezmirLogo} alt="Vezmir Logo" className="w-8 h-8 mr-2 invert" />
@@ -249,7 +242,7 @@ const ChatComponent: React.FC = () => {
         {/* Input Area - Fixed at the bottom */}
         <div className="p-4 bg-[var(--gray-800)] sticky bottom-0 z-10">
           <InputMessage
-            selectedModel={selectedAIModel}
+            selectedModel={currentAIModel}
             isStreaming={isStreaming}
             onSendMessage={handleSendMessageToStream}
           />
