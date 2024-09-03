@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { CreditCardIcon, ChartPieIcon, PencilSquareIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
+import { useParams } from 'react-router-dom';
+import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
 import { useConversation } from '@/context/ConversationContext';
 import { Message, AIModel } from '@/types';
@@ -115,15 +115,6 @@ const ChatComponent: React.FC = () => {
 
       const payload = { content: message, model_name: model.name };
       const response = await api.post(url, payload, true);
-      if (selectedAIModel.name == "vezmir") {
-        await fetchConversations();
-        // fetch the conversation new ai model
-        resetSelectedAIModel(chatId);
-        setMessages(prevMessages => [
-          ...prevMessages.slice(0, -1),
-          { role: 'assistant', content: assistantMessage, ai_model_details: model }
-        ]);
-      }
 
       if (!response) {
         throw new Error('Response body is null');
