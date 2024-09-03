@@ -61,7 +61,7 @@ const CompleteProfileModal: React.FC<CompleteProfileModalProps> = ({ open, setOp
               </div>
             </div>
             <div className="mt-5">
-              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+              <div className="w-full bg-gray-200 rounded-full h-2.5 bg-gray-700">
                 <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
               </div>
               <ul className="mt-4 space-y-2">

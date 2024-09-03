@@ -49,7 +49,7 @@ const Login: React.FC = () => {
           />
         </div>
         <p
-          className="mb-4 text-center text-4xl font-extrabold text-gray-700 dark:text-white"
+          className="mb-4 text-center text-4xl font-extrabold text-gray-700 text-white"
         >
           {locale('com_auth_welcome_back')}
         </p>
@@ -101,8 +101,8 @@ const Login: React.FC = () => {
             {locale('com_auth_login')}
           </button>
         </form>
-        <div className="relative mt-6 flex w-full items-center justify-center border border-t border-gray-300 uppercase dark:border-gray-600">
-          <div className="absolute bg-[var(--black)] px-3 text-xs text-white dark:text-white">
+        <div className="relative mt-6 flex w-full items-center justify-center border border-t border-gray-300 uppercase border-gray-600">
+          <div className="absolute bg-[var(--black)] px-3 text-xs text-white text-white">
             {locale('com_auth_or')}
           </div>
         </div>
@@ -113,7 +113,7 @@ const Login: React.FC = () => {
             width={350}
           />
         </div>
-        <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
+        <p className="my-4 text-center text-sm font-light text-gray-700 text-white">
           {' '}
           {locale('com_auth_no_account')}{' '}
           <Link to="/register" className="p-1 text-[var(--bordeaux-clear)]">
