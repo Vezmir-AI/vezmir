@@ -155,6 +155,16 @@ const ChatComponent: React.FC = () => {
     }
   };
 
+  const handleRegenerateMessage = async (messageIndex: number) => {
+    if (messageIndex < 1 || messageIndex >= messages.length) return;
+
+    const previousUserMessage = messages[messageIndex - 1];
+    const messagesToKeep = messages.slice(0, messageIndex);
+
+    setMessages(messagesToKeep);
+    await handleSendMessageToStream(previousUserMessage.content);
+  };
+
   return (
     <div className="flex h-screen bg-[var(--gray-800)]">
       <div className="flex-1 flex flex-col bg-[var(--gray-800)] pl-4">
@@ -221,7 +231,11 @@ const ChatComponent: React.FC = () => {
               <p className="text-4xl font-bold text-white">How can I help you today?</p>
             </div>
           ) : (
-            <ChatMessages messages={messages} />
+            <ChatMessages
+              messages={messages}
+              isStreaming={isStreaming}
+              onRegenerateMessage={handleRegenerateMessage}
+            />
           )}
           <div ref={messagesEndRef} />
         </div>
