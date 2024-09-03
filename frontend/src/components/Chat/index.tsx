@@ -151,9 +151,55 @@ const ChatComponent: React.FC = () => {
 
     const previousUserMessage = messages[messageIndex - 1];
     const messagesToKeep = messages.slice(0, messageIndex);
+    const messagesToAppend = messages.slice(messageIndex + 1);
 
-    setMessages(messagesToKeep);
-    await handleSendMessageToStream(previousUserMessage.content);
+    setMessages([...messagesToKeep]);
+    setIsStreaming(true);
+
+    try {
+      let model: AIModel = isVezmirIntelligence
+        ? await api.post(`/chat/choose_model/`, { user_message: previousUserMessage.content })
+        : selectedAIModel;
+
+      setCurrentAIModel(model.display_name);
+
+      let assistantMessage = '';
+      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: model }]);
+
+      const url = chatId ? `/chat/conversations/${chatId}/` : `/chat/conversations/`;
+      const payload = { content: previousUserMessage.content, model_name: model.name };
+      const response = await api.post(url, payload, true);
+
+      if (!response) {
+        throw new Error('Response body is null');
+      }
+
+      const reader = response.getReader();
+      const decoder = new TextDecoder('utf-8');
+
+      const processText = async ({ done, value }: ReadableStreamReadResult<Uint8Array>): Promise<void> => {
+        if (done) {
+          setIsStreaming(false);
+          setMessages(prevMessages => [...prevMessages, ...messagesToAppend]);
+          return;
+        }
+
+        const chunk = decoder.decode(value, { stream: true });
+        assistantMessage += chunk;
+        setMessages(prevMessages => [
+          ...prevMessages.slice(0, -1),
+          { role: 'assistant', content: assistantMessage, ai_model_details: model }
+        ]);
+
+        return reader.read().then(processText);
+      };
+
+      reader.read().then(processText);
+    } catch (error) {
+      console.error('Error regenerating message:', error);
+      setIsStreaming(false);
+      setMessages(prevMessages => [...prevMessages, ...messagesToAppend]);
+    }
   };
 
   return (
