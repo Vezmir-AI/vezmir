@@ -29,7 +29,7 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEV")
+DEBUG = os.getenv("DEV", "False").lower() == "true"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -109,7 +109,7 @@ ROOT_URLCONF = "vesmir_app.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "users/template"],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
