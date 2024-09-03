@@ -160,11 +160,6 @@ button {
 button:hover {
   background-color: var(--bordeaux-hover);
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-  outline-color: var(--bordeaux-clear);
-}
 
 /* Override global button styles for usage switches */
 .usage-switch {
