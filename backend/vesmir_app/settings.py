@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "users",
     "chat",
     "billing",
+    "middlewares",
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -101,7 +102,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
+    "middlewares.user_middleware.UserConnectionMiddleware",
 ]
 
 ROOT_URLCONF = "vesmir_app.urls"
