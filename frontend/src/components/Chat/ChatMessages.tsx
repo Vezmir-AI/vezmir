@@ -75,14 +75,14 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming, onRe
                       </>
                     )}
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => onRegenerateMessage(index)}
                     className="p-1 rounded bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1"
                     title="Regenerate response"
                   >
                     <ArrowPathIcon className="h-4 w-4 text-white" />
                     <span className="text-xs text-white">Retry</span>
-                  </button>
+                  </button> */}
                 </div>
               )}
             </div>
