@@ -20,7 +20,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming, onRe
   };
 
   return (
-    <div className="flex-grow overflow-y-auto p-4 space-y-4 max-w-4xl mx-auto">
+    <div className="flex-grow overflow-y-auto p-4 space-y-4 max-w-4xl mx-auto mb-4">
       {messages.map((msg, index) => (
         <div
           key={index}
@@ -54,7 +54,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming, onRe
                 )}
               </div>
             )}
-            <div className="relative flex-grow mb-4">
+            <div className="relative flex-grow">
               {renderContent(msg.content, index, copiedStates, setCopiedStates)}
               {!isStreaming && msg.role === 'assistant' && (
                 <div className="absolute -bottom-6 left-0 flex space-x-2 mt-2">
