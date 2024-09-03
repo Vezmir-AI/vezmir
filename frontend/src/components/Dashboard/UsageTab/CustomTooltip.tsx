@@ -17,7 +17,7 @@ const CustomTooltip: React.FC<CustomTooltipType> = ({ active, payload, label }) 
                             item.value?(
                             <div key={item.name} className="flex items-center mb-2">
                                 <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: item.color }}></div>
-                                <span className="font-bold text-gray-800">{`${item.name}: ${item.value<0.01? "<$0.01" : `$${item.value}`}`}</span>
+                                <span className="font-bold text-gray-800">{`${item.name}: ${item.value<0.01? "<$0.01" : `$${item.value.toFixed(2)}`}`}</span>
                             </div>): <></>
                         ))}
                     </div>
