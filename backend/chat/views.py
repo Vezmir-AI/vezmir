@@ -258,7 +258,10 @@ class FeedbackView(APIView):
             return Response({"status": "error", "message": "no_feedback_message"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            send_feedback_email(feedback_message)
+            user = request.user
+            user_context = f"User ID: {user.id}, Email: {user.email}"
+            feedback_with_context = f"User Context:\n{user_context}\n\nFeedback Message:\n{feedback_message}"
+            send_feedback_email(feedback_with_context)
             return Response({"status": "success", "message": "feedback_sent"}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
