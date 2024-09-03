@@ -43,7 +43,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                     className={`absolute hidden group-hover:flex items-center h-6 bg-opacity-75 text-white text-xs px-2 py-1 rounded-md -top-7 left-full ml-2 whitespace-nowrap ${getProviderColor(msg.ai_model_details?.provider || 'vezmir')}`}
                     style={{ width: 'max-content', transition: 'width 0.3s ease-out' }}
                   >
-                    {messages[index].ai_model_details?.name}
+                    {messages[index].ai_model_details?.display_name}
                   </div>
                 )}
               </div>
