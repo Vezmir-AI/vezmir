@@ -7,10 +7,9 @@ import { ClipboardDocumentIcon, ArrowPathIcon, CheckIcon } from '@heroicons/reac
 interface ChatMessagesProps {
   messages: Message[];
   isStreaming: boolean;
-  onRegenerateMessage: (messageIndex: number) => void;
 }
 
-const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming, onRegenerateMessage }) => {
+const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) => {
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
 
   const handleCopy = (content: string) => {
