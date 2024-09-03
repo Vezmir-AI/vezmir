@@ -114,7 +114,7 @@ const Register: React.FC = () => {
           />
         </div>
         <h1
-          className="mb-4 text-center text-4xl font-bold text-gray-700 dark:text-white"
+          className="mb-4 text-center text-4xl font-bold text-gray-700 text-white"
         >
           {locale('com_auth_create_account')}
         </h1>
@@ -187,8 +187,8 @@ const Register: React.FC = () => {
             {locale('com_auth_register')}
           </button>
         </form>
-        <div className="relative mt-6 flex w-full items-center justify-center border border-t border-gray-300 uppercase dark:border-gray-600">
-          <div className="absolute bg-[var(--black)] px-3 text-xs text-white dark:text-white">
+        <div className="relative mt-6 flex w-full items-center justify-center border border-t border-gray-300 uppercase border-gray-600">
+          <div className="absolute bg-[var(--black)] px-3 text-xs text-white text-white">
             {locale('com_auth_or')}
           </div>
         </div>
@@ -200,7 +200,7 @@ const Register: React.FC = () => {
             text="signup_with"
           />
         </div>
-        <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
+        <p className="my-4 text-center text-sm font-light text-gray-700 text-white">
           {locale('com_auth_already_have_account')}{' '}
           <Link to="/login" aria-label="Login" className="p-1 text-[var(--bordeaux-clear)]">
             {locale('com_auth_login')}
