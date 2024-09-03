@@ -108,7 +108,6 @@ const ChatComponent: React.FC = () => {
         url = `/chat/conversations/${chatId}/`;
       }
 
-
       const userMessage = { role: 'user' as const, content: message, ai_model_details: model };
       setMessages(prevMessages => [...prevMessages, userMessage]);
 
@@ -188,13 +187,13 @@ const ChatComponent: React.FC = () => {
                 {!isVezmirIntelligence && <ModelSelector />}
               </div>
             </div>
-            <div className="flex space-x-2 ml-4">
+            {/* <div className="flex space-x-2 ml-4" className="md:hidden">
               <Link to="/dashboard/billing">
                 <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
                   <CreditCardIcon className="w-6 h-6 text-[var(--bordeaux)]" />
                 </div>
               </Link>
-              <Link to="/dashboard/usage">
+              <Link to="/dashboard/usage" className="md:hidden">
                 <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
                   <ChartPieIcon className="w-6 h-6 text-[var(--bordeaux)]" />
                 </div>
@@ -204,7 +203,7 @@ const ChatComponent: React.FC = () => {
                   <PencilSquareIcon className="w-6 h-6 text-[var(--bordeaux)]" />
                 </div>
               </Link>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -215,7 +214,7 @@ const ChatComponent: React.FC = () => {
               {selectedAIModel && (
                 <div className="bg-white rounded-full p-2">
                   <img
-                    src={getProviderLogo(selectedAIModel.provider)}
+                    src={isVezmirIntelligence ? getProviderLogo('vezmir') : getProviderLogo(selectedAIModel.provider)}
                     alt={`${selectedAIModel.provider} logo`}
                     className="w-12 h-12"
                   />
@@ -240,7 +239,7 @@ const ChatComponent: React.FC = () => {
         </div>
 
         {/* Input Area - Fixed at the bottom */}
-        <div className="p-4 bg-[var(--gray-800)] sticky bottom-0 z-10">
+        <div className="bg-[var(--gray-800)] sticky bottom-0 z-10">
           <InputMessage
             selectedModel={currentAIModel}
             isStreaming={isStreaming}

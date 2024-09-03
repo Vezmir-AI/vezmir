@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import {
   Bars3Icon,
@@ -52,52 +52,53 @@ export default function SideBar() {
               transition
               className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full"
             >
-              {/* Sidebar component for mobile */}
-              <div className="flex h-screen grow flex-col gap-y-5 overflow-y-auto bg-[var(--gray-900)] px-6 pb-2 ring-1 ring-white/10">
-                <div className="flex h-16 shrink-0 items-center justify-between">
-                  <img
-                    alt="vezmir-logo"
-                    src="/assets/white.svg"
-                    className="h-8 w-auto"
-                  />
-                  <button type="button" onClick={() => setSidebarOpen(false)} className="p-2 rounded-md bg-[var(--gray-700)] hover:bg-[var(--gray-600)] text-gray-400 hover:text-white">
-                    <span className="sr-only">Close sidebar</span>
-                    <ChevronLeftIcon aria-hidden="true" className="h-6 w-6" />
-                  </button>
+              <div className="flex h-full flex-col bg-[var(--gray-900)] px-6 pb-2 ring-1 ring-white/10">
+                <div className="flex-shrink-0">
+                  <div className="flex h-16 items-center justify-between">
+                    <Link to="/">
+                      <img
+                        alt="vezmir-logo"
+                        src="/assets/white.svg"
+                        className="h-8 w-auto cursor-pointer"
+                      />
+                    </Link>
+                    <button type="button" onClick={() => setSidebarOpen(false)} className="p-2 rounded-md bg-[var(--gray-700)] hover:bg-[var(--gray-600)] text-gray-400 hover:text-white">
+                      <span className="sr-only">Close sidebar</span>
+                      <ChevronLeftIcon aria-hidden="true" className="h-6 w-6" />
+                    </button>
+                  </div>
+                  <div className="mt-2 mb-4">
+                    <NewChatButton />
+                  </div>
                 </div>
-                <nav className="flex flex-1 flex-col" onClick={() => setSidebarOpen(false)} >
-                  <NewChatButton />
-                  <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                    <li className="mt-4">
-                      <ChatHistory />
-                    </li>
-                    <li className="mt-auto pr-2">
-                      <div
-                        ref={profileRef}
-                        className="relative rounded-lg shadow-md bg-[var(--gray-800)] hover:bg-[var(--gray-700)] transition-colors duration-200 cursor-pointer"
-                      >
-                        <div className="flex items-center gap-x-4 px-4 py-3">
-                          <div onClick={() => navigate('/dashboard/profile')} className="flex items-center gap-x-4 flex-grow">
-                            <CogIcon className="h-8 w-8 text-gray-400" />
-                            <div className="flex flex-col">
-                              <span className={`text-${textSize} font-semibold text-white`}>{userName}</span>
-                              <span className="sr-only">Your profile</span>
-                            </div>
-                          </div>
-                          <div className="ml-auto p-2 rounded-lg">
-                            <ArrowLeftEndOnRectangleIcon
-                              className="h-5 w-5 text-gray-400"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                logout();
-                              }}
-                            />
-                          </div>
+                <div className="flex-grow overflow-y-auto">
+                  <ChatHistory />
+                </div>
+                <div className="flex-shrink-0 mt-auto pr-2">
+                  <div
+                    ref={profileRef}
+                    className="relative rounded-lg shadow-md bg-[var(--gray-800)] hover:bg-[var(--gray-700)] transition-colors duration-200 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-x-4 px-4 py-3">
+                      <div onClick={() => navigate('/dashboard/profile')} className="flex items-center gap-x-4 flex-grow">
+                        <CogIcon className="h-8 w-8 text-gray-400" />
+                        <div className="flex flex-col">
+                          <span className={`text-${textSize} font-semibold text-white`}>{userName}</span>
+                          <span className="sr-only">Your profile</span>
                         </div>
                       </div>
-                    </li>
-                  </ul>
-                </nav>
+                      <div className="ml-auto p-2 rounded-lg">
+                        <ArrowLeftEndOnRectangleIcon
+                          className="h-5 w-5 text-gray-400"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            logout();
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </DialogPanel>
           </div>
@@ -115,60 +116,60 @@ export default function SideBar() {
               </button>
             </div>
           ) : (
-            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[var(--gray-900)] px-6">
-              <div className="flex h-16 shrink-0 items-center justify-between mt-1">
-                <img
-                  alt="vezmir-logo"
-                  src="/assets/white.svg"
-                  className="h-8 w-auto"
-                />
-                {!isDashboard && (
-                  <button
-                    onClick={() => setIsCollapsed(true)}
-                    className="p-2 rounded-md text-gray-400 bg-[var(--gray-700)] hover:bg-[var(--gray-600)] mt-2"
-                  >
-                    <ChevronLeftIcon className="h-6 w-6" />
-                  </button>
-                )}
-              </div>
-              <nav className="flex flex-1 flex-col">
-                <NewChatButton />
-                  <ul role="list" className="flex flex-col h-[calc(100vh-150px)] gap-y-7">                
-                  <li className="mt-4 flex-grow overflow-hidden flex flex-col">
-                    <div className="flex-grow overflow-y-auto">
-                      <ChatHistory />
-                    </div>
-                  </li>
-                  <li className="mt-auto pr-2">
-                    <div
-                      ref={profileRef}
-                      className="relative rounded-lg shadow-md bg-[var(--gray-800)] transition-colors duration-200"
+            <div className="flex flex-col h-full bg-[var(--gray-900)] px-3">
+              <div className="flex-shrink-0">
+                <div className="flex h-16 items-center justify-between mt-1 px-2">
+                  <Link to="/">
+                    <img
+                      alt="vezmir-logo"
+                      src="/assets/white.svg"
+                      className="h-8 w-auto cursor-pointer"
+                    />
+                  </Link>
+                  {!isDashboard && (
+                    <button
+                      onClick={() => setIsCollapsed(true)}
+                      className="p-2 rounded-md text-gray-400 bg-[var(--gray-700)] hover:bg-[var(--gray-600)] mt-2"
                     >
-                      <div className="flex items-center gap-x-4 px-2 py-3 hover:bg-[var(--gray-700)] rounded-lg">
-                        <div
-                          onClick={() => navigate('/dashboard/profile')}
-                          className="flex items-center gap-x-4 flex-grow cursor-pointer"
-                        >
-                          <CogIcon className="h-8 w-8 text-gray-400" />
-                          <span aria-hidden="true" className={`text-${textSize} font-semibold text-white`}>{userName}</span>
-                          <span className="sr-only">Your profile</span>
-                        </div>
-                        <div
-                          className="p-2 overflow-hidden rounded-lg hover:bg-[var(--gray-800)]"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            logout();
-                          }}
-                        >
-                          <ArrowLeftEndOnRectangleIcon
-                            className="h-5 w-5 text-gray-400 hover:text-white cursor-pointer"
-                          />
-                        </div>
-                      </div>
+                      <ChevronLeftIcon className="h-6 w-6" />
+                    </button>
+                  )}
+                </div>
+                <div className="mt-2 mb-4 px-3">
+                  <NewChatButton />
+                </div>
+              </div>
+              <div className="flex-grow overflow-y-auto">
+                <ChatHistory />
+              </div>
+              <div className="flex-shrink-0 mt-auto pr-2">
+                <div
+                  ref={profileRef}
+                  className="relative rounded-lg shadow-md bg-[var(--gray-800)] transition-colors duration-200"
+                >
+                  <div className="flex items-center gap-x-4 px-2 py-3 hover:bg-[var(--gray-700)] rounded-lg">
+                    <div
+                      onClick={() => navigate('/dashboard/profile')}
+                      className="flex items-center gap-x-4 flex-grow cursor-pointer"
+                    >
+                      <CogIcon className="h-8 w-8 text-gray-400" />
+                      <span aria-hidden="true" className={`text-${textSize} font-semibold text-white`}>{userName}</span>
+                      <span className="sr-only">Your profile</span>
                     </div>
-                  </li>
-                </ul>
-              </nav>
+                    <div
+                      className="p-2 overflow-hidden rounded-lg hover:bg-[var(--gray-800)]"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        logout();
+                      }}
+                    >
+                      <ArrowLeftEndOnRectangleIcon
+                        className="h-5 w-5 text-gray-400 hover:text-white cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>

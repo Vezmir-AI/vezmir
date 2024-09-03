@@ -37,8 +37,8 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-[var(--gray-dark)] mt-auto">
-      <div className="flex items-center max-w-2xl mx-auto relative bg-[var(--gray-800)]">
+    <form onSubmit={handleSubmit} className="bg-[var(--gray-dark)] mt-auto mb-8">
+      <div className="flex items-center max-w-4xl mx-auto relative bg-[var(--gray-800)]">
         <textarea
           ref={textareaRef}
           value={inputMessage}
@@ -56,7 +56,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           } ${(isStreaming || !inputMessage.trim()) ? 'cursor-not-allowed opacity-50' : ''}`}
           disabled={isStreaming || !inputMessage.trim()}
         >
-          <ArrowUpIcon className="size-6" />
+          <ArrowUpIcon className="size-6 stroke-width-4" />        
         </button>
       </div>
     </form>
