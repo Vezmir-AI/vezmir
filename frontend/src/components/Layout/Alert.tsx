@@ -39,13 +39,13 @@ const Alert: React.FC<AlertProps> = ({ notification }) => {
         >
             <div 
                 onClick={handleClose}
-                className={`flex items-center justify-center p-3 rounded-3xl m-2 ${
+                className={`flex items-center justify-center p-2 rounded-3xl m-2 ${
                     notification.status === 'success' 
                         ? 'bg-[var(--bordeaux)] border-4 border-[var(--bordeaux-hover)] hover:bg-[var(--bordeaux-hover)]' 
-                        : 'bg-red-600 border-4 border-red-800 hover:bg-red-800'
+                        : 'bg-red-600 border-2 border-red-800 hover:bg-red-800'
                 } cursor-pointer`}
             >
-                <p className="text-xl font-bold text-white text-center px-2">{locale(notification.message ?? '')}</p>
+                <p className="text-lg font-bold text-white text-center px-2">{locale(notification.message ?? '')}</p>
             </div>
         </Transition>
     );
