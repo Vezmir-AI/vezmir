@@ -45,7 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # App related fields
     is_active = models.BooleanField(default=True)
-    balance = models.DecimalField(max_digits=100, decimal_places=10, default=0)
+    balance = models.DecimalField(max_digits=20, decimal_places=10, default=Decimal("10.0"))
     preferred_model = models.ForeignKey(AIModel, on_delete=models.SET_NULL, null=True, blank=True)
     stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
     stripe_payment_method_id = models.CharField(max_length=50, blank=True, null=True)
@@ -67,3 +67,55 @@ class User(AbstractBaseUser, PermissionsMixin):
         print("Updating balance", cost)
         self.balance -= Decimal(str(cost))
         self.save()
+
+
+## STATS RELATED MODELS ##
+
+
+# Count of connections per day
+class UserConnection(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    connection_date = models.DateField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ["user", "connection_date"]
+
+
+# Count of new messages per day per users
+class UserMessage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message_date = models.DateField(auto_now_add=True)
+    message_count = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ["user", "message_date"]
+
+
+# Count of new conversations per day per users
+class UserConversation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    conversation_date = models.DateField(auto_now_add=True)
+    conversation_count = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ["user", "conversation_date"]
+
+
+# Count of how many times users go back to past conversations
+class UserBackToConversation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    back_to_conversation_date = models.DateField(auto_now_add=True)
+    back_to_conversation_count = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ["user", "back_to_conversation_date"]
+
+
+# Count of how many times users go to usage page
+class UserWentToUsage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    went_to_usage_date = models.DateField(auto_now_add=True)
+    went_to_usage_count = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ["user", "went_to_usage_date"]
