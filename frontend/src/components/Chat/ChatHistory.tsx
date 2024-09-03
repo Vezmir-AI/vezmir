@@ -33,7 +33,7 @@ const ChatHistory: React.FC = () => {
                     <div className={`group flex items-center justify-between rounded-md ${item.id === chatId ? 'bg-[var(--gray-800)]' : 'bg-[var(--gray-900)]'} hover:bg-[var(--gray-800)]`}>
                         <Link
                             to={`/chat/${item.id}`}
-                            className={`${item.id === chatId ? 'text-white' : 'text-[var(--gray-400)]'} group-hover:text-white flex-grow flex gap-x-3 p-3 text-base font-semibold leading-6 min-w-0`}
+                            className={`${item.id === chatId ? 'text-white' : 'text-[var(--gray-400)]'} group-hover:text-white flex-grow flex gap-x-3 p-2 text-sm font-semibold leading-6 min-w-0`}
                             title={item.name}
                         >
                             <span className="truncate">{item.name}</span>
