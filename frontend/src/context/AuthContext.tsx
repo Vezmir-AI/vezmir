@@ -26,7 +26,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const googleLogin = async (credentials: CredentialResponse) => {
-    console.log('googleLogin', credentials);
     const { credential } = credentials;
     const { access, refresh } = await api.post('/auth/google/', { credential });
     login(access, refresh);

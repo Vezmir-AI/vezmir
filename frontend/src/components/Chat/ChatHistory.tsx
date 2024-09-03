@@ -17,7 +17,6 @@ const ChatHistory: React.FC = () => {
     }, [location.pathname]);
 
     const handleDeleteConversation = (id: string, event: React.MouseEvent) => {
-        console.log('delete conversation', id, chatId);
         event.preventDefault();
         event.stopPropagation();
         deleteConversation(id);

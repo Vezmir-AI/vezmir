@@ -128,7 +128,11 @@ const UsageConsumptionArea: React.FC = () => {
                                         contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', border: 'none' }}
                                         labelStyle={{ color: '#333' }}
                                         itemStyle={{ color: '#8F22FC' }}
-                                        formatter={(value, name) => [`${value} tokens`, name]}
+                                        formatter={(value, name, props) => [
+                                            `${value} tokens`,
+                                            `${name} - ${props.payload.date}`
+                                        ]}
+                                        position={{ y: showDetails ? -150 : -50 }}
                                     />
                                 )}
                                 {showDetails ? (

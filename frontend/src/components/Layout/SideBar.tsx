@@ -139,7 +139,7 @@ export default function SideBar() {
                   <NewChatButton />
                 </div>
               </div>
-              <div className="flex-grow overflow-y-auto">
+              <div className="flex-grow overflow-y-auto hide-scrollbar">
                 <ChatHistory />
               </div>
               <div className="flex-shrink-0 mt-auto pr-2">
