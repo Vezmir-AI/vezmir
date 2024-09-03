@@ -24,7 +24,7 @@ const VerifyEmail: React.FC = () => {
                 setTimeout(() => navigate("/dashboard"), 3000)
             }
         }).catch((error) => {
-            console.log(error)
+            console.error(error)
             if (error.message) {
                 const errorMessage = error.message;
                 switch (errorMessage) {

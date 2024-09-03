@@ -91,7 +91,6 @@ const ChatComponent: React.FC = () => {
       }
       setIsStreaming(true);
       setCurrentAIModel(model.display_name);
-      console.log("using model", model);
 
       if (!chatId) {
         const newConversationResponse = await addConversation();
@@ -144,7 +143,6 @@ const ChatComponent: React.FC = () => {
           ...prevMessages.slice(0, -1),
           { role: 'assistant', content: assistantMessage, ai_model_details: model }
         ]);
-        console.log("ehhheooo", model)
 
         return reader.read().then(processText);
       };
