@@ -30,7 +30,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <>
-      <div className="absolute top-0 right-0 z-50 flex flex-col space-y-2 p-4">
+      <div className="fixed top-0 right-0 z-50 flex flex-col items-end space-y-2 p-4">
         {notifications.map((notification, index) => (
           <Alert key={index} notification={notification} />
         ))}

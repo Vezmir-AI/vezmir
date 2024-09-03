@@ -11,11 +11,11 @@ const NewChatButton = () => {
         <button
             data-testid="wide-header-new-chat-button"
             type="button"
-            className="w-full flex items-center justify-between whitespace-nowrap rounded-xl bg-gray-850 py-3 px-5"
+            className="w-full  border-4 border-[var(--bordeaux-hover)] flex items-center justify-between whitespace-nowrap rounded-3xl bg-gray-850 py-3 px-5"
             onClick={goToNewChat}
         >
-            <span className="text-token-text-primary overflow-hidden text-ellipsis whitespace-nowrap text-lg font-medium">New chat</span>
-            <PencilSquareIcon className="size-6" />
+            <span className="text-token-text-primary overflow-hidden text-ellipsis whitespace-nowrap text-xl font-bold">New chat</span>
+            <PencilSquareIcon className="size-7" />
         </button>
     );
 }
