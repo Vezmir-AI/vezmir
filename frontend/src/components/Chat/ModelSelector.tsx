@@ -3,14 +3,15 @@ import { ChevronDown } from 'lucide-react';
 import { AIModel } from '@/types';
 import { getProviderLogo, getProviderColor } from '../../utils/providerUtils';
 import { useConversation } from '../../context/ConversationContext';
-
+import { useParams } from 'react-router-dom';
 
 const ModelSelector: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredHint, setHoveredHint] = useState<string | null>(null);
-  const { aiModels, selectedAIModel, setSelectedAIModel } = useConversation();
+  const { aiModels, selectedAIModel, setSelectedAIModel, setConversationAIModel } = useConversation();
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const { chatId } = useParams<{ chatId: string }>();
+  console.log(chatId)
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -26,6 +27,9 @@ const ModelSelector: React.FC = () => {
 
   const handleModelChange = (model: AIModel) => {
     setSelectedAIModel(model);
+    if (chatId) {
+      setConversationAIModel(chatId, model.id);
+    }
     setIsOpen(false);
   };
 
