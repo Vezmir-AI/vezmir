@@ -23,8 +23,6 @@ const ChatComponent: React.FC = () => {
   });
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
 
-  console.log(currentAIModel,selectedAIModel)
-
   useEffect(() => {
     if (!chatId) {
       resetMessages();
