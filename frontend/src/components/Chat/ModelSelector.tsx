@@ -11,7 +11,6 @@ const ModelSelector: React.FC = () => {
   const { aiModels, selectedAIModel, setSelectedAIModel, setConversationAIModel } = useConversation();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { chatId } = useParams<{ chatId: string }>();
-  console.log(chatId)
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
