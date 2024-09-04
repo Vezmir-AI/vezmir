@@ -67,7 +67,7 @@ const ChatComponent: React.FC = () => {
   }, [chatId, resetMessages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ block: "end" });
   };
 
   const fetchMessages = async (id: string): Promise<void> => {
