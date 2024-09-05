@@ -16,6 +16,7 @@ interface ConversationContext {
     setSelectedAIModel: (model: AIModel) => void;
     setCurrentAIModel: (model: string) => void;
     resetSelectedAIModel: (chatId?: string) => void;
+    setConversationAIModel: (chatId: string, newAIModel: string) => void;
 }
 
 const ConversationContext = createContext<ConversationContext | null>(null);
@@ -38,6 +39,21 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
             initializeData();
         }
     }, [isAuthenticated]);
+
+    const setConversationAIModel = async (chatId: string, newAIModel: string) => {
+        try {
+            await api.put(`/chat/conversations/${chatId}/`, { ai_model: newAIModel });
+            setConversations(prevConversations => 
+                prevConversations.map(conv => 
+                    conv.id === chatId 
+                        ? { ...conv, ai_model: newAIModel } 
+                        : conv
+                )
+            );
+        } catch (error) {
+            console.error('Error updating conversation AI model:', error);
+        }
+    };
 
     const resetSelectedAIModel = (chatId: string = "") => {
         if (chatId) {
@@ -92,6 +108,7 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
             setSelectedAIModel,
             setCurrentAIModel,
             resetSelectedAIModel,
+            setConversationAIModel,
         }}>
             {children}
         </ConversationContext.Provider>
