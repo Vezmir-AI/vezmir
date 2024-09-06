@@ -180,7 +180,7 @@ const ProfileTab: React.FC = () => {
                           <span className="flex items-center text-red-400">
                             <XMarkIcon className="h-5 w-5" />
                             <span className="ml-1 text-xs">Email not verified</span>
-                            <Link to="/resend-verification-email" className="ml-2 text-xs text-white underline">Resend verification email</Link>
+                            <Link to="/resend-verification-email" className="ml-2 mr-2 text-xs text-white underline">Resend verification email</Link>
                           </span>
                         )}
                       </div>
