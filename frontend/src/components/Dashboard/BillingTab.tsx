@@ -54,12 +54,12 @@ const BillingTab: React.FC = () => {
   };
 
   return (
-    <div className="bg-[var(--gray-800)] shadow sm:rounded-lg text-[var(--white)]">
-      <h2 className="text-2xl font-bold mb-6 text-[var(--white)] px-4 py-5 sm:px-6">Billing Information</h2>
+    <div className="xl:px-16 bg-[var(--gray-800)] h-screen">
+      <div className="max-w-7xl px-4 mt-12 sm:px-6 lg:px-8">
+      <h2 className="text-2xl px-2 font-semibold leading-7 text-white mb-4">Billing Information</h2>
 
-      <div className="px-4 py-5 sm:p-6">
         {/* Balance Section */}
-        <div className="mb-8">
+        <div className="px-2 mb-8">
           <h3 className="text-lg font-semibold leading-6 text-[var(--white)] mb-4">Your Balance</h3>
           <p className="text-sm text-gray-400 my-2">
             Balance is added manually for the beta. <br />
@@ -75,7 +75,7 @@ const BillingTab: React.FC = () => {
 
         {/* Payment Method Section */}
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold leading-6 text-[var(--white)]">Your Payment Methods</h3>
+          <h3 className="px-2 text-lg font-semibold leading-6 text-[var(--white)]">Your Payment Methods</h3>
           <Link
             to="/setup-payment"
             className="inline-flex items-center rounded-md px-3 py-2 bg-[var(--bordeaux)] text-sm font-semibold text-[var(--white)] shadow-sm hover:bg-[var(--bordeaux-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--bordeaux-clear)] focus:ring-offset-2 focus:ring-offset-[var(--gray-800)]"
@@ -134,9 +134,9 @@ const BillingTab: React.FC = () => {
               </div>
             )
           )}
+          </div>
         </div>
       </div>
-    </div>
   );
 };
 

@@ -45,7 +45,7 @@ def choose_model(user_message):
         {
             "role": "user",
             "content": (
-                "Based on this prompt can you select the category that is the most close the question just "
+                "Based on this prompt can you select the category that is the most close to the question just "
                 'output the category : \n\nCategories : ["Programming code", "General knowledge", "Mailing", '
                 f'"Translation", "Writing", Mathematics"]\n\nPrompt : {user_message}'
             ),

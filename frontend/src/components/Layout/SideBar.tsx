@@ -183,7 +183,7 @@ export default function SideBar() {
         </div>
 
         {/* Desktop sidebar buffer for layout, do not remove */}
-        <div className={`py-10 ${isCollapsed ? 'lg:pl-4' : 'lg:pl-60'} ${isDashboard ? '' : 'bg-[var(--gray-800)]'} hidden sm:block sm:h-full transition-all duration-0`}>
+        <div className={`py-10 ${isCollapsed ? 'lg:pl-4' : 'lg:pl-60'} bg-[var(--gray-800)] hidden sm:block sm:h-full transition-all duration-0`}>
           <div className="px-4 sm:px-6 lg:px-8"></div>
         </div>
       </div >

@@ -42,7 +42,7 @@ const DashboardHeader: React.FC = () => {
     }, [isMenuOpen]);
 
     return (
-        <div className="sticky top-0 z-20 bg-[var(--gray-900)] w-auto m-1">
+        <div className="sticky top-0 z-20 bg-[var(--gray-800)] w-auto ">
             <div className="md:hidden flex items-center h-14 ">
                 <div className="relative flex-grow px-4">
                     <button
@@ -105,12 +105,15 @@ const DashboardHeader: React.FC = () => {
                                 aria-current={tab === currentTab ? 'page' : undefined}
                                 className={classNames(
                                     tab === currentTab
-                                        ? 'border-white text-[var(--bordeaux-clear)]'
-                                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
-                                    'flex-1 border-b-2 px-1 py-4 text-center text-sm font-medium',
+                                        ? 'border-[var(--bordeaux-clear)] text-[var(--bordeaux-clear)] text-xl font-bold relative'
+                                        : 'border-transparent text-gray-500 text-base hover:border-gray-300 hover:text-gray-700 font-medium',
+                                    'flex-1 px-1 py-4 text-center',
                                 )}
                             >
                                 {tab.name}
+                                {tab === currentTab && (
+                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--bordeaux-clear)]" />
+                                )}
                             </Link>
                         ))}
                     </nav>
