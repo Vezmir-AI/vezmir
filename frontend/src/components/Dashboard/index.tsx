@@ -26,7 +26,7 @@ const Dashboard: React.FC = () => {
       }, 3000);
   }
   return (
-    <div>
+    <div className='bg-[var(--gray-800)]'>
       <DashboardHeader />
       <Component />
     </div>
