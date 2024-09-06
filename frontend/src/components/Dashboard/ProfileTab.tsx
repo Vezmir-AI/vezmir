@@ -101,7 +101,7 @@ const ProfileTab: React.FC = () => {
             {/* Settings forms */}
             <div className="divide-y divide-white/5">
               <div className="max-w-7xl px-4 mt-12 sm:px-6 lg:px-8">
-                <h2 className="text-2xl px-2 font-semibold leading-7 text-white mb-4">Personal Information</h2>
+                <h2 className="text-2xl px-2 font-semibold leading-7 text-white mb-4">Profile Information</h2>
                 <p className="mt-1 px-2 text-sm leading-6 text-gray-400 mb-6">
                   Update your personal information associated with your account.
                 </p>
