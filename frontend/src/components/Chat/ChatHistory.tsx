@@ -64,14 +64,14 @@ const ChatHistory: React.FC = () => {
                                         className="p-2 text-[var(--gray-400)] hover:text-white"
                                         title="Cancel"
                                     >
-                                        <XMarkIcon className="h-5 w-5 text-white" />
+                                        <XMarkIcon className="h-3 w-3 text-white" />
                                     </button>
                                     <button
                                         onClick={(e) => handleDeleteConversation(item.id, e)}
                                         className="p-2 text-[var(--gray-400)] hover:text-white"
                                         title="Confirm delete"
                                     >
-                                        <CheckIcon className="h-5 w-5 text-white" />
+                                        <CheckIcon className="h-3 w-3 text-white" />
                                     </button>
                                 </div>
                             )}
