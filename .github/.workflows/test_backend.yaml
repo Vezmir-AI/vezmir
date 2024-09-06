@@ -28,3 +28,14 @@ jobs:
             sudo systemctl restart gunicorn
 
             pip freeze > hey.txt
+
+  check-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch
+        run: |
+          if [[ ${GITHUB_HEAD_REF} != test* ]];
+          then
+            echo "Error: Pull request must come from 'test*' branch"
+            exit 1
+          fi
