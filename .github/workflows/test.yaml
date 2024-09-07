@@ -1,10 +1,14 @@
-name: test
+name: Run on PR to stage branches
+
 on:
   pull_request:
-    types: [opened, reopened]
+    branches:
+      - 'stage*'  # This matches any branch starting with "stage"
 
 jobs:
-  test:
+  say-hello:
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo yo
+    - name: Echo Hello World
+      run: echo "Hello World"
