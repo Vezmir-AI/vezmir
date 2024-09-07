@@ -2,14 +2,8 @@ name: Deploy webapp on VPS
 on:
   pull_request:
     branches:
-      - main
+      - "main"
   workflow_dispatch:
-    inputs:
-      branch:
-        type: string
-        required: true
-        description: 'Branch to deploy'
-        default: 'main'
 
 jobs:
   deploy-webapp-on-vps:
