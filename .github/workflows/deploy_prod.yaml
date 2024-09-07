@@ -6,13 +6,34 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-webapp-on-vps:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy webapp on VPS
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18" # or your preferred Node.js version
+
+      - name: Install dependencies and build frontend
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Copy built frontend to VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "frontend/dist/*"
+          target: "/var/www/vezmir.ai.prod"
+          strip_components: 2
+
+      - name: Deploy backend to VPS
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -22,7 +43,7 @@ jobs:
             cd /home/azureuser/vezmir
             git pull origin ${{ github.head_ref }}
             git checkout ${{ github.head_ref }}
-            cp -r /home/azureuser/vezmir/backend /home/azureuser/backend-prod
+            cp -r /home/azureuser/vezmir/backend/* /home/azureuser/backend-prod/
             cd /home/azureuser/backend-prod
             cp deployments/.env.backend.prod .env
             echo "DJANGO_SECRET_KEY=$(openssl rand -base64 32)" >> .env
@@ -38,13 +59,17 @@ jobs:
             echo "DJANGO_GOOGLE_OAUTH2_PROJECT_ID=${{ secrets.DJANGO_GOOGLE_OAUTH2_PROJECT_ID }}" >> .env
             echo "DJANGO_EMAIL_HOST_USER=${{ secrets.DJANGO_EMAIL_HOST_USER }}" >> .env
             echo "DJANGO_EMAIL_HOST_PASSWORD=${{ secrets.DJANGO_EMAIL_HOST_PASSWORD }}" >> .env
+            source /home/azureuser/.prod-vezmir/bin/activate
             pip install -r requirements.txt
             python manage.py migrate
             sudo systemctl daemon-reload
             sudo systemctl restart gunicorn
 
-            cd /home/azureuser/vezmir/frontend
-            cp deployments/.env.frontend.prod .env
-            npm run build
-            sudo cp -r /home/azureuser/vezmir/frontend/dist/* /var/www/vezmir.ai.prod
+      - name: Restart Nginx
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
             sudo systemctl restart nginx
