@@ -1,0 +1,39 @@
+name: Deploy Backend on VPS
+on:
+  pull_request:
+    branches:
+      - 'stage/*'
+jobs:
+  deploy-backend-on-vps:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy backend to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /home/azureuser/vezmir
+            git pull origin {{ github.head_ref }}
+            source /home/azureuser/.vezmir/bin/activate
+            pip install -r requirements.txt
+            python manage.py migrate
+            sudo systemctl daemon-reload
+            sudo systemctl restart gunicorn
+
+            pip freeze > hey.txt
+
+  check-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch
+        run: |
+          if [[ ${GITHUB_HEAD_REF} != test* ]];
+          then
+            echo "Error: Pull request must come from 'test*' branch"
+            exit 1
+          fi
