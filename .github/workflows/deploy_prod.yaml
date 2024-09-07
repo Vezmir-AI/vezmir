@@ -32,6 +32,7 @@ jobs:
           source: "frontend/dist/*"
           target: "/var/www/vezmir.ai.prod"
           strip_components: 2
+          overwrite: true
 
       - name: Deploy backend to VPS
         uses: appleboy/ssh-action@master
