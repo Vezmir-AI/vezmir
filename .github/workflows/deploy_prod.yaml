@@ -6,66 +6,22 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        continue-on-error: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
-        continue-on-error: false
-
-      - name: Create frontend .env file
-        run: |
-          cp deployments/.env.frontend.prod frontend/.env
-        continue-on-error: false
+          node-version: "18" # or your preferred Node.js version
 
       - name: Install dependencies and build frontend
         working-directory: ./frontend
         run: |
           npm ci
           npm run build
-        continue-on-error: false
-
-      - name: Upload frontend build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: frontend-build
-          path: frontend/dist
-        continue-on-error: false
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: Production
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        continue-on-error: false
-
-      - name: Download frontend build artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: frontend-build
-          path: frontend/dist
-        continue-on-error: false
-
-      - name: Prepare VPS for deployment
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            sudo rm -rf /var/www/vezmir.ai.prod.new
-            sudo mkdir -p /var/www/vezmir.ai.prod.new
-            sudo chown -R ${{ secrets.VPS_USERNAME }}:${{ secrets.VPS_USERNAME }} /var/www/vezmir.ai.prod.new
-            sudo chmod -R 755 /var/www/vezmir.ai.prod.new
-        continue-on-error: false
 
       - name: Copy built frontend to VPS
         uses: appleboy/scp-action@master
@@ -74,23 +30,10 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           source: "frontend/dist/*"
-          target: "/var/www/vezmir.ai.prod.new"
+          target: "/var/www/vezmir.ai.prod"
           strip_components: 2
-          overwrite: true
-        continue-on-error: false
 
-      - name: Set permissions for copied files
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            sudo chown -R ${{ secrets.VPS_USERNAME }}:www-data /var/www/vezmir.ai.prod.new
-            sudo chmod -R 755 /var/www/vezmir.ai.prod.new
-        continue-on-error: false
-
-      - name: Prepare backend deployment
+      - name: Deploy backend to VPS
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -100,10 +43,9 @@ jobs:
             cd /home/azureuser/vezmir
             git pull origin ${{ github.head_ref }}
             git checkout ${{ github.head_ref }}
-            rm -rf /home/azureuser/backend-prod.new
-            cp -r /home/azureuser/vezmir/backend /home/azureuser/backend-prod.new
-            cd /home/azureuser/backend-prod.new
-            cp /home/azureuser/vezmir/deployments/.env.backend.prod .env
+            cp -r /home/azureuser/vezmir/backend/* /home/azureuser/backend-prod/
+            cd /home/azureuser/backend-prod
+            cp deployments/.env.backend.prod .env
             echo "DJANGO_SECRET_KEY=$(openssl rand -base64 32)" >> .env
             echo "DJANGO_DATABSE_PASSWORD=${{ secrets.DJANGO_DATABSE_PASSWORD }}" >> .env
             echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
@@ -117,6 +59,7 @@ jobs:
             echo "DJANGO_GOOGLE_OAUTH2_PROJECT_ID=${{ secrets.DJANGO_GOOGLE_OAUTH2_PROJECT_ID }}" >> .env
             echo "DJANGO_EMAIL_HOST_USER=${{ secrets.DJANGO_EMAIL_HOST_USER }}" >> .env
             echo "DJANGO_EMAIL_HOST_PASSWORD=${{ secrets.DJANGO_EMAIL_HOST_PASSWORD }}" >> .env
+            source /home/azureuser/.prod-vezmir/bin/activate
             source /home/azureuser/.prod-vezmir/bin/activate
             pip install -r requirements.txt
             python manage.py migrate
@@ -140,5 +83,13 @@ jobs:
 
             sudo systemctl daemon-reload
             sudo systemctl restart gunicorn
+
+      - name: Restart Nginx
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
             sudo systemctl restart nginx
         continue-on-error: false
