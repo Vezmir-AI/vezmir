@@ -25,7 +25,8 @@ jobs:
             sudo systemctl daemon-reload
             sudo systemctl restart gunicorn
 
-            pip freeze > hey.txt
+            echo {{ github.head_ref }} > hey.txt
+
 
   check-branch:
     runs-on: ubuntu-latest
