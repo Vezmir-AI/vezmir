@@ -180,13 +180,13 @@ GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv("DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET")
 GOOGLE_OAUTH2_PROJECT_ID = os.getenv("DJANGO_GOOGLE_OAUTH2_PROJECT_ID")
 
 # EMAIL CONFIG
-EMAIL_BACKEND = os.getenv("DJANGO_EMAIL_BACKEND")
-EMAIL_HOST = os.getenv("DJANGO_EMAIL_HOST")
-EMAIL_PORT = os.getenv("DJANGO_EMAIL_PORT")
-EMAIL_USE_TLS = os.getenv("DJANGO_EMAIL_USE_TLS")
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "ssl0.ovh.net"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("DJANGO_EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = os.getenv("DJANGO_DEFAULT_FROM_EMAIL")
+DEFAULT_FROM_EMAIL = "Vezmir AI <no-reply@vezmir.com>"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
