@@ -1,10 +1,8 @@
 name: Deploy Backend on VPS
-
 on:
   pull_request:
     branches:
-      - [test*]
-
+      - ["test*"]
 jobs:
   deploy-backend-on-vps:
     runs-on: ubuntu-latest
