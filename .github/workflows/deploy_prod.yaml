@@ -1,0 +1,56 @@
+name: Deploy webapp on VPS
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      branch:
+        type: string
+        required: true
+        description: 'Branch to deploy'
+        default: 'main'
+
+jobs:
+  deploy-webapp-on-vps:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy webapp on VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /home/azureuser/vezmir
+            git pull origin {{ github.head_ref }}
+            git checkout {{ github.head_ref }}
+            cp /home/azureuser/vezmir/backend /home/azureuser/backend-prod
+            cd /home/azureuser/backend-prod
+            cp deployments/.env.backend.prod .env
+            echo "DJANGO_SECRET_KEY=$(openssl rand -base64 32)" >> .env
+            echo "DJANGO_DATABSE_PASSWORD=$(openssl rand -base64 32)" >> .env
+            echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+            echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> .env
+            echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> .env
+            echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> .env
+            echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" >> .env
+            echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> .env
+            echo "DJANGO_GOOGLE_OAUTH2_CLIENT_ID=${{ secrets.DJANGO_GOOGLE_OAUTH2_CLIENT_ID }}" >> .env
+            echo "DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET=${{ secrets.DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET }}" >> .env
+            echo "DJANGO_GOOGLE_OAUTH2_PROJECT_ID=${{ secrets.DJANGO_GOOGLE_OAUTH2_PROJECT_ID }}" >> .env
+            echo "DJANGO_EMAIL_HOST_USER=${{ secrets.DJANGO_EMAIL_HOST_USER }}" >> .env
+            echo "DJANGO_EMAIL_HOST_PASSWORD=${{ secrets.DJANGO_EMAIL_HOST_PASSWORD }}" >> .env
+            pip install -r requirements.txt
+            python manage.py migrate
+            sudo systemctl daemon-reload
+            sudo systemctl restart gunicorn
+
+            cd /home/azureuser/vezmir/frontend
+            cp deployments/.env.frontend.prod .env
+            npm run build
+            sudo cp -r /home/azureuser/vezmir/frontend/dist/* /var/www/vezmir.ai.prod
+            sudo systemctl restart nginx
