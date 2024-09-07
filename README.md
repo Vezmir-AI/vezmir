@@ -26,3 +26,7 @@ Once this is done, just run `pre-commit install` and here you go, everythin now 
 :warning: WARNING: Commiting from vscode/cursor source control won't run the pre-commit, you __must__ run it from the command line.
 
 If you want to run the pre-commit formatting just like that, you can run either `pre-commit run -a`/`pre-commit run -f path/to/file` or `npm run lint` from frontend and `ruff check` from backend. Please refer to [ES Lint docs](https://eslint.org/docs/latest/) and [Ruff docs](https://docs.astral.sh/ruff/) for more information.
+
+## Deployement
+
+Deployement config can be found in the [deployement folder](./deployement/README.md)
