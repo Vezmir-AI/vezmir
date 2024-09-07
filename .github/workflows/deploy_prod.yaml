@@ -74,7 +74,7 @@ jobs:
             cd /home/azureuser/backend-prod
             cp /home/azureuser/vezmir/deployments/.env.backend.prod .env
             echo "DJANGO_SECRET_KEY=$(openssl rand -base64 32)" >> .env
-            echo "DJANGO_DATABSE_PASSWORD=$(openssl rand -base64 32)" >> .env
+            echo "DJANGO_DATABSE_PASSWORD=${{ secrets.DJANGO_DATABSE_PASSWORD }}" >> .env
             echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
             echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> .env
             echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> .env
