@@ -66,6 +66,9 @@ const UsageSummaryCard: React.FC = () => {
                         </div>
                     </div>
                 </div>
+                <div className="px-2 mt-2">
+                    <p>Money saved is calculated compared to a 20$ monthly subscription.</p>
+                </div>
             </div>
         </>
     )

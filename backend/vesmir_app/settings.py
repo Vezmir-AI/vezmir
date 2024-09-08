@@ -69,8 +69,16 @@ if DEBUG:
         }
     }
 else:
-    ALLOWED_HOSTS = ["*.vezmir.ai"]
-    CORS_ORIGIN_ALLOW_ALL = True
+    ALLOWED_HOSTS = ["api.vezmir.ai"]
+    CORS_ALLOWED_ORIGINS = [
+        "https://www.vezmir.ai",
+        "https://vezmir.ai",
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        "https://www.vezmir.ai",
+        "https://vezmir.ai",
+    ]
+    CORS_ALLOW_CREDENTIALS = True
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
 
