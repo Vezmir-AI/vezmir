@@ -107,7 +107,12 @@ const ChatComponent: React.FC = () => {
         url = `/chat/conversations/${chatId}/`;
       }
 
-      const userMessage = { role: 'user' as const, content: message, ai_model_details: model };
+      const userMessage = { 
+        role: 'user' as const, 
+        content: message, 
+        ai_model_details: model,
+        files: files // Add the files to the user message
+      };
       setMessages(prevMessages => [...prevMessages, userMessage]);
 
       let assistantMessage = '';
