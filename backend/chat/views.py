@@ -5,6 +5,10 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+import base64
+import os
 
 from chat.models import AIModel, AIModelProvider, ChatConversation, ChatMessage
 from chat.serializers import (
@@ -95,7 +99,7 @@ class ChatMessageView(APIView):
                 {"message": "conversation_not_found", "status": "error"},
                 status=status.HTTP_404_NOT_FOUND,
             )
-
+            
         # Query model name and its provider
         model_name = request.data.get("model_name")
         try:
@@ -121,22 +125,36 @@ class ChatMessageView(APIView):
         )
         user_message_serializer.is_valid(raise_exception=True)
         user_message = user_message_serializer.save()
+        
         # get the whole conversation to pass to the model
         # TODO: Use self.get? or a serializer?
+
+
+        # Handle file uploads
+        uploaded_files = request.FILES.getlist('files')
+        print(f"Uploaded files: {uploaded_files}")
+        file_paths = []
+        for file in uploaded_files:
+            file_path = default_storage.save(f'chat_uploads/{file.name}', ContentFile(file.read()))
+            print(f"Saved file path: {file_path}")
+            file_paths.append(file_path)
+
         conv_messages = FormattedMessageSerializer(
             ChatMessage.objects.filter(chat_conversation=conversation).order_by("date_created"),
             many=True,
         ).data
 
         def stream_and_save():
+            print(f"File paths being sent to get_api_response: {file_paths}")
             full_response = ""
             token_in = token_out = None
             for chunk in get_api_response(
                 model_name=model_name,
                 model_provider=model_provider,
                 messages=conv_messages,
+                file_paths=file_paths,
             ):
-                # this allows to send the response to the client as it is being generated
+                # this allows to send the response to the client as it is being generated 
                 if content := chunk.content:
                     full_response += content
                     yield content
@@ -145,9 +163,11 @@ class ChatMessageView(APIView):
                         ChatMessage.objects.filter(id=user_message.id).update(num_tokens=token_in)
                     if token_out := usage.get("output_tokens"):
                         pass
-                if response := chunk.response_metadata:  # noqa: F841
+                if response := chunk.response_metadata: # noqa: F841
                     # TODO implement response metadata, e.g. stop reason
+                    
                     pass
+
 
             # Save the complete response to the database
             ai_message_serializer = ChatMessageSerializer(
@@ -160,16 +180,19 @@ class ChatMessageView(APIView):
                     "num_tokens": token_out,
                 }
             )
-            ai_message_serializer.is_valid(
-                raise_exception=True
-            )  # TODO: handle API problems, like stop generation (i.e. data.completed=False)
+            ai_message_serializer.is_valid(raise_exception=True) # TODO: handle API problems, like stop generation (i.e. data.completed=False)
             ai_message_serializer.save()
 
             # updates the user's balance
+
             user_message_cost = request.user.calculate_message_cost(token_in, model, is_input=True)
             ai_message_cost = request.user.calculate_message_cost(token_out, model, is_input=False)
             total_cost = user_message_cost + ai_message_cost
             request.user.update_balance(total_cost)
+
+            # Clean up uploaded files
+            for file_path in file_paths:
+                default_storage.delete(file_path)
 
         response = StreamingHttpResponse(stream_and_save(), content_type="text/event-stream")
         # do not remove this, it is used by nginx to stream the response
@@ -212,7 +235,6 @@ class ChatMessageView(APIView):
             status=status.HTTP_204_NO_CONTENT,
         )
 
-
 class ChatConversationTitleView(APIView):
     permission_classes = (IsAuthenticated, IsOwner)
 
@@ -232,7 +254,6 @@ class ChatConversationTitleView(APIView):
         conversation.save()
         return Response({"data": {"title": title}})
 
-
 class ChooseModelView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -247,7 +268,6 @@ class ChooseModelView(APIView):
         except AIModel.DoesNotExist:
             return Response({"status": "error", "message": "model_not_found"}, status=status.HTTP_404_NOT_FOUND)
         return Response({"data": model})
-
 
 class FeedbackView(APIView):
     permission_classes = (IsAuthenticated,)

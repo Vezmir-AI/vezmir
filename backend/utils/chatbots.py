@@ -3,15 +3,15 @@ import random
 from .lib import AnthropicAPI, GoogleAPI, GroqAPI, OpenAIAPI
 
 
-def get_api_response(model_name: str, model_provider: str, messages: list[dict]):
+def get_api_response(model_name: str, model_provider: str, messages: list[dict], file_paths: list[str]):
     formatted_messages = format_messages(messages, model_provider)
     match model_provider:
         case "OpenAI":
-            yield from OpenAIAPI.get_response(formatted_messages, model_name)
+            yield from OpenAIAPI.get_response(formatted_messages, model_name, file_paths)
         case "Anthropic":
-            yield from AnthropicAPI.get_response(formatted_messages, model_name)
+            yield from AnthropicAPI.get_response(formatted_messages, model_name, file_paths)
         case "Google":
-            yield from GoogleAPI.get_response(formatted_messages, model_name)
+            yield from GoogleAPI.get_response(formatted_messages, model_name, file_paths)
 
 
 def generate_title(user_message):

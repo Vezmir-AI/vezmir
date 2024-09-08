@@ -79,8 +79,7 @@ const ChatComponent: React.FC = () => {
     }
   };
 
-  const handleSendMessageToStream = async (message: string): Promise<void> => {
-
+  const handleSendMessageToStream = async (message: string, files?: File[]): Promise<void> => {
     try {
       let url, newChatId, model: AIModel;
 
@@ -94,6 +93,7 @@ const ChatComponent: React.FC = () => {
 
       if (!chatId) {
         const newConversationResponse = await addConversation();
+        console.log("New conversation response:", newConversationResponse);
         if (!newConversationResponse) {
           throw new Error('Failed to create a new conversation');
         }
@@ -113,9 +113,19 @@ const ChatComponent: React.FC = () => {
       let assistantMessage = '';
       setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: model }]);
 
-      const payload = { content: message, model_name: model.name };
-      const response = await api.post(url, payload, true);
+      const formData = new FormData();
+      formData.append('content', message);
+      formData.append('model_name', model.name);
+      
+      if (files && files.length > 0) {
+        files.forEach((file, index) => {
+          formData.append(`files`, file);
+        });
+      }
 
+      console.log('Form Files:', formData.get('files'));
+      const response = await api.post(url, formData, true, true);
+      console.log('Response:', response);
       if (!response) {
         throw new Error('Response body is null');
       }
