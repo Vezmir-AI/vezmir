@@ -10,6 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useProfile } from '@/context/ProfileContext';
 import NewChatButton from '../Chat/NewChatButton';
 import ChatHistory from '../Chat/ChatHistory';
+import WizardIcon from '@/assets/Wizard.svg';
 
 export default function SideBar() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -80,11 +81,9 @@ export default function SideBar() {
                   >
                     <div className="flex items-center gap-x-4 px-4 py-3">
                       <div onClick={() => navigate('/dashboard/profile')} className="flex items-center gap-x-4 flex-grow">
-                        <CogIcon className="h-8 w-8 text-gray-400" />
-                        <div className="flex flex-col">
-                          <span className={`text-${textSize} font-semibold text-white`}>{userName}</span>
-                          <span className="sr-only">Your profile</span>
-                        </div>
+                        <img src={WizardIcon} alt="Wizard" className="h-8 w-8 text-gray-400" />
+                        <span aria-hidden="true" className={`text-${textSize} font-semibold text-white`}>{userName}</span>
+                        <span className="sr-only">Your profile</span>
                       </div>
                       <div className="ml-auto p-2 rounded-lg">
                         <ArrowLeftEndOnRectangleIcon
@@ -146,12 +145,12 @@ export default function SideBar() {
                   ref={profileRef}
                   className="relative rounded-lg shadow-md bg-[var(--gray-800)] transition-colors duration-200"
                 >
-                  <div className="flex items-center gap-x-4 px-2 py-3 hover:bg-[var(--gray-700)] rounded-lg">
+                  <div className="flex items-center gap-x-4 px-2 py-1 hover:bg-[var(--gray-700)] rounded-lg">
                     <div
                       onClick={() => navigate('/dashboard/profile')}
                       className="flex items-center gap-x-4 flex-grow cursor-pointer"
                     >
-                      <CogIcon className="h-8 w-8 text-gray-400" />
+                      <img src={WizardIcon} alt="Wizard" className="mt-1 h-14 w-14 text-gray-400 invert" />
                       <span aria-hidden="true" className={`text-${textSize} font-semibold text-white`}>{userName}</span>
                       <span className="sr-only">Your profile</span>
                     </div>
@@ -182,7 +181,7 @@ export default function SideBar() {
         </div>
 
         {/* Desktop sidebar buffer for layout, do not remove */}
-        <div className={`py-10 ${isCollapsed ? 'lg:pl-4' : 'lg:pl-60'} ${isDashboard ? '' : 'bg-[var(--gray-800)]'} hidden sm:block sm:h-full transition-all duration-0`}>
+        <div className={`py-10 ${isCollapsed ? 'lg:pl-4' : 'lg:pl-60'} bg-[var(--gray-800)] hidden sm:block sm:h-full transition-all duration-0`}>
           <div className="px-4 sm:px-6 lg:px-8"></div>
         </div>
       </div >

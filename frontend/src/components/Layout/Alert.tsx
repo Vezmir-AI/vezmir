@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Transition } from '@headlessui/react'
-import { CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import { useTheme } from '@/context/ThemeContext';
 import { serverResponse } from '@/types';
 
@@ -10,7 +9,6 @@ interface AlertProps {
 
 const Alert: React.FC<AlertProps> = ({ notification }) => {
     const [show, setShow] = useState(true)
-    const icon = notification.status === 'success' ? <CheckCircleIcon aria-hidden="true" className="h-5 w-5 text-white" /> : <ExclamationTriangleIcon aria-hidden="true" className="h-5 w-5 text-white" />
     const { locale, removeNotification } = useTheme();
 
     useEffect(() => {
@@ -37,11 +35,11 @@ const Alert: React.FC<AlertProps> = ({ notification }) => {
             appear={true}
             afterLeave={() => removeNotification(notification.message ?? '')}
         >
-            <div 
+            <div
                 onClick={handleClose}
                 className={`flex items-center justify-center p-2 rounded-3xl m-2 ${
-                    notification.status === 'success' 
-                        ? 'bg-[var(--bordeaux)] border-4 border-[var(--bordeaux-hover)] hover:bg-[var(--bordeaux-hover)]' 
+                    notification.status === 'success'
+                        ? 'bg-[var(--bordeaux)] border-4 border-[var(--bordeaux-hover)] hover:bg-[var(--bordeaux-hover)]'
                         : 'bg-red-600 border-2 border-red-800 hover:bg-red-800'
                 } cursor-pointer`}
             >
@@ -52,4 +50,3 @@ const Alert: React.FC<AlertProps> = ({ notification }) => {
 }
 
 export default Alert;
-
