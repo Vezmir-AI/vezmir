@@ -21,6 +21,7 @@ interface Message {
     role: 'user' | 'assistant';
     content: string;
     ai_model_details: AIModel;
+    files?: File[];
 }
 // TODO add Message? api request and response schema,
 
