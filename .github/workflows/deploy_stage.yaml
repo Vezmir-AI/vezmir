@@ -36,6 +36,7 @@ jobs:
         with:
           name: frontend-build
           path: frontend/dist
+          include-hidden-files: true
         continue-on-error: false
 
       - name: Create backend .env file
@@ -62,6 +63,7 @@ jobs:
         with:
           name: backend-dir
           path: backend
+          include-hidden-files: true
         continue-on-error: false
 
   deploy:
