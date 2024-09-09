@@ -60,7 +60,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
                     <div key={fileIndex} className="flex flex-col items-center bg-[var(--gray-600)] text-white rounded-lg p-2">
                       {file.type.startsWith('image/') ? (
                         <img 
-                          src={URL.createObjectURL(file)} 
+                          src={file.url}
                           alt={file.name} 
                           className="w-40 h-40 object-cover rounded-md mb-1"
                         />
