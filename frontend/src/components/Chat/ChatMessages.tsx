@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Message } from '@/types';
 import renderContent from './renderContent/renderContent';
 import { getProviderLogo, getProviderColor } from '@/utils/providerUtils';
-import { ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { ClipboardDocumentIcon, CheckIcon, PaperClipIcon } from '@heroicons/react/24/outline';
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -54,6 +54,30 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
               </div>
             )}
             <div className="relative flex-grow">
+              {msg.files && msg.files.length > 0 && (
+                <>
+                  <div className="mb-2 flex flex-wrap gap-2">
+                    {msg.files.map((file, fileIndex) => (
+                      <div key={fileIndex} className="flex flex-col items-center bg-[var(--gray-600)] text-white rounded-lg p-2">
+                        {file.type.startsWith('image/') ? (
+                          <img 
+                            src={file.url}
+                            alt={file.name} 
+                            className="w-40 h-40 object-cover rounded-md mb-1"
+                          />
+                        ) : (
+                          <div className="w-20 h-20 flex items-center justify-center bg-[var(--gray-700)] rounded-md mb-1">
+                            <PaperClipIcon className="h-8 w-8" />
+                          </div>
+                        )}
+                        <span className="truncate max-w-[80px] text-xs">
+                          {file.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
               {renderContent(msg.content, index, copiedStates, setCopiedStates)}
               {!isStreaming && msg.role === 'assistant' && (
                 <div className="absolute -bottom-6 left-0 flex space-x-2 mt-2">
@@ -74,14 +98,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
                       </>
                     )}
                   </button>
-                  {/* <button
-                    onClick={() => onRegenerateMessage(index)}
-                    className="p-1 rounded bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1"
-                    title="Regenerate response"
-                  >
-                    <ArrowPathIcon className="h-4 w-4 text-white" />
-                    <span className="text-xs text-white">Retry</span>
-                  </button> */}
                 </div>
               )}
             </div>

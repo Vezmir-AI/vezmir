@@ -34,6 +34,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
     content = serializers.CharField(max_length=10000, required=True)
     ai_model = serializers.PrimaryKeyRelatedField(queryset=AIModel.objects.all(), write_only=True)
     ai_model_details = AIModelSerializer(source="ai_model", read_only=True)
+    files = serializers.JSONField(required=False)
 
     class Meta:
         model = ChatMessage
@@ -48,15 +49,16 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             "ai_model_details",
             "user",
             "num_tokens",
+            "files",
         )
-
 
 # serializer for chat conversation, having a list of chat messages
 # each chat message is a dict {"role": role, "content": content}
 class FormattedMessageSerializer(serializers.Serializer):
     role = serializers.CharField(max_length=100, required=True)
     content = serializers.CharField(max_length=10000, required=True)
+    files = serializers.JSONField(required=False)
 
     class Meta:
         model = ChatMessage
-        fields = ("role", "content")
+        fields = ("role", "content", "files")

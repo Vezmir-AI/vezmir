@@ -79,8 +79,7 @@ const ChatComponent: React.FC = () => {
     }
   };
 
-  const handleSendMessageToStream = async (message: string): Promise<void> => {
-
+  const handleSendMessageToStream = async (message: string, files?: File[]): Promise<void> => {
     try {
       let url, newChatId, model: AIModel;
 
@@ -107,15 +106,34 @@ const ChatComponent: React.FC = () => {
         url = `/chat/conversations/${chatId}/`;
       }
 
-      const userMessage = { role: 'user' as const, content: message, ai_model_details: model };
+      const formData = new FormData();
+      formData.append('content', message);
+      formData.append('model_name', model.name);
+      
+      let fileInfo: { name: string, url: string, type: string }[] = [];
+      if (files && files.length > 0) {
+        files.forEach((file) => {
+          formData.append(`files`, file);
+          fileInfo.push({
+            name: file.name,
+            url: URL.createObjectURL(file),
+            type: file.type
+          });
+        });
+      }
+
+      const userMessage = { 
+        role: 'user' as const, 
+        content: message, 
+        ai_model_details: model,
+        files: fileInfo
+      };
       setMessages(prevMessages => [...prevMessages, userMessage]);
 
       let assistantMessage = '';
       setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: model }]);
 
-      const payload = { content: message, model_name: model.name };
-      const response = await api.post(url, payload, true);
-
+      const response = await api.post(url, formData, true, true);
       if (!response) {
         throw new Error('Response body is null');
       }
