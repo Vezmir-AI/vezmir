@@ -87,7 +87,6 @@ class ChatMessageView(APIView):
 
         messages = ChatMessage.objects.filter(chat_conversation=conversation).order_by("date_created")
         serializer = ChatMessageSerializer(messages, many=True)
-        print(f"Messages: {serializer}")
         return Response({"data": serializer.data})
 
     # create a new message in a conversation
@@ -116,8 +115,6 @@ class ChatMessageView(APIView):
 
         # Handle file uploads
         uploaded_files = request.FILES.getlist('files')
-        print(f"Uploaded files: {uploaded_files}")
-        file_paths = []
         file_info = []
         
         # Create the directory structure
@@ -132,14 +129,13 @@ class ChatMessageView(APIView):
                 for chunk in file.chunks():
                     destination.write(chunk)
             
-            print(f"Saved file path: {file_path}")
             file_url = request.build_absolute_uri(f'/api/chat/file/{request.user.id}/{conv_id}/{file_name}')
             file_info.append({
                 'name': file_name,
                 'url': file_url,
+                'path': file_path,
                 'type': file.content_type
             })
-            file_paths.append(file_path)
 
         # Create and save the user message with file information
         user_message_serializer = ChatMessageSerializer(
@@ -158,17 +154,16 @@ class ChatMessageView(APIView):
         conv_messages = FormattedMessageSerializer(
             ChatMessage.objects.filter(chat_conversation=conversation).order_by("date_created"),
             many=True,
-        ).data
-
+        ).data 
+        
+        
         def stream_and_save():
-            print(f"File paths being sent to get_api_response: {file_paths}")
             full_response = ""
             token_in = token_out = None
             for chunk in get_api_response(
                 model_name=model_name,
                 model_provider=model_provider,
-                messages=conv_messages,
-                file_paths=file_paths,
+                messages=conv_messages
             ):
                 # this allows to send the response to the client as it is being generated 
                 if content := chunk.content:

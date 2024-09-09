@@ -73,7 +73,6 @@ const ChatComponent: React.FC = () => {
   const fetchMessages = async (id: string): Promise<void> => {
     try {
       const response = await api.get(`/chat/conversations/${id}/`);
-      console.log('Response:', response);
       setMessages(response);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -135,9 +134,7 @@ const ChatComponent: React.FC = () => {
       let assistantMessage = '';
       setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: model }]);
 
-      console.log('Form Files:', formData.get('files'));
       const response = await api.post(url, formData, true, true);
-      console.log('Response:', response);
       if (!response) {
         throw new Error('Response body is null');
       }
