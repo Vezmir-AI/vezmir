@@ -87,6 +87,7 @@ class ChatMessageView(APIView):
 
         messages = ChatMessage.objects.filter(chat_conversation=conversation).order_by("date_created")
         serializer = ChatMessageSerializer(messages, many=True)
+        print(f"Messages: {serializer}")
         return Response({"data": serializer.data})
 
     # create a new message in a conversation

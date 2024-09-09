@@ -73,6 +73,7 @@ const ChatComponent: React.FC = () => {
   const fetchMessages = async (id: string): Promise<void> => {
     try {
       const response = await api.get(`/chat/conversations/${id}/`);
+      console.log('Response:', response);
       setMessages(response);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -111,9 +112,9 @@ const ChatComponent: React.FC = () => {
       formData.append('content', message);
       formData.append('model_name', model.name);
       
-      let fileInfo = [];
+      let fileInfo: { name: string, url: string, type: string }[] = [];
       if (files && files.length > 0) {
-        files.forEach((file, index) => {
+        files.forEach((file) => {
           formData.append(`files`, file);
           fileInfo.push({
             name: file.name,
