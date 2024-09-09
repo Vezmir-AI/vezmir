@@ -40,3 +40,4 @@ class ChatMessage(models.Model):
     completed = models.BooleanField(default=True)
     ai_model = models.ForeignKey(AIModel, on_delete=models.SET_NULL, null=True)
     num_tokens = models.IntegerField(default=0)
+    files = models.JSONField(null=True, blank=True)
