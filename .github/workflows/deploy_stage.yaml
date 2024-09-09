@@ -155,6 +155,7 @@ jobs:
               echo "Migration failed"
               exit 1
             fi
+            python manage.py loaddata fixtures/models
             deactivate
         continue-on-error: false
 

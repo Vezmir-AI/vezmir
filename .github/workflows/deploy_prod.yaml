@@ -36,19 +36,29 @@ jobs:
         with:
           name: frontend-build
           path: frontend/dist
+          include-hidden-files: true
         continue-on-error: false
 
       - name: Create backend .env file
         run: |
-          cp deployments/.env.backend.prod backend/.env
-          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> backend/.env
-          echo "DJANGO_DATABSE_PASSWORD=${{ secrets.DJANGO_DATABSE_PASSWORD }}" >> backend/.env
-          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> backend/.env
-          echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> backend/.env
-          echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> backend/.env
-          echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> backend/.env
-          echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" >> backend/.env
-          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> backend/.env
+          cp deployments/.env.backend.stage backend/.env.temp
+          echo "DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}" >> backend/.env.temp
+          echo "DJANGO_DATABSE_PASSWORD=${DJANGO_DATABSE_PASSWORD}" >> backend/.env.temp
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> backend/.env.temp
+          echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> backend/.env.temp
+          echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> backend/.env.temp
+          echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> backend/.env.temp
+          echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" >> backend/.env.temp
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> backend/.env.temp
+          echo "DJANGO_GOOGLE_OAUTH2_CLIENT_ID=${{ secrets.DJANGO_GOOGLE_OAUTH2_CLIENT_ID }}" >> backend/.env.temp
+          echo "DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET=${{ secrets.DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET }}" >> backend/.env.temp
+          echo "DJANGO_GOOGLE_OAUTH2_PROJECT_ID=${{ secrets.DJANGO_GOOGLE_OAUTH2_PROJECT_ID }}" >> backend/.env.temp
+          echo "DJANGO_EMAIL_HOST_USER=${{ secrets.DJANGO_EMAIL_HOST_USER }}" >> backend/.env.temp
+          echo "DJANGO_EMAIL_HOST_PASSWORD=${DJANGO_EMAIL_HOST_PASSWORD}" >> backend/.env.temp
+        env:
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DJANGO_DATABSE_PASSWORD: ${{ secrets.DJANGO_DATABSE_PASSWORD }}
+          DJANGO_EMAIL_HOST_PASSWORD: ${{ secrets.DJANGO_EMAIL_HOST_PASSWORD }}
         continue-on-error: false
 
       - name: Upload backend build artifacts
@@ -56,6 +66,7 @@ jobs:
         with:
           name: backend-dir
           path: backend
+          include-hidden-files: true
         continue-on-error: false
 
   deploy:
@@ -73,13 +84,6 @@ jobs:
           path: frontend/dist
         continue-on-error: false
 
-      - name: Download backend artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: backend-dir
-          path: backend
-        continue-on-error: false
-
       - name: Prepare VPS for frontend deployment
         uses: appleboy/ssh-action@master
         with:
@@ -88,6 +92,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             sudo rm -rf /var/www/vezmir.ai.new
+            sudo rm -rf /home/azureuser/backend-vezmir.ai.new
             sudo mkdir -p /var/www/vezmir.ai.new
             sudo chown -R ${{ secrets.VPS_USERNAME }}:${{ secrets.VPS_USERNAME }} /var/www/vezmir.ai.new
             sudo chmod -R 755 /var/www/vezmir.ai.new
@@ -116,6 +121,13 @@ jobs:
             sudo chmod -R 755 /var/www/vezmir.ai.new
         continue-on-error: false
 
+      - name: Download backend build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-dir
+          path: backend
+        continue-on-error: false
+
       - name: Copy backend to VPS
         uses: appleboy/scp-action@master
         with:
@@ -124,6 +136,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           source: "backend/*"
           target: "/home/azureuser/backend-vezmir.ai.new"
+          strip_components: 1
         continue-on-error: false
 
       - name: Install dependencies and migrate
@@ -133,10 +146,16 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            source /home/azureuser/.vezmir/bin/activate
             cd /home/azureuser/backend-vezmir.ai.new
-            source /home/azureuser/.prod-vezmir/bin/activate
+            mv .env.temp .env
             pip install -r requirements.txt
             python manage.py migrate
+            if [ $? -ne 0 ]; then
+              echo "Migration failed"
+              exit 1
+            fi
+            python manage.py loaddata fixtures/models
             deactivate
         continue-on-error: false
 
@@ -149,9 +168,9 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             sudo mv /var/www/vezmir.ai /var/www/vezmir.ai.old
-            sudo mv /var/www/vezmir.ai.new /var/www/vezmir.ai
-
             sudo mv /home/azureuser/backend-vezmir.ai /home/azureuser/backend-vezmir.ai.old
+
+            sudo mv /var/www/vezmir.ai.new /var/www/vezmir.ai
             sudo mv /home/azureuser/backend-vezmir.ai.new /home/azureuser/backend-vezmir.ai
         continue-on-error: false
 
@@ -169,14 +188,13 @@ jobs:
             if [ -d /home/azureuser/backend-vezmir.ai.old ]; then
               sudo mv /home/azureuser/backend-vezmir.ai.old /home/azureuser/backend-vezmir.ai
             fi
-            source /home/azureuser/.prod-vezmir/bin/activate
+            source /home/azureuser/.vezmir/bin/activate
             cd /home/azureuser/backend-vezmir.ai
             pip install -r requirements.txt
             python manage.py migrate
             deactivate
 
-      - name: Rollback deployment
-
+      - name: Restart services and clean up old deployment directories
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST_PROD }}
