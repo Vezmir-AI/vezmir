@@ -1,13 +1,13 @@
-name: Deploy webapp on VPS
+name: Deploy stage webapp on VPS
 on:
-  push:
+  pull_request:
     branches:
       - 'main'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: Production
+    environment: Stage
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,7 +21,7 @@ jobs:
 
       - name: Create frontend .env file
         run: |
-          cp deployments/.env.frontend.prod frontend/.env
+          cp deployments/.env.frontend.stage frontend/.env
         continue-on-error: false
 
       - name: Install dependencies and build frontend
@@ -40,8 +40,8 @@ jobs:
 
       - name: Create backend .env file
         run: |
-          cp deployments/.env.backend.prod backend/.env
-          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> backend/.env
+          cp deployments/.env.backend.stage backend/.env
+          echo "DJANGO_SECRET_KEY=$(openssl rand -base64 32)" >> backend/.env
           echo "DJANGO_DATABSE_PASSWORD=${{ secrets.DJANGO_DATABSE_PASSWORD }}" >> backend/.env
           echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> backend/.env
           echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> backend/.env
@@ -49,6 +49,12 @@ jobs:
           echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> backend/.env
           echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" >> backend/.env
           echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> backend/.env
+          echo "DJANGO_GOOGLE_OAUTH2_CLIENT_ID=${{ secrets.DJANGO_GOOGLE_OAUTH2_CLIENT_ID }}" >> backend/.env
+          echo "DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET=${{ secrets.DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET }}" >> backend/.env
+          echo "DJANGO_GOOGLE_OAUTH2_PROJECT_ID=${{ secrets.DJANGO_GOOGLE_OAUTH2_PROJECT_ID }}" >> backend/.env
+          echo "DJANGO_EMAIL_HOST_USER=${{ secrets.DJANGO_EMAIL_HOST_USER }}" >> backend/.env
+          echo "DJANGO_EMAIL_HOST_PASSWORD=${{ secrets.DJANGO_EMAIL_HOST_PASSWORD }}" >> backend/.env
+
         continue-on-error: false
 
       - name: Upload backend build artifacts
@@ -73,34 +79,27 @@ jobs:
           path: frontend/dist
         continue-on-error: false
 
-      - name: Download backend artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: backend-dir
-          path: backend
-        continue-on-error: false
-
-      - name: Prepare VPS for frontend deployment
+      - name: Prepare VPS for deployment
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.VPS_HOST_PROD }}
+          host: ${{ secrets.VPS_HOST_STAGE }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            sudo rm -rf /var/www/vezmir.ai.new
-            sudo mkdir -p /var/www/vezmir.ai.new
-            sudo chown -R ${{ secrets.VPS_USERNAME }}:${{ secrets.VPS_USERNAME }} /var/www/vezmir.ai.new
-            sudo chmod -R 755 /var/www/vezmir.ai.new
+            sudo rm -rf /var/www/dev.vezmir.ai.new
+            sudo mkdir -p /var/www/dev.vezmir.ai.new
+            sudo chown -R ${{ secrets.VPS_USERNAME }}:${{ secrets.VPS_USERNAME }} /var/www/dev.vezmir.ai.new
+            sudo chmod -R 755 /var/www/dev.vezmir.ai.new
         continue-on-error: false
 
       - name: Copy built frontend to VPS
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.VPS_HOST_PROD }}
+          host: ${{ secrets.VPS_HOST_STAGE }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           source: "frontend/dist/*"
-          target: "/var/www/vezmir.ai.new"
+          target: "/var/www/dev.vezmir.ai.new"
           strip_components: 2
           overwrite: true
         continue-on-error: false
@@ -108,83 +107,83 @@ jobs:
       - name: Set permissions for copied files
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.VPS_HOST_PROD }}
+          host: ${{ secrets.VPS_HOST_STAGE }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            sudo chown -R ${{ secrets.VPS_USERNAME }}:www-data /var/www/vezmir.ai.new
-            sudo chmod -R 755 /var/www/vezmir.ai.new
+            sudo chown -R ${{ secrets.VPS_USERNAME }}:www-data /var/www/dev.vezmir.ai.new
+            sudo chmod -R 755 /var/www/dev.vezmir.ai.new
         continue-on-error: false
 
       - name: Copy backend to VPS
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.VPS_HOST_PROD }}
+          host: ${{ secrets.VPS_HOST_STAGE }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           source: "backend/*"
-          target: "/home/azureuser/backend-vezmir.ai.new"
+          target: "/home/azureuser/backend-dev.vezmir.ai.new"
+          strip_components: 1
         continue-on-error: false
 
       - name: Install dependencies and migrate
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.VPS_HOST_PROD }}
+          host: ${{ secrets.VPS_HOST_STAGE }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /home/azureuser/backend-vezmir.ai.new
             source /home/azureuser/.prod-vezmir/bin/activate
+            cd /home/azureuser/backend-dev.vezmir.ai.new
             pip install -r requirements.txt
             python manage.py migrate
             deactivate
         continue-on-error: false
 
-      - name: Swap deployment directories and restart services
+      - name: Swap deployment directories
         if: success()
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.VPS_HOST_PROD }}
+          host: ${{ secrets.VPS_HOST_STAGE }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            sudo mv /var/www/vezmir.ai /var/www/vezmir.ai.old
-            sudo mv /var/www/vezmir.ai.new /var/www/vezmir.ai
+            sudo mv /var/www/dev.vezmir.ai /var/www/dev.vezmir.ai.old
+            sudo mv /home/azureuser/backend-dev.vezmir.ai /home/azureuser/backend-dev.vezmir.ai.old
 
-            sudo mv /home/azureuser/backend-vezmir.ai /home/azureuser/backend-vezmir.ai.old
-            sudo mv /home/azureuser/backend-vezmir.ai.new /home/azureuser/backend-vezmir.ai
+            sudo mv /var/www/dev.vezmir.ai.new /var/www/dev.vezmir.ai
+            sudo mv /home/azureuser/backend-dev.vezmir.ai.new /home/azureuser/backend-dev.vezmir.ai
         continue-on-error: false
 
       - name: Deployment failed
         if: failure()
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.VPS_HOST_PROD }}
+          host: ${{ secrets.VPS_HOST_STAGE }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            if [ -d /var/www/vezmir.ai.old ]; then
-              sudo mv /var/www/vezmir.ai.old /var/www/vezmir.ai
+            if [ -d /var/www/dev.vezmir.ai.old ]; then
+              sudo mv /var/www/dev.vezmir.ai.old /var/www/dev.vezmir.ai
             fi
-            if [ -d /home/azureuser/backend-vezmir.ai.old ]; then
-              sudo mv /home/azureuser/backend-vezmir.ai.old /home/azureuser/backend-vezmir.ai
+            if [ -d /home/azureuser/backend-dev.vezmir.ai.old ]; then
+              sudo mv /home/azureuser/backend-dev.vezmir.ai.old /home/azureuser/backend-dev.vezmir.ai
             fi
             source /home/azureuser/.prod-vezmir/bin/activate
-            cd /home/azureuser/backend-vezmir.ai
+            cd /home/azureuser/backend-dev.vezmir.ai
             pip install -r requirements.txt
             python manage.py migrate
             deactivate
 
-      - name: Rollback deployment
-
+      - name: Restart services and clean up old deployment directories
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.VPS_HOST_PROD }}
+          host: ${{ secrets.VPS_HOST_STAGE }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            sudo rm -rf /var/www/vezmir.ai.old
-            sudo rm -rf /home/azureuser/backend-vezmir.ai.old
+            sudo rm -rf /var/www/dev.vezmir.ai.old
+            sudo rm -rf /home/azureuser/backend-dev.vezmir.ai.old
 
             sudo systemctl daemon-reload
             sudo systemctl reload gunicorn
