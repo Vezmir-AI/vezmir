@@ -1,8 +1,8 @@
 import time
 
-from django.http import StreamingHttpResponse
+from django.http import StreamingHttpResponse, HttpResponse, Http404
 from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.files.storage import default_storage
@@ -113,7 +113,34 @@ class ChatMessageView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # creates the user message
+        # Handle file uploads
+        uploaded_files = request.FILES.getlist('files')
+        print(f"Uploaded files: {uploaded_files}")
+        file_paths = []
+        file_info = []
+        
+        # Create the directory structure
+        upload_dir = os.path.join('chat_uploads', str(request.user.id), str(conv_id))
+        os.makedirs(upload_dir, exist_ok=True)
+
+        for file in uploaded_files:
+            file_name = default_storage.get_valid_name(file.name)
+            file_path = os.path.join(upload_dir, file_name)
+            
+            with default_storage.open(file_path, 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+            
+            print(f"Saved file path: {file_path}")
+            file_url = request.build_absolute_uri(f'/api/chat/file/{request.user.id}/{conv_id}/{file_name}')
+            file_info.append({
+                'name': file_name,
+                'url': file_url,
+                'type': file.content_type
+            })
+            file_paths.append(file_path)
+
+        # Create and save the user message with file information
         user_message_serializer = ChatMessageSerializer(
             data={
                 "user": request.user.id,
@@ -121,23 +148,11 @@ class ChatMessageView(APIView):
                 "content": request.data.get("content"),
                 "role": "user",
                 "ai_model": model.id,
+                "files": file_info
             }
         )
         user_message_serializer.is_valid(raise_exception=True)
         user_message = user_message_serializer.save()
-        
-        # get the whole conversation to pass to the model
-        # TODO: Use self.get? or a serializer?
-
-
-        # Handle file uploads
-        uploaded_files = request.FILES.getlist('files')
-        print(f"Uploaded files: {uploaded_files}")
-        file_paths = []
-        for file in uploaded_files:
-            file_path = default_storage.save(f'chat_uploads/{file.name}', ContentFile(file.read()))
-            print(f"Saved file path: {file_path}")
-            file_paths.append(file_path)
 
         conv_messages = FormattedMessageSerializer(
             ChatMessage.objects.filter(chat_conversation=conversation).order_by("date_created"),
@@ -190,9 +205,6 @@ class ChatMessageView(APIView):
             total_cost = user_message_cost + ai_message_cost
             request.user.update_balance(total_cost)
 
-            # Clean up uploaded files
-            for file_path in file_paths:
-                default_storage.delete(file_path)
 
         response = StreamingHttpResponse(stream_and_save(), content_type="text/event-stream")
         # do not remove this, it is used by nginx to stream the response
@@ -288,3 +300,16 @@ class FeedbackView(APIView):
             return Response(
                 {"status": "error", "message": "feedback_sending_error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+class FileAccessView(APIView):
+    permission_classes = (AllowAny,)
+    def get(self, request, user_id, conv_id, filename):
+        file_path = os.path.join('chat_uploads', str(user_id), conv_id, filename)
+
+        if default_storage.exists(file_path):
+            with default_storage.open(file_path, 'rb') as file:
+                response = HttpResponse(file.read(), content_type='application/octet-stream')
+                response['Content-Disposition'] = f'inline; filename="{filename}"'
+                return response
+        else:
+            raise Http404

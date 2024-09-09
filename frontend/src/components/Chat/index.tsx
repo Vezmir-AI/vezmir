@@ -107,26 +107,32 @@ const ChatComponent: React.FC = () => {
         url = `/chat/conversations/${chatId}/`;
       }
 
+      const formData = new FormData();
+      formData.append('content', message);
+      formData.append('model_name', model.name);
+      
+      let fileInfo = [];
+      if (files && files.length > 0) {
+        files.forEach((file, index) => {
+          formData.append(`files`, file);
+          fileInfo.push({
+            name: file.name,
+            url: URL.createObjectURL(file),
+            type: file.type
+          });
+        });
+      }
+
       const userMessage = { 
         role: 'user' as const, 
         content: message, 
         ai_model_details: model,
-        files: files // Add the files to the user message
+        files: fileInfo
       };
       setMessages(prevMessages => [...prevMessages, userMessage]);
 
       let assistantMessage = '';
       setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: model }]);
-
-      const formData = new FormData();
-      formData.append('content', message);
-      formData.append('model_name', model.name);
-      
-      if (files && files.length > 0) {
-        files.forEach((file, index) => {
-          formData.append(`files`, file);
-        });
-      }
 
       console.log('Form Files:', formData.get('files'));
       const response = await api.post(url, formData, true, true);
