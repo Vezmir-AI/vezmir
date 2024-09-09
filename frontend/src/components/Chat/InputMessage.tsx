@@ -30,7 +30,6 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputMessage.trim() && selectedFiles.length === 0) return;
-    console.log('Submitting message with files:', selectedFiles);
     onSendMessage(inputMessage, selectedFiles);
     setInputMessage('');
     setSelectedFiles([]);

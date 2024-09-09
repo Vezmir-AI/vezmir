@@ -54,7 +54,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
               </div>
             )}
             <div className="relative flex-grow">
-              {console.log('Message files:', msg)}
               {msg.files && msg.files.length > 0 && (
                 <>
                   <div className="mb-2 flex flex-wrap gap-2">
