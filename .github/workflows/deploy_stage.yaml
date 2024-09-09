@@ -32,7 +32,7 @@ jobs:
         continue-on-error: false
 
       - name: Upload frontend build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-build
           path: frontend/dist
@@ -58,7 +58,7 @@ jobs:
         continue-on-error: false
 
       - name: Upload backend build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: backend-dir
           path: backend
@@ -73,7 +73,7 @@ jobs:
         continue-on-error: false
 
       - name: Download frontend build artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: frontend-build
           path: frontend/dist
@@ -113,6 +113,13 @@ jobs:
           script: |
             sudo chown -R ${{ secrets.VPS_USERNAME }}:www-data /var/www/dev.vezmir.ai.new
             sudo chmod -R 755 /var/www/dev.vezmir.ai.new
+        continue-on-error: false
+
+      - name: Download backend build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-dir
+          path: backend
         continue-on-error: false
 
       - name: Copy backend to VPS
