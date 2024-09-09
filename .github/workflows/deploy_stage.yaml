@@ -42,8 +42,8 @@ jobs:
       - name: Create backend .env file
         run: |
           cp deployments/.env.backend.stage backend/.env.temp
-          echo "DJANGO_SECRET_KEY='${{ secrets.DJANGO_SECRET_KEY }}'" >> backend/.env.temp
-          echo "DJANGO_DATABSE_PASSWORD='${{ secrets.DJANGO_DATABSE_PASSWORD }}'" >> backend/.env.temp
+          echo "DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}" >> backend/.env.temp
+          echo "DJANGO_DATABSE_PASSWORD=${DJANGO_DATABSE_PASSWORD}" >> backend/.env.temp
           echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> backend/.env.temp
           echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> backend/.env.temp
           echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> backend/.env.temp
@@ -54,8 +54,11 @@ jobs:
           echo "DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET=${{ secrets.DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET }}" >> backend/.env.temp
           echo "DJANGO_GOOGLE_OAUTH2_PROJECT_ID=${{ secrets.DJANGO_GOOGLE_OAUTH2_PROJECT_ID }}" >> backend/.env.temp
           echo "DJANGO_EMAIL_HOST_USER=${{ secrets.DJANGO_EMAIL_HOST_USER }}" >> backend/.env.temp
-          echo "DJANGO_EMAIL_HOST_PASSWORD='${{ secrets.DJANGO_EMAIL_HOST_PASSWORD }}'" >> backend/.env.temp
-
+          echo "DJANGO_EMAIL_HOST_PASSWORD=${DJANGO_EMAIL_HOST_PASSWORD}" >> backend/.env.temp
+        env:
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DJANGO_DATABSE_PASSWORD: ${{ secrets.DJANGO_DATABSE_PASSWORD }}
+          DJANGO_EMAIL_HOST_PASSWORD: ${{ secrets.DJANGO_EMAIL_HOST_PASSWORD }}
         continue-on-error: false
 
       - name: Upload backend build artifacts
