@@ -1,6 +1,6 @@
 import time
 
-from django.http import StreamingHttpResponse, HttpResponse, Http404
+from django.http import StreamingHttpResponse
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -118,7 +118,7 @@ class ChatMessageView(APIView):
         file_info = []
         
         # Create the directory structure
-        upload_dir = os.path.join('chat_uploads', str(request.user.id), str(conv_id))
+        upload_dir = os.path.join('chat_uploads', str(conv_id))
         os.makedirs(upload_dir, exist_ok=True)
 
         for file in uploaded_files:
@@ -129,7 +129,7 @@ class ChatMessageView(APIView):
                 for chunk in file.chunks():
                     destination.write(chunk)
             
-            file_url = request.build_absolute_uri(f'/api/chat/file/{request.user.id}/{conv_id}/{file_name}')
+            file_url = request.build_absolute_uri(f'/api/chat/file/{conv_id}/{file_name}')
             file_info.append({
                 'name': file_name,
                 'url': file_url,
@@ -299,13 +299,17 @@ class FeedbackView(APIView):
 
 class FileAccessView(APIView):
     permission_classes = (AllowAny,)
-    def get(self, request, user_id, conv_id, filename):
-        file_path = os.path.join('chat_uploads', str(user_id), conv_id, filename)
+    
+    def get(self, request, conv_id, filename):
+        file_path = os.path.join('chat_uploads', conv_id, filename)
 
         if default_storage.exists(file_path):
             with default_storage.open(file_path, 'rb') as file:
-                response = HttpResponse(file.read(), content_type='application/octet-stream')
+                response = StreamingHttpResponse(file.read(), content_type='application/octet-stream')
                 response['Content-Disposition'] = f'inline; filename="{filename}"'
                 return response
         else:
-            raise Http404
+            return Response(
+                {"message": "file_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
+            )

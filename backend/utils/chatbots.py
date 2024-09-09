@@ -9,9 +9,9 @@ def get_api_response(model_name: str, model_provider: str, messages: list[dict])
         case "OpenAI":
             yield from OpenAIAPI.get_response(formatted_messages, model_name)
         case "Anthropic":
-            yield from AnthropicAPI.get_response(formatted_messages, model_name, file_paths)
+            yield from AnthropicAPI.get_response(formatted_messages, model_name)
         case "Google":
-            yield from GoogleAPI.get_response(formatted_messages, model_name, file_paths)
+            yield from GoogleAPI.get_response(formatted_messages, model_name)
 
 
 def generate_title(user_message):

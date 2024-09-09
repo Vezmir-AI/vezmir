@@ -11,5 +11,5 @@ urlpatterns = [
     path("chat/conversations/<uuid:conv_id>/", views.ChatMessageView.as_view()),
     path("chat/conversations/<uuid:conv_id>/title/", views.ChatConversationTitleView.as_view()),
     path('chat/choose_model/', views.ChooseModelView.as_view()),
-    path('chat/file/<int:user_id>/<str:conv_id>/<str:filename>/', views.FileAccessView.as_view(), name='file_access'),
+    path('chat/file/<str:conv_id>/<str:filename>/', views.FileAccessView.as_view()),
 ]

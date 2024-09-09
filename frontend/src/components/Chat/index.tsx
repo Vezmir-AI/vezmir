@@ -93,7 +93,6 @@ const ChatComponent: React.FC = () => {
 
       if (!chatId) {
         const newConversationResponse = await addConversation();
-        console.log("New conversation response:", newConversationResponse);
         if (!newConversationResponse) {
           throw new Error('Failed to create a new conversation');
         }
