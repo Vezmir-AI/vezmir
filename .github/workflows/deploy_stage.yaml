@@ -143,7 +143,7 @@ jobs:
           script: |
             source /home/azureuser/.stage-vezmir/bin/activate
             cd /home/azureuser/backend-dev.vezmir.ai.new
-            mv backend/.env.temp backend/.env
+            mv .env.temp .env
             pip install -r requirements.txt
             python manage.py migrate
             if [ $? -ne 0 ]; then
