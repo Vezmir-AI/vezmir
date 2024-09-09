@@ -48,6 +48,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             "ai_model_details",
             "user",
             "num_tokens",
+            "files",
         )
 
 

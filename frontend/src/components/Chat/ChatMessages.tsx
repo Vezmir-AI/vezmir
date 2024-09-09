@@ -54,27 +54,30 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
               </div>
             )}
             <div className="relative flex-grow">
+              {console.log('Message files:', msg)}
               {msg.files && msg.files.length > 0 && (
-                <div className="mb-2 flex flex-wrap gap-2">
-                  {msg.files.map((file, fileIndex) => (
-                    <div key={fileIndex} className="flex flex-col items-center bg-[var(--gray-600)] text-white rounded-lg p-2">
-                      {file.type.startsWith('image/') ? (
-                        <img 
-                          src={file.url}
-                          alt={file.name} 
-                          className="w-40 h-40 object-cover rounded-md mb-1"
-                        />
-                      ) : (
-                        <div className="w-20 h-20 flex items-center justify-center bg-[var(--gray-700)] rounded-md mb-1">
-                          <PaperClipIcon className="h-8 w-8" />
-                        </div>
-                      )}
-                      <span className="truncate max-w-[80px] text-xs">
-                        {file.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <>
+                  <div className="mb-2 flex flex-wrap gap-2">
+                    {msg.files.map((file, fileIndex) => (
+                      <div key={fileIndex} className="flex flex-col items-center bg-[var(--gray-600)] text-white rounded-lg p-2">
+                        {file.type.startsWith('image/') ? (
+                          <img 
+                            src={file.url}
+                            alt={file.name} 
+                            className="w-40 h-40 object-cover rounded-md mb-1"
+                          />
+                        ) : (
+                          <div className="w-20 h-20 flex items-center justify-center bg-[var(--gray-700)] rounded-md mb-1">
+                            <PaperClipIcon className="h-8 w-8" />
+                          </div>
+                        )}
+                        <span className="truncate max-w-[80px] text-xs">
+                          {file.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
               {renderContent(msg.content, index, copiedStates, setCopiedStates)}
               {!isStreaming && msg.role === 'assistant' && (
