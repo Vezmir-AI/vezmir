@@ -17,15 +17,17 @@ interface AIModel {
     hint: string;
 }
 
+interface File {
+    name: string;
+    url: string;
+    type: string;
+}
+
 interface Message {
     role: 'user' | 'assistant';
     content: string;
     ai_model_details: AIModel;
-    files?: {
-        name: string;
-        url: string;
-        type: string;
-    }[];
+    files?: File[];
 }
 // TODO add Message? api request and response schema,
 
