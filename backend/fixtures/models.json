@@ -27,7 +27,7 @@
             "name": "gpt-4o-2024-08-06",
             "display_name": "GPT-4o",
             "provider": "OpenAI",
-            "hint": "Best model for general purpose, ideas and writing",
+            "hint": "model_hint_gpt4o",
             "is_active": true,
             "price_per_1K_token_input": 0.00250,
             "price_per_1K_token_output": 0.01000
@@ -40,7 +40,7 @@
             "name": "gpt-4o-mini-2024-07-18",
             "display_name": "GPT-4o Mini",
             "provider": "OpenAI",
-            "hint": "Smaller, faster version of GPT-4o",
+            "hint": "model_hint_gpt4o_mini",
             "is_active": true,
             "price_per_1K_token_input": 0.000150,
             "price_per_1K_token_output": 0.000600
@@ -53,7 +53,7 @@
             "name": "claude-3-5-sonnet-20240620",
             "display_name": "Claude Sonnet",
             "provider": "Anthropic",
-            "hint": "Best model for coding and reasoning.",
+            "hint": "model_hint_claude_sonnet",
             "is_active": true,
             "price_per_1K_token_input": 0.003,
             "price_per_1K_token_output": 0.015
@@ -66,7 +66,7 @@
             "name": "claude-3-haiku-20240307",
             "display_name": "Claude Haiku",
             "provider": "Anthropic",
-            "hint": "Fastest model of Anthropic, good for basic tasks",
+            "hint": "model_hint_claude_haiku",
             "is_active": true,
             "price_per_1K_token_input": 0.00025,
             "price_per_1K_token_output": 0.00125
@@ -79,7 +79,7 @@
             "name": "gemini-1.5-pro",
             "display_name": "Gemini Pro",
             "provider": "Google",
-            "hint": "Best model for writing and searching information",
+            "hint": "model_hint_gemini_pro",
             "is_active": true,
             "price_per_1K_token_input": 0.0035,
             "price_per_1K_token_output": 0.0105
@@ -92,7 +92,7 @@
             "name": "gemini-1.5-flash",
             "display_name": "Gemini Flash",
             "provider": "Google",
-            "hint": "Fastest model of Google, good for basic tasks",
+            "hint": "model_hint_gemini_flash",
             "is_active": true,
             "price_per_1K_token_input": 0.000075,
             "price_per_1K_token_output": 0.00030

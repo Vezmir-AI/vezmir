@@ -74,7 +74,7 @@ const ModelSelector: React.FC = () => {
                     </div>
                     {hoveredHint === model.display_name && (
                       <div className="absolute z-10 p-2 left-0 top-full text-sm text-white bg-[var(--gray-700)] rounded-md shadow-lg whitespace-nowrap">
-                        {model.hint}
+                        {locale(model.hint)}
                       </div>
                     )}
                   </div>
