@@ -1,11 +1,11 @@
 const api = {
   baseURL: import.meta.env.VITE_API_URL,
-  getHeaders: function () {
+  getHeaders: function (): { [key: string]: string } {
     const accessToken = localStorage.getItem('accessToken');
     return {
       'Content-Type': 'application/json',
       ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-    };
+    } as { [key: string]: string };
   },
   post: async function (url: string, body: any = {}, stream: boolean = false, formData: boolean = false) {
     return this._fetch(url, body, 'POST', true, stream, formData);
@@ -25,7 +25,7 @@ const api = {
   },
   _fetch: async function (url: string, options: any, method: string, _retry: boolean = true, stream: boolean = false, formData: boolean = false): Promise<any> {
     const fetchUrl = this.baseURL + url;
-    const headers = this.getHeaders();
+    const headers: { [key: string]: string } = this.getHeaders();
     if (formData) {
       delete headers['Content-Type'];
     }
