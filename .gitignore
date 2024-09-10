@@ -40,3 +40,5 @@ dist
 /.yarn
 /.yarn-integrity
 /yarn-error.log
+
+chat_uploads/
