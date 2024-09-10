@@ -131,4 +131,10 @@ export default {
     alert_email_verified_successfully: 'Email Verified Successfully',
     alert_verification_email_sent: 'Verification Email Sent',
     alert_invalid_type: 'Invalid Type',
+    model_hint_gpt4o: "Best model for general purpose, ideas and writing",
+    model_hint_gpt4o_mini: "Smaller, faster version of GPT-4o",
+    model_hint_claude_sonnet: "Best model for coding and reasoning",
+    model_hint_claude_haiku: "Fastest model of Anthropic, good for basic tasks",
+    model_hint_gemini_pro: "Best model for writing and searching information",
+    model_hint_gemini_flash: "Fastest model of Google, good for basic tasks",
   };
