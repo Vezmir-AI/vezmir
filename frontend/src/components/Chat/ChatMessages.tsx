@@ -40,7 +40,15 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
       setImageUrls(prev => ({ ...prev, ...newImageUrls }));
     };
 
-    fetchImages();
+    const retryFetchImages = () => {
+      if (isStreaming) {
+        setTimeout(retryFetchImages, 1000);
+      } else {
+        fetchImages();
+      }
+    };
+
+    retryFetchImages();
 
     // Cleanup function to revoke object URLs
     return () => {
