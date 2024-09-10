@@ -43,7 +43,7 @@ const Alert: React.FC<AlertProps> = ({ notification }) => {
                         : 'bg-red-600 border-2 border-red-800 hover:bg-red-800'
                 } cursor-pointer`}
             >
-                <p className="text-lg font-bold text-white text-center px-2">{locale(notification.message ?? '')}</p>
+                <p className="text-lg font-bold text-white text-center px-2">{locale("alert_" + notification.message) ?? ''}</p>
             </div>
         </Transition>
     );

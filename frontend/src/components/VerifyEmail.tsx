@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import api from "@/api"
+import { useTheme } from "@/context/ThemeContext"
 
 const VerifyEmail: React.FC = () => {
+    const { locale } = useTheme()
     const [isVerified, setIsVerified] = useState(false)
     const [error, setError] = useState("")
     const [searchParams] = useSearchParams()
@@ -54,19 +56,19 @@ const VerifyEmail: React.FC = () => {
         <div className="verify-email-container">
             {isVerified ? (
                 <div className="success-message">
-                    <h2>Email Verified Successfully!</h2>
-                    <p>Your email has been successfully verified. You can now use all features of our platform.</p>
-                    <p>Redirecting to dashboard...</p>
+                    <h2>{locale("auth_verify_email_success")}</h2>
+                    <p>{locale("auth_verify_email_success_description")}</p>
+                    <p>{locale("auth_verify_email_redirecting")}</p>
                 </div>
             ) : error ? (
                 <div className="error-message">
-                    <h2>Verification Error</h2>
+                    <h2>{locale("auth_verify_email_error")}</h2>
                     <p>{error}</p>
-                    <p>Please check your email for a valid verification link or <a className="underline" href="/resend-verification-email">request a new one</a>.</p>
+                    <p>{locale("auth_verify_email_error_description")}</p>
                 </div>
             ) : (
                 <div className="loading-message">
-                    <p>Verifying your email...</p>
+                    <p>{locale("auth_verify_email_verifying")}</p>
                 </div>
             )}
         </div>

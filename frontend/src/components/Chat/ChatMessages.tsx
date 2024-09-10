@@ -3,6 +3,7 @@ import { Message } from '@/types';
 import renderContent from './renderContent/renderContent';
 import { getProviderLogo, getProviderColor } from '@/utils/providerUtils';
 import { ClipboardDocumentIcon, CheckIcon, PaperClipIcon } from '@heroicons/react/24/outline';
+import { useTheme } from '@/context/ThemeContext';
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -11,6 +12,7 @@ interface ChatMessagesProps {
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) => {
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+  const { locale } = useTheme();
 
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content);
@@ -60,9 +62,9 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
                     {msg.files.map((file, fileIndex) => (
                       <div key={fileIndex} className="flex flex-col items-center bg-[var(--gray-600)] text-white rounded-lg p-2">
                         {file.type.startsWith('image/') ? (
-                          <img 
+                          <img
                             src={file.url}
-                            alt={file.name} 
+                            alt={file.name}
                             className="w-40 h-40 object-cover rounded-md mb-1"
                           />
                         ) : (
@@ -89,12 +91,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
                     {copiedStates[msg.content] ? (
                       <>
                         <CheckIcon className="h-4 w-4 text-white" />
-                        <span className="text-xs text-white">Copy</span>
+                        <span className="text-xs text-white">{locale('chat_copy')}</span>
                       </>
                     ) : (
                       <>
                         <ClipboardDocumentIcon className="h-4 w-4 text-white" />
-                        <span className="text-xs text-white">Copy</span>
+                        <span className="text-xs text-white">{locale('chat_copy')}</span>
                       </>
                     )}
                   </button>

@@ -5,8 +5,10 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
 import { useProfile } from "@/context/ProfileContext";
 import { usageData } from '@/types'
 import { getWeekStart, getWeekEnd, formatDate } from '@/utils';
+import { useTheme } from '@/context/ThemeContext';
 
 const UsageConsumptionArea: React.FC = () => {
+    const { locale } = useTheme();
     const [showDetails, setShowDetails] = useState(false);
     const [displayData, setDisplayData] = useState<usageData[]>([]);
     const [currentWeek, setCurrentWeek] = useState<Date>(new Date());
@@ -88,15 +90,15 @@ const UsageConsumptionArea: React.FC = () => {
     return (
         <div className={`${loading ? 'bg-gradient-to-r from-[var(--gray-800) via-[var(--gray-600) to-[var(--gray-800) animate-gradient-loading' : ''}`}>
             <div className="flex justify-between items-center p-2">
-                <h2 className="text-lg font-semibold">Models used</h2>
+                <h2 className="text-lg font-semibold">{locale('dashboard_models_used')}</h2>
                 <div className="flex items-center space-x-2">
-                    <span className="text-sm text-[var(--gray-400)">Show Details</span>
+                    <span className="text-sm text-[var(--gray-400)">{locale('dashboard_show_details')}</span>
                     <Switch
                         checked={showDetails}
                         onChange={() => setShowDetails(!showDetails)}
                         className="usage-switch group relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out "
                     >
-                        <span className="sr-only">Use setting</span>
+                        <span className="sr-only">{locale('dashboard_use_setting')}</span>
                         <span
                             className={`${showDetails ? 'translate-x-5' : 'translate-x-0'
                                 } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
@@ -146,7 +148,7 @@ const UsageConsumptionArea: React.FC = () => {
                                 )}
                                 {!hasData && (
                                     <text x="50%" y="30%" textAnchor="middle" dominantBaseline="middle" fill="#888" fontSize="14">
-                                        No data available for this week
+                                        {locale('dashboard_no_data_available_for_this_week')}
                                     </text>
                                 )}
                             </AreaChart>
@@ -161,7 +163,7 @@ const UsageConsumptionArea: React.FC = () => {
                     disabled={loading}
                 >
                     <ChevronLeftIcon className="h-6 w-6 sm:h-5 sm:w-5" />
-                    <span className="ml-1 text-sm hidden sm:inline">Previous</span>
+                    <span className="ml-1 text-sm hidden sm:inline">{locale('dashboard_previous')}</span>
                 </button>
                 <span className="text-sm font-medium">{formatWeekRange(currentWeek)}</span>
                 <button
@@ -169,7 +171,7 @@ const UsageConsumptionArea: React.FC = () => {
                     className={`p-2 sm:pl-3 flex items-center rounded-md ${loading ? 'bg-transparent' : 'bg-[var(--gray-500) sm:bg-[var(--gray-800)'} ${futureWeekDisabled ? 'text-[var(--gray-600) bg-[var(--gray-600)] hover:bg-[var(--gray-600)]' : ''}`}
                     disabled={futureWeekDisabled || loading}
                 >
-                    <span className="mr-1 text-sm hidden sm:inline">Next</span>
+                    <span className="mr-1 text-sm hidden sm:inline">{locale('dashboard_next')}</span>
                     <ChevronRightIcon className="h-6 w-6 sm:h-5 sm:w-5" />
                 </button>
             </div>
