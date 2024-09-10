@@ -52,7 +52,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
       const files = Array.from(e.target.files);
       const validFiles = files.filter(file => {
         const isValidSize = file.size <= 30 * 1024 * 1024; // 30MB limit
-        const isValidType = ['image/jpeg', 'image/png', 'application/pdf'].includes(file.type);
+        const isValidType = ['image/jpeg', 'image/png'].includes(file.type);
         return isValidSize && isValidType;
       });
       const newFiles = [...selectedFiles, ...validFiles].slice(0, 5); // Limit to 5 files
@@ -133,7 +133,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           ref={fileInputRef}
           onChange={handleFileChange}
           multiple
-          accept="image/jpeg,image/png,application/pdf"
+          accept="image/jpeg,image/png"
           className="hidden"
           disabled={selectedFiles.length >= 5}
         />
