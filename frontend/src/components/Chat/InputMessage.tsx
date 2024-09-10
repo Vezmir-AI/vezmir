@@ -50,7 +50,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
       const files = Array.from(e.target.files);
       const validFiles = files.filter(file => {
         const isValidSize = file.size <= 30 * 1024 * 1024; // 30MB limit
-        const isValidType = ['image/jpeg', 'image/png', 'application/pdf'].includes(file.type);
+        const isValidType = ['image/jpeg', 'image/png'].includes(file.type);
         return isValidSize && isValidType;
       });
       const newFiles = [...selectedFiles, ...validFiles].slice(0, 5); // Limit to 5 files
@@ -108,7 +108,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           <PaperClipIcon className="h-6 w-6 stroke-width-4 -rotate-45" />
           {showTooltip && (
             <div className="absolute bottom-full left-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap">
-              Upload pdf or images (Max 5, 30MB each)
+              Upload images (Max 5, 30MB each)
             </div>
           )}
         </button>
@@ -120,8 +120,8 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           disabled={isStreaming || !inputMessage.trim()}
         >
           <div className="w-6 h-6 flex items-center justify-center">
-            <img 
-              src={arrowSend} 
+            <img
+              src={arrowSend}
               className={`w-5 h-5`}
             />
           </div>
@@ -131,7 +131,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           ref={fileInputRef}
           onChange={handleFileChange}
           multiple
-          accept="image/jpeg,image/png,application/pdf"
+          accept="image/jpeg,image/png"
           className="hidden"
           disabled={selectedFiles.length >= 5}
         />
