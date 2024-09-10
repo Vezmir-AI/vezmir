@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "@/api"
 import { CircularProgress, Typography, Box, Container } from "@mui/material";
+import { useTheme } from "@/context/ThemeContext";
 
 const PaymentSuccess: React.FC = () => {
+    const { locale } = useTheme();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const sessionId = searchParams.get("session_id");
@@ -47,25 +49,25 @@ const PaymentSuccess: React.FC = () => {
                     <>
                         <CircularProgress size={60} thickness={4} />
                         <Typography variant="h5" mt={3}>
-                            Confirming your payment...
+                            {locale("stripe_confirm_payment_confirming")}
                         </Typography>
                     </>
                 ) : success ? (
                     <>
                         <Typography variant="h4" gutterBottom>
-                            Payment Successful!
+                            {locale("stripe_confirm_payment_success")}
                         </Typography>
                         <Typography variant="body1">
-                            Thank you for your purchase. You will be redirected to the homepage in {countdown} seconds...
+                            {locale("stripe_confirm_payment_redirecting")} {countdown} {locale("stripe_confirm_payment_seconds")}...
                         </Typography>
                     </>
                 ) : (
                     <Typography variant="h5" color="error">
-                        There was an error processing your payment. Please try again.
+                        {locale("stripe_confirm_payment_error")}
                     </Typography>
                 )}
                 <Typography variant="body2" mt={2} color="white">
-                    Hint: All payment information can be found under the Billing tab in your profile settings.
+                    {locale("stripe_confirm_payment_hint")}
                 </Typography>
             </Box>
         </Container>

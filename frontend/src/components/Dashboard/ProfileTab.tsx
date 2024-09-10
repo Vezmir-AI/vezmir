@@ -32,13 +32,13 @@ const ProfileTab: React.FC = () => {
     const newPassword = e.target.value.slice(0, 128); // Limit to 128 characters
     setPassword(newPassword);
     if (newPassword.length > 0 && newPassword.length < 8) {
-      setPasswordError(locale('com_auth_password_min_length'));
+      setPasswordError(locale('auth_password_min_length'));
     } else {
       setPasswordError('');
     }
     setPasswordsMatch(newPassword === confirmPassword);
   };
-  
+
   const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const confirmPwd = e.target.value;
     setConfirmPassword(confirmPwd);
@@ -96,14 +96,14 @@ const ProfileTab: React.FC = () => {
         />
         <div className="xl:px-16 bg-[var(--gray-800)]">
           <main>
-            <h1 className="sr-only">Account Settings</h1>
+            <h1 className="sr-only">{locale("dashboard_account_settings")}</h1>
 
             {/* Settings forms */}
             <div className="divide-y divide-white/5">
               <div className="max-w-7xl px-4 mt-12 sm:px-6 lg:px-8">
-                <h2 className="text-2xl px-2 font-semibold leading-7 text-white mb-4">Profile Information</h2>
+                <h2 className="text-2xl px-2 font-semibold leading-7 text-white mb-4">{locale("dashboard_profile_information")}</h2>
                 <p className="mt-1 px-2 text-sm leading-6 text-gray-400 mb-6">
-                  Update your personal information associated with your account.
+                  {locale("dashboard_profile_information_description")}
                 </p>
 
                 {/* PERSONAL INFORMATION */}
@@ -125,7 +125,7 @@ const ProfileTab: React.FC = () => {
                           htmlFor="first-name"
                           className="floating-label"
                         >
-                          First name
+                          {locale("dashboard_first_name")}
                         </label>
                       </div>
                     </div>
@@ -145,7 +145,7 @@ const ProfileTab: React.FC = () => {
                           htmlFor="last-name"
                           className="floating-label"
                         >
-                          Last name
+                          {locale("dashboard_last_name")}
                         </label>
                       </div>
                     </div>
@@ -166,30 +166,30 @@ const ProfileTab: React.FC = () => {
                           htmlFor="email"
                           className="floating-label"
                         >
-                          Email address
+                          {locale("auth_email_address")}
                         </label>
                       </div>
                       <div className="mt-2 flex justify-between items-center">
-                        <p className="text-xs px-2 leading-5 text-gray-400 italic">Email cannot be changed.</p>
+                        <p className="text-xs px-2 leading-5 text-gray-400 italic">{locale("dashboard_email_cannot_be_changed")}</p>
                         {user.email_verified ? (
                           <span className="flex items-center text-green-400">
                             <CheckIcon className="h-5 w-5" />
-                            <span className="ml-1 text-xs">Email verified</span>
+                            <span className="ml-1 text-xs">{locale("dashboard_email_verified")}</span>
                           </span>
                         ) : (
                           <span className="flex items-center text-red-400">
                             <XMarkIcon className="h-5 w-5" />
-                            <span className="ml-1 text-xs">Email not verified</span>
-                            <Link to="/resend-verification-email" className="ml-2 mr-2 text-xs text-white underline">Resend verification email</Link>
+                            <span className="ml-1 text-xs">{locale("dashboard_email_not_verified")}</span>
+                            <Link to="/resend-verification-email" className="ml-2 mr-2 text-xs text-white underline">{locale("dashboard_resend_verification_email")}</Link>
                           </span>
                         )}
                       </div>
                     </div>
 
                     <div className="col-span-full">
-                      <h3 className="text-lg px-2 font-semibold leading-7 text-white mb-4">Preferred AI Model</h3>
+                      <h3 className="text-lg px-2 font-semibold leading-7 text-white mb-4">{locale("dashboard_preferred_ai_model")}</h3>
                       <p className="mt-1 px-2 text-sm leading-6 text-gray-400 mb-6">
-                      This will be the default model used in new chats.
+                      {locale("dashboard_preferred_ai_model_description")}
                       </p>
                       <div className="mb-2 relative">
                         <div className="relative inline-block text-left w-full sm:w-1/2">
@@ -248,7 +248,7 @@ const ProfileTab: React.FC = () => {
                       type="submit"
                       className="rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                     >
-                      Save
+                      {locale("dashboard_save")}
                     </button>
                   </div>
                 </form>
@@ -256,9 +256,9 @@ const ProfileTab: React.FC = () => {
 
               {/* PASSWORD */}
               <div className="max-w-7xl px-4 mt-16 sm:px-6 lg:px-8">
-                <h2 className="text-2xl px-2 font-semibold leading-7 text-white mb-4">Change password</h2>
+                <h2 className="text-2xl px-2 font-semibold leading-7 text-white mb-4">{locale("dashboard_change_password")}</h2>
                 <p className="mt-1 px-2 text-sm leading-6 text-gray-400 mb-6">
-                  Update your password associated with your account.
+                  {locale("dashboard_change_password_description")}
                 </p>
 
                 <form className="w-full" onSubmit={handleSubmitPassword}>
@@ -277,7 +277,7 @@ const ProfileTab: React.FC = () => {
                           htmlFor="current-password"
                           className="floating-label"
                         >
-                          Current password
+                          {locale("dashboard_current_password")}
                         </label>
                       </div>
                     </div>
@@ -297,7 +297,7 @@ const ProfileTab: React.FC = () => {
                           htmlFor="new-password"
                           className="floating-label"
                         >
-                          New password
+                          {locale("dashboard_new_password")}
                         </label>
                         {passwordError && <p className="text-[var(--bordeaux)] text-sm mt-1">{passwordError}</p>}
                       </div>
@@ -318,10 +318,10 @@ const ProfileTab: React.FC = () => {
                           htmlFor="confirm-password"
                           className="floating-label"
                         >
-                          Confirm password
+                          {locale("dashboard_confirm_password")}
                         </label>
                         {!passwordsMatch && confirmPassword !== '' && (
-                          <p className="text-[var(--bordeaux)] text-sm mt-1">{locale('com_auth_password_not_match')}</p>
+                          <p className="text-[var(--bordeaux)] text-sm mt-1">{locale('auth_password_not_match')}</p>
                         )}
                       </div>
                     </div>
@@ -332,7 +332,7 @@ const ProfileTab: React.FC = () => {
                       type="submit"
                       className="rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                     >
-                      Save
+                      {locale("dashboard_save")}
                     </button>
                   </div>
                 </form>
@@ -340,10 +340,9 @@ const ProfileTab: React.FC = () => {
 
               {/* DELETE ACCOUNT */}
               <div className="max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-                <h2 className="text-2xl px-2 font-semibold leading-7 text-white mb-4">Delete account</h2>
+                <h2 className="text-2xl px-2 font-semibold leading-7 text-white mb-4">{locale("dashboard_delete_account")}</h2>
                 <p className="mt-1 px-2 text-sm leading-6 text-gray-400 mb-6">
-                  No longer want to use our service? You can delete your account here.
-                  All information related to this account will be deleted permanently in 30 days. You can revert this action in the meantime.
+                  {locale("dashboard_delete_account_description")}
                 </p>
 
                 <div className="px-2">
@@ -354,7 +353,7 @@ const ProfileTab: React.FC = () => {
                     }}
                     className="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400"
                   >
-                    Yes, delete my account
+                    {locale("dashboard_delete_account")}
                   </button>
                 </div>
               </div>

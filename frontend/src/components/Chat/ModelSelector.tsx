@@ -4,9 +4,11 @@ import { AIModel } from '@/types';
 import { getProviderLogo, getProviderColor } from '../../utils/providerUtils';
 import { useConversation } from '../../context/ConversationContext';
 import { useParams } from 'react-router-dom';
+import { useTheme } from '@/context/ThemeContext';
 
 const ModelSelector: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { locale } = useTheme();
   const [hoveredHint, setHoveredHint] = useState<string | null>(null);
   const { aiModels, selectedAIModel, setSelectedAIModel, setConversationAIModel } = useConversation();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -33,7 +35,7 @@ const ModelSelector: React.FC = () => {
   };
 
   return (
-    <div className="relative inline-block text-left w-full sm:w-72 z-50" ref={dropdownRef}>
+    <div className="relative inline-block text-left w-full sm:w-56 z-50" ref={dropdownRef}>
       <div>
         <button
           type="button"
@@ -41,14 +43,14 @@ const ModelSelector: React.FC = () => {
           onClick={() => setIsOpen(!isOpen)}
         >
           <span className="truncate">
-            {aiModels.find(model => model.name === selectedAIModel?.name)?.display_name || 'Select a model'}
+            {aiModels.find(model => model.name === selectedAIModel?.name)?.display_name || locale('chat_select_a_model')}
           </span>
           <ChevronDown className="ml-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
         </button>
       </div>
 
       {isOpen && (
-        <div className="origin-top-right absolute right-0 w-full sm:w-72 rounded-md shadow-lg bg-[var(--gray-700)] z-50">
+        <div className="origin-top-right absolute right-0 w-full sm:w-56 rounded-md shadow-lg bg-[var(--gray-700)] z-50">
           <div role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
             {aiModels.map((model) => (
               <button
@@ -67,7 +69,7 @@ const ModelSelector: React.FC = () => {
                         onMouseEnter={() => setHoveredHint(model.display_name)}
                         onMouseLeave={() => setHoveredHint(null)}
                       >
-                        hint
+                        {locale('chat_model_hint')}
                       </span>
                     </div>
                     {hoveredHint === model.display_name && (

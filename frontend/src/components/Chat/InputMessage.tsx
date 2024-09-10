@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PaperClipIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import arrowSend from '@/assets/arrowSend.svg';
+import { useTheme } from '@/context/ThemeContext';
 
 interface InputMessageProps {
   selectedModel: string | null;
@@ -10,6 +11,7 @@ interface InputMessageProps {
 
 const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming, onSendMessage }) => {
   const [inputMessage, setInputMessage] = useState<string>('');
+  const { locale } = useTheme();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -91,7 +93,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           className="flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none overflow-hidden"
-          placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel}`}
+          placeholder={isStreaming ? `${selectedModel} ${locale('chat_is_thinking')}` : `${locale('chat_message')} ${selectedModel}`}
           rows={1}
           style={{ minHeight: '56px', maxHeight: '200px' }}
         />
@@ -108,7 +110,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           <PaperClipIcon className="h-6 w-6 stroke-width-4 -rotate-45" />
           {showTooltip && (
             <div className="absolute bottom-full left-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap">
-              Upload pdf or images (Max 5, 30MB each)
+              {locale('chat_upload_pdf')}
             </div>
           )}
         </button>
@@ -120,8 +122,8 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           disabled={isStreaming || !inputMessage.trim()}
         >
           <div className="w-6 h-6 flex items-center justify-center">
-            <img 
-              src={arrowSend} 
+            <img
+              src={arrowSend}
               className={`w-5 h-5`}
             />
           </div>
