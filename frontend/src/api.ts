@@ -56,6 +56,9 @@ const api = {
     if (stream) {
       return response.body;
     }
+    if (url.startsWith("/chat/file/")){
+      return response.blob();
+    }
     // prevent errors on api.delete request, which contains no response data
     // as 204 responses doesn't have a body
     if (response.status == 204) {
