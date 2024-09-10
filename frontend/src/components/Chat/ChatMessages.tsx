@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Message } from '@/types';
 import renderContent from './renderContent/renderContent';
 import { getProviderLogo, getProviderColor } from '@/utils/providerUtils';
 import { ClipboardDocumentIcon, CheckIcon, PaperClipIcon } from '@heroicons/react/24/outline';
+import api from '@/api';
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -10,7 +12,39 @@ interface ChatMessagesProps {
 }
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) => {
+  const { chatId } = useParams();
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+  const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const newImageUrls: { [key: string]: string } = {};
+      for (const msg of messages) {
+        if (msg.files) {
+          for (const file of msg.files) {
+            if (file.type.startsWith('image/') && !imageUrls[file.url]) {
+              try {
+                const url = `/chat/file/${chatId}/${file.name}/`;
+                const blob = await api.get(url);
+                const objectUrl = URL.createObjectURL(blob);
+                newImageUrls[file.url] = objectUrl;
+              } catch (error) {
+                console.error('Error fetching image:', error);
+              }
+            }
+          }
+        }
+      }
+      setImageUrls(prev => ({ ...prev, ...newImageUrls }));
+    };
+
+    fetchImages();
+
+    // Cleanup function to revoke object URLs
+    return () => {
+      Object.values(imageUrls).forEach(URL.revokeObjectURL);
+    };
+  }, [messages]);
 
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content);
@@ -60,9 +94,9 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
                     {msg.files.map((file, fileIndex) => (
                       <div key={fileIndex} className="flex flex-col items-center bg-[var(--gray-600)] text-white rounded-lg p-2">
                         {file.type.startsWith('image/') ? (
-                          <img 
-                            src={file.url}
-                            alt={file.name} 
+                          <img
+                            src={imageUrls[file.url] || file.url}
+                            alt={file.name}
                             className="w-40 h-40 object-cover rounded-md mb-1"
                           />
                         ) : (
