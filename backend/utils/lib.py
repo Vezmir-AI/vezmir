@@ -58,7 +58,7 @@ class GoogleAPI(AbstractAPI):
 
         formatted_messages = format_messages(messages)
 
-        for chunk in chat.stream(formatted_messages, stream_usage=True):
+        for chunk in chat.stream(formatted_messages):
             yield chunk
 
 
