@@ -152,20 +152,32 @@ class ChatMessageView(APIView):
         def stream_and_save():
             full_response = ""
             token_in = token_out = None
+            char_count = 0
             for chunk in get_api_response(model_name=model_name, model_provider=model_provider, messages=conv_messages):
                 # this allows to send the response to the client as it is being generated
                 if content := chunk.content:
                     full_response += content
                     yield content
-                if usage := chunk.usage_metadata:
-                    if token_in := usage.get("input_tokens"):
-                        ChatMessage.objects.filter(id=user_message.id).update(num_tokens=token_in)
-                    if token_out := usage.get("output_tokens"):
-                        pass
-                if response := chunk.response_metadata:  # noqa: F841
-                    # TODO implement response metadata, e.g. stop reason
+                    if model_provider == "Perplexity":
+                        char_count += len(content)
 
-                    pass
+                if model_provider != "Perplexity":
+                    if usage := chunk.usage_metadata:
+                        if token_in := usage.get("input_tokens"):
+                            ChatMessage.objects.filter(id=user_message.id).update(num_tokens=token_in)
+                        if token_out := usage.get("output_tokens"):
+                            pass
+
+                if response := chunk.response_metadata:
+                    if model_provider == "Perplexity" and response.get("finish_reason") == "stop":
+                        # Estimate tokens for Perplexity based on character count
+                        estimated_tokens = char_count // 4  # Rough estimate: 1 token ≈ 4 characters
+                        token_in = (
+                            len("".join(msg["content"] for msg in conv_messages)) // 4 + 5000
+                        )  # Add the 0.005$ of Perplexity request cost
+                        token_out = estimated_tokens
+                        ChatMessage.objects.filter(id=user_message.id).update(num_tokens=token_in)
+                    # TODO implement response metadata, e.g. stop reason
 
             # Save the complete response to the database
             ai_message_serializer = ChatMessageSerializer(
@@ -178,13 +190,10 @@ class ChatMessageView(APIView):
                     "num_tokens": token_out,
                 }
             )
-            ai_message_serializer.is_valid(
-                raise_exception=True
-            )  # TODO: handle API problems, like stop generation (i.e. data.completed=False)
+            ai_message_serializer.is_valid(raise_exception=True)
             ai_message_serializer.save()
 
             # updates the user's balance
-
             user_message_cost = request.user.calculate_message_cost(token_in, model, is_input=True)
             ai_message_cost = request.user.calculate_message_cost(token_out, model, is_input=False)
             total_cost = user_message_cost + ai_message_cost
