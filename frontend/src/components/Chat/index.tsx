@@ -250,7 +250,7 @@ const ChatComponent: React.FC = () => {
         </div>
 
         {/* Feedback Button */}
-        <div className="fixed bottom-10 right-4 z-20">
+        <div className="fixed bottom-28 right-2 z-20 xl:bottom-10 xl:right-4">
           <button
             onClick={() => setShowFeedbackForm(true)}
             className="p-2 rounded-full bg-[var(--bordeaux)] hover:bg-[var(--bordeaux-hover)] transition-colors duration-200"
