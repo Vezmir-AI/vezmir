@@ -141,28 +141,56 @@ const ChatComponent: React.FC = () => {
       const reader = response.getReader();
       const decoder = new TextDecoder('utf-8');
 
-      const processText = async ({ done, value }: ReadableStreamReadResult<Uint8Array>): Promise<void> => {
-        if (done) {
-          setIsStreaming(false);
-          return;
-        }
-
-        const chunk = decoder.decode(value, { stream: true });
-        assistantMessage += chunk;
-        setMessages(prevMessages => [
-          ...prevMessages.slice(0, -1),
-          { role: 'assistant', content: assistantMessage, ai_model_details: model }
-        ]);
-
-        return reader.read().then(processText);
+      const processText = async (): Promise<void> => {
+        await bufferStream(
+          reader,
+          decoder,
+          (char: string) => {
+            assistantMessage += char;
+            setMessages(prevMessages => [
+              ...prevMessages.slice(0, -1),
+              { role: 'assistant', content: assistantMessage, ai_model_details: model }
+            ]);
+          },
+          200 // Adjust this value to change the streaming speed (characters per second)
+        );
+        setIsStreaming(false);
       };
 
-      reader.read().then(processText);
+      processText();
 
     } catch (error) {
       console.error('Error sending message:', error);
       setIsStreaming(false);
     }
+  };
+
+  const bufferStream = async (
+    reader: ReadableStreamDefaultReader<Uint8Array>,
+    decoder: TextDecoder,
+    callback: (chunk: string) => void,
+    speed: number = 100 // Characters per second
+  ): Promise<void> => {
+    let buffer = '';
+    const interval = 1000 / speed; // Milliseconds between each character
+
+    const processChunk = async (): Promise<void> => {
+      const { done, value } = await reader.read();
+      if (done) return;
+
+      buffer += decoder.decode(value, { stream: true });
+
+      while (buffer.length > 0) {
+        const char = buffer.charAt(0);
+        buffer = buffer.slice(1);
+        callback(char);
+        await new Promise(resolve => setTimeout(resolve, interval));
+      }
+
+      return processChunk();
+    };
+
+    return processChunk();
   };
 
   return (
