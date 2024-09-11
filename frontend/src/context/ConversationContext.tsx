@@ -55,7 +55,7 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
         }
     };
 
-    const resetSelectedAIModel = (chatId: string = "", selectedAIModel: AIModel) => {
+    const resetSelectedAIModel = (chatId: string = "", selectedAIModel: AIModel | null = null) => {
         if (chatId) {
             const chat = conversations.find(conversation => conversation.id === chatId);
             if (chat) {
