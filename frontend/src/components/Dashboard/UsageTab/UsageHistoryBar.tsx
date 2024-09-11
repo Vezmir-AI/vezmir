@@ -6,9 +6,10 @@ import { useProfile } from '@/context/ProfileContext';
 import { usageData } from '@/types';
 import { formatDate, formatDateReadable } from '@/utils';
 import CustomTooltip from './CustomTooltip';
-
+import { useTheme } from '@/context/ThemeContext';
 
 const UsageHistoryBar: React.FC = () => {
+    const { locale } = useTheme();
     const [displayedData, setDisplayedData] = useState<usageData[]>([]);
     const [showDetails, setShowDetails] = useState(false);
     const [activeIndex, setActiveIndex] = useState<number>(-1);
@@ -142,13 +143,13 @@ const UsageHistoryBar: React.FC = () => {
                     </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <span className="text-sm text-[var(--gray-400)]">Show Details</span>
+                    <span className="text-sm text-[var(--gray-400)]">{locale('dashboard_show_details')}</span>
                     <Switch
                         checked={showDetails}
                         onChange={() => setShowDetails(!showDetails)}
                         className="usage-switch group relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out"
                     >
-                        <span className="sr-only">Use setting</span>
+                        <span className="sr-only">{locale('dashboard_use_setting')}</span>
                         <span
                             className="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out group-data-[checked]:translate-x-5"
                         />
@@ -229,7 +230,7 @@ const UsageHistoryBar: React.FC = () => {
                             )}
                             {!hasData && (
                                 <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" fill="#888" fontSize="14">
-                                    No data available for this month
+                                    {locale('dashboard_no_data_available_for_this_month')}
                                 </text>
                             )}
                         </BarChart>

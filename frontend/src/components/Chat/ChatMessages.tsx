@@ -5,6 +5,7 @@ import renderContent from './renderContent/renderContent';
 import { getProviderLogo, getProviderColor } from '@/utils/providerUtils';
 import { ClipboardDocumentIcon, CheckIcon, PaperClipIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
+import { useTheme } from '@/context/ThemeContext';
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -14,6 +15,7 @@ interface ChatMessagesProps {
 const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) => {
   const { chatId } = useParams();
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+  const { locale } = useTheme();
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
@@ -72,8 +74,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
           <div
             className={`max-w-[80%] ${
               msg.role === 'user'
-                ? 'bg-[var(--gray-700)] text-white rounded-3xl rounded-br-sm'
-                : 'bg-[var(--gray-800)] text-white rounded-3xl rounded-tl-sm'
+                ? 'bg-[var(--gray-700)] text-white rounded-2xl rounded-br-sm'
+                : 'bg-[var(--gray-800)] text-white rounded-3xl rounded-tl-sm mb-6'
             } px-3 py-2 text-base flex items-start relative`}
           >
             {msg.role !== 'user' && (
@@ -95,7 +97,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
                 )}
               </div>
             )}
-            <div className="relative flex-grow">
+            <div className="w-full break-words">
               {msg.files && msg.files.length > 0 && (
                 <>
                   <div className="mb-2 flex flex-wrap gap-2">
@@ -122,7 +124,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
               )}
               {renderContent(msg.content, index, copiedStates, setCopiedStates)}
               {!isStreaming && msg.role === 'assistant' && (
-                <div className="absolute -bottom-6 left-0 flex space-x-2 mt-2">
+                <div className="absolute -bottom-6 left-0 flex space-x-2 mt-2 ml-12">
                   <button
                     onClick={() => handleCopy(msg.content)}
                     className="p-1 rounded bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1"
@@ -131,12 +133,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
                     {copiedStates[msg.content] ? (
                       <>
                         <CheckIcon className="h-4 w-4 text-white" />
-                        <span className="text-xs text-white">Copy</span>
+                        <span className="text-xs text-white">{locale('chat_copy')}</span>
                       </>
                     ) : (
                       <>
                         <ClipboardDocumentIcon className="h-4 w-4 text-white" />
-                        <span className="text-xs text-white">Copy</span>
+                        <span className="text-xs text-white">{locale('chat_copy')}</span>
                       </>
                     )}
                   </button>

@@ -5,8 +5,10 @@ import api from '@/api';
 import { PaymentMethod } from '@/types';
 import { getIssuerLogo } from '@/utils';
 import { useProfile } from '@/context/ProfileContext';
+import { useTheme } from '@/context/ThemeContext';
 
 const BillingTab: React.FC = () => {
+  const { locale } = useTheme();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingPM, setLoadingPM] = useState(false);
@@ -56,14 +58,14 @@ const BillingTab: React.FC = () => {
   return (
     <div className="xl:px-16 bg-[var(--gray-800)] h-screen">
       <div className="max-w-7xl px-4 mt-12 sm:px-6 lg:px-8">
-      <h2 className="text-2xl px-2 font-semibold leading-7 text-white mb-4">Billing Information</h2>
+      <h2 className="text-2xl px-2 font-semibold leading-7 text-white mb-4">{locale('dashboard_billing_information')}</h2>
 
         {/* Balance Section */}
         <div className="px-2 mb-8">
-          <h3 className="text-lg font-semibold leading-6 text-[var(--white)] mb-4">Your Balance</h3>
+          <h3 className="text-lg font-semibold leading-6 text-[var(--white)] mb-4">{locale('dashboard_your_balance')}</h3>
           <p className="text-sm text-gray-400 my-2">
-            Balance is added manually for the beta. <br />
-            <span className="font-bold text-xs text-[var(--bordeaux-clear)]">For new balance requests, please contact <a href="mailto:beta@vezmir.com" className="text-[var(--bordeaux-clear)] underline">beta@vezmir.com</a>.</span>
+            {locale("dashboard_balance_beta")} <br />
+            <span className="font-bold text-xs text-[var(--bordeaux-clear)]">{locale("dashboard_balance_request")} <a href="mailto:beta@vezmir.com" className="text-[var(--bordeaux-clear)] underline">beta@vezmir.com</a>.</span>
           </p>
 
           {loading ? (
@@ -75,12 +77,12 @@ const BillingTab: React.FC = () => {
 
         {/* Payment Method Section */}
         <div className="flex justify-between items-center">
-          <h3 className="px-2 text-lg font-semibold leading-6 text-[var(--white)]">Your Payment Methods</h3>
+          <h3 className="px-2 text-lg font-semibold leading-6 text-[var(--white)]">{locale("dashboard_your_payment_methods")}</h3>
           <Link
             to="/setup-payment"
             className="inline-flex items-center rounded-md px-3 py-2 bg-[var(--bordeaux)] text-sm font-semibold text-[var(--white)] shadow-sm hover:bg-[var(--bordeaux-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--bordeaux-clear)] focus:ring-offset-2 focus:ring-offset-[var(--gray-800)]"
           >
-            Add Payment Method
+            {locale("dashboard_add_payment_method")}
           </Link>
         </div>
         <div id="payment-methods" className="mt-5 space-y-4">
@@ -130,7 +132,7 @@ const BillingTab: React.FC = () => {
               ))
             ) : (
               <div className="rounded-md bg-gray-800 px-6 py-5 text-center">
-                <p className="text-sm text-gray-400">No payment method found.</p>
+                <p className="text-sm text-gray-400">{locale("dashboard_no_payment_method_found")}</p>
               </div>
             )
           )}
