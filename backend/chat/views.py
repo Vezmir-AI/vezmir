@@ -2,6 +2,7 @@ import os
 import time
 
 from django.core.files.storage import default_storage
+from django.db.models import F
 from django.http import FileResponse, StreamingHttpResponse
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -164,19 +165,19 @@ class ChatMessageView(APIView):
                 if model_provider != "Perplexity":
                     if usage := chunk.usage_metadata:
                         if token_in := usage.get("input_tokens"):
-                            ChatMessage.objects.filter(id=user_message.id).update(num_tokens=token_in)
+                            ChatMessage.objects.filter(id=user_message.id).update(num_tokens=F("num_tokens") + token_in)
                         if token_out := usage.get("output_tokens"):
                             pass
 
+                # Perplexity specific handling
                 if response := chunk.response_metadata:
                     if model_provider == "Perplexity" and response.get("finish_reason") == "stop":
-                        # Estimate tokens for Perplexity based on character count
                         estimated_tokens = char_count // 4  # Rough estimate: 1 token ≈ 4 characters
                         token_in = (
                             len("".join(msg["content"] for msg in conv_messages)) // 4 + 5000
                         )  # Add the 0.005$ of Perplexity request cost
                         token_out = estimated_tokens
-                        ChatMessage.objects.filter(id=user_message.id).update(num_tokens=token_in)
+                        ChatMessage.objects.filter(id=user_message.id).update(num_tokens=token_in + token_out)
                     # TODO implement response metadata, e.g. stop reason
 
             # Save the complete response to the database
