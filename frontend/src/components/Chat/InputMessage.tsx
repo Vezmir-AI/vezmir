@@ -15,6 +15,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showTooltip, setShowTooltip] = useState(false);
   const isFileInputDisabled = selectedFiles.length >= 5;
+  const [enableHorizontalScroll, setEnableHorizontalScroll] = useState(false);
 
   useEffect(() => {
     adjustTextareaHeight();
@@ -24,6 +25,11 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+
+      const lineHeight = parseInt(window.getComputedStyle(textareaRef.current).lineHeight);
+      const visibleLines = Math.floor(textareaRef.current.clientHeight / lineHeight);
+
+      setEnableHorizontalScroll(visibleLines > 6);
     }
   };
 
@@ -88,9 +94,12 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
         <textarea
           ref={textareaRef}
           value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
+          onChange={(e) => {
+            setInputMessage(e.target.value);
+            adjustTextareaHeight();
+          }}
           onKeyDown={handleKeyDown}
-          className="flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none overflow-hidden"
+          className={`flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none ${enableHorizontalScroll ? 'overflow-x-auto' : 'overflow-hidden'}`}
           placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel}`}
           rows={1}
           style={{ minHeight: '56px', maxHeight: '200px' }}
