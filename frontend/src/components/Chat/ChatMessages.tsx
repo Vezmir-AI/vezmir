@@ -5,7 +5,10 @@ import renderContent from './renderContent/renderContent';
 import { getProviderLogo, getProviderColor } from '@/utils/providerUtils';
 import { ClipboardDocumentIcon, CheckIcon, PaperClipIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
+<<<<<<< HEAD
 import { useTheme } from '@/context/ThemeContext';
+=======
+>>>>>>> dev
 
 interface ChatMessagesProps {
   messages: Message[];
