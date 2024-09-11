@@ -22,7 +22,7 @@ const CompleteProfileModal: React.FC<CompleteProfileModalProps> = ({ open, setOp
       { action: locale("complete_profile_modal_verify_email"), completed: !!user.email_verified, link: "/dashboard/profile" },
       { action: locale("complete_profile_modal_add_name"), completed: !!(user.first_name && user.last_name), link: "/dashboard/profile" },
       { action: locale("complete_profile_modal_choose_ai_model"), completed: !!user.preferred_model, link: "/dashboard/profile" },
-      { action: locale("complete_profile_modal_add_payment_method"), completed: !!user.stripe_payment_method_id, link: "/dashboard/billing" },
+      // { action: locale("complete_profile_modal_add_payment_method"), completed: !!user.stripe_payment_method_id, link: "/dashboard/billing" },
     ];
     const completedSteps = profileSteps.filter(step => step.completed).length;
     setProgress((completedSteps / profileSteps.length) * 100);
