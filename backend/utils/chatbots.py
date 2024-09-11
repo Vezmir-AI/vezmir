@@ -1,4 +1,4 @@
-from .lib import AnthropicAPI, GoogleAPI, GroqAPI, OpenAIAPI
+from .lib import AnthropicAPI, GoogleAPI, GroqAPI, OpenAIAPI, PerplexityAPI
 
 
 def get_api_response(model_name: str, model_provider: str, messages: list[dict]):
@@ -10,6 +10,8 @@ def get_api_response(model_name: str, model_provider: str, messages: list[dict])
             yield from AnthropicAPI.get_response(formatted_messages, model_name)
         case "Google":
             yield from GoogleAPI.get_response(formatted_messages, model_name)
+        case "Perplexity":
+            yield from PerplexityAPI.get_response(formatted_messages, model_name)
 
 
 def generate_title(user_message):
