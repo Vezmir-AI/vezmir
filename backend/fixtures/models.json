@@ -21,6 +21,13 @@
         }
     },
     {
+        "model": "chat.aimodelprovider",
+        "pk": "Perplexity",
+        "fields": {
+            "display_name": "Perplexity"
+        }
+    },
+    {
         "model": "chat.aimodel",
         "pk": 1,
         "fields": {
@@ -96,6 +103,19 @@
             "is_active": true,
             "price_per_1K_token_input": 0.000075,
             "price_per_1K_token_output": 0.00030
+        }
+    },
+    {
+        "model": "chat.aimodel",
+        "pk": 7,
+        "fields": {
+            "name": "llama-3.1-sonar-large-128k-online",
+            "display_name": "Llama 3.1 Online",
+            "provider": "Perplexity",
+            "hint": "Model that can search the internet",
+            "is_active": true,
+            "price_per_1K_token_input": 0.001,
+            "price_per_1K_token_output": 0.001
         }
     }
 ]
