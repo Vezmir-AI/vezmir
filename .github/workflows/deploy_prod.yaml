@@ -207,5 +207,5 @@ jobs:
             sudo rm -rf /home/azureuser/backend-vezmir.ai.old
 
             sudo systemctl daemon-reload
-            sudo systemctl reload gunicorn
-            sudo systemctl reload nginx
+            sudo systemctl restart gunicorn
+            sudo systemctl restart nginx
