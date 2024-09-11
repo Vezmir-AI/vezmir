@@ -28,6 +28,7 @@ interface Message {
     content: string;
     ai_model_details: AIModel;
     files?: File[];
+    isStreaming?: boolean;
 }
 // TODO add Message? api request and response schema,
 
