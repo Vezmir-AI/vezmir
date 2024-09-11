@@ -1,6 +1,4 @@
-import random
-
-from .lib import AnthropicAPI, GoogleAPI, GroqAPI, OpenAIAPI
+from .lib import AnthropicAPI, GoogleAPI, GroqAPI, OpenAIAPI, PerplexityAPI
 
 
 def get_api_response(model_name: str, model_provider: str, messages: list[dict]):
@@ -12,6 +10,8 @@ def get_api_response(model_name: str, model_provider: str, messages: list[dict])
             yield from AnthropicAPI.get_response(formatted_messages, model_name)
         case "Google":
             yield from GoogleAPI.get_response(formatted_messages, model_name)
+        case "Perplexity":
+            yield from PerplexityAPI.get_response(formatted_messages, model_name)
 
 
 def generate_title(user_message):
@@ -58,11 +58,6 @@ def choose_model(user_message):
         chosen_model = mapping[category]
     except KeyError:
         chosen_model = "gpt-4o-mini-2024-07-18"
-
-    if chosen_model == "gpt-4o-mini-2024-07-18" and random.random() < 0.3:
-        chosen_model = "gemini-1.5-flash"
-    elif chosen_model == "gpt-4o-2024-08-06" and random.random() < 0.3:
-        chosen_model = "gemini-1.5-pro"
 
     return chosen_model
 

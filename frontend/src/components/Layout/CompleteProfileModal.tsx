@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { CheckIcon, ClockIcon } from '@heroicons/react/20/solid'
 import { useProfile } from '@/context/ProfileContext';
+import { useTheme } from '@/context/ThemeContext';
 
 interface CompleteProfileModalProps {
   open: boolean;
@@ -10,6 +11,7 @@ interface CompleteProfileModalProps {
 }
 
 const CompleteProfileModal: React.FC<CompleteProfileModalProps> = ({ open, setOpen }) => {
+  const { locale } = useTheme();
   const navigate = useNavigate();
   const { user } = useProfile();
   const [profileSteps, setProfileSteps] = useState<{ action: string, completed: boolean, link: string }[]>([]);
@@ -17,10 +19,10 @@ const CompleteProfileModal: React.FC<CompleteProfileModalProps> = ({ open, setOp
 
   useEffect(() => {
     const profileSteps = [
-      { action: "Verify your email address", completed: !!user.email_verified, link: "/dashboard/profile" },
-      { action: "Add your first and last name", completed: !!(user.first_name && user.last_name), link: "/dashboard/profile" },
-      { action: "Choose your preferred AI model", completed: !!user.preferred_model, link: "/dashboard/profile" },
-      { action: "Add a payment method", completed: !!user.stripe_payment_method_id, link: "/dashboard/billing" },
+      { action: locale("complete_profile_modal_verify_email"), completed: !!user.email_verified, link: "/dashboard/profile" },
+      { action: locale("complete_profile_modal_add_name"), completed: !!(user.first_name && user.last_name), link: "/dashboard/profile" },
+      { action: locale("complete_profile_modal_choose_ai_model"), completed: !!user.preferred_model, link: "/dashboard/profile" },
+      { action: locale("complete_profile_modal_add_payment_method"), completed: !!user.stripe_payment_method_id, link: "/dashboard/billing" },
     ];
     const completedSteps = profileSteps.filter(step => step.completed).length;
     setProgress((completedSteps / profileSteps.length) * 100);
@@ -51,11 +53,11 @@ const CompleteProfileModal: React.FC<CompleteProfileModalProps> = ({ open, setOp
               </div>
               <div className="mt-3 text-center sm:mt-5">
                 <DialogTitle as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                  Complete your profile
+                  {locale("complete_profile_modal_title")}
                 </DialogTitle>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Please complete your profile to use the full features of the platform.
+                    {locale("complete_profile_modal_description")}
                   </p>
                 </div>
               </div>
@@ -83,7 +85,7 @@ const CompleteProfileModal: React.FC<CompleteProfileModalProps> = ({ open, setOp
                 onClick={() => setOpen(false)}
                 className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Do it later
+                {locale("complete_profile_modal_do_it_later")}
               </button>
             </div>
           </DialogPanel>

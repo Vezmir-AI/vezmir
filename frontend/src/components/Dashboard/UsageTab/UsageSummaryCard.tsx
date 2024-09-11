@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/20/solid'
 import { useProfile } from '@/context/ProfileContext';
+import { useTheme } from '@/context/ThemeContext';
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
 }
 
 const UsageSummaryCard: React.FC = () => {
+    const { locale } = useTheme();
     const { usage, getMoneySpent } = useProfile();
     const [currentSpending, setCurrentSpending] = useState(0);
     const [moneySaved, setMoneySaved] = useState(0);
@@ -32,15 +34,15 @@ const UsageSummaryCard: React.FC = () => {
 
     return (
         <>
-            <h2 className="text-lg font-semibold p-2 text-white">Usage Summary</h2>
+            <h2 className="text-lg font-semibold p-2 text-white">{locale('dashboard_usage_summary')}</h2>
             <div className="h-24">
                 <div className="h-full w-full overflow-hidden rounded-lg bg-[var(--gray-800)] shadow">
                     <div className="flex h-full">
                         <div className="flex-1 flex flex-col justify-center px-2 py-4 sm:p-4">
-                            <dt className="text-xs font-normal text-[var(--gray-400)] mb-1">Current Spending</dt>
+                            <dt className="text-xs font-normal text-[var(--gray-400)] mb-1">{locale('dashboard_current_spending')}</dt>
                             <dd className="flex flex-col items-start">
                                 <span className="text-2xl font-semibold text-[var(--bordeaux-clear)]">${currentSpending.toFixed(2)}</span>
-                                <span className="text-xs text-[var(--gray-400)]">out of $20 for the last month</span>
+                                <span className="text-xs text-[var(--gray-400)]">{locale('dashboard_out_of_20$')}</span>
                             </dd>
                         </div>
                         <div className="flex-1 flex items-center justify-center">
@@ -67,7 +69,7 @@ const UsageSummaryCard: React.FC = () => {
                     </div>
                 </div>
                 <div className="px-2 mt-2">
-                    <p>Money saved is calculated compared to a 20$ monthly subscription.</p>
+                    <p>{locale('dashboard_money_saved_calculation')}</p>
                 </div>
             </div>
         </>

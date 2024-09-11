@@ -10,13 +10,15 @@ import ChatMessages from './ChatMessages';
 import InputMessage from './InputMessage';
 import VezmirLogo from '@/assets/vezmir.svg';
 import FeedbackForm from './FeedbackForm';
+import { useTheme } from '@/context/ThemeContext';
 
 const ChatComponent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const { locale } = useTheme();
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { currentAIModel, addConversation, selectedAIModel, setCurrentAIModel, resetSelectedAIModel, fetchConversations, conversations } = useConversation();
+  const { currentAIModel, addConversation, selectedAIModel, setSelectedAIModel, setCurrentAIModel, resetSelectedAIModel, fetchConversations, conversations } = useConversation();
   const [isVezmirIntelligence, setIsVezmirIntelligence] = useState(() => {
     const saved = localStorage.getItem('isVezmirIntelligence');
     return saved ? JSON.parse(saved) : false;
@@ -28,7 +30,7 @@ const ChatComponent: React.FC = () => {
       resetMessages();
       resetSelectedAIModel();
     } else {
-      resetSelectedAIModel(chatId);
+      resetSelectedAIModel(chatId, selectedAIModel);
     }
   }, [chatId, conversations]);
 
@@ -90,6 +92,7 @@ const ChatComponent: React.FC = () => {
       }
       setIsStreaming(true);
       setCurrentAIModel(model.display_name);
+      setSelectedAIModel(model);
 
       if (!chatId) {
         const newConversationResponse = await addConversation();
@@ -109,7 +112,7 @@ const ChatComponent: React.FC = () => {
       const formData = new FormData();
       formData.append('content', message);
       formData.append('model_name', model.name);
-      
+
       let fileInfo: { name: string, url: string, type: string }[] = [];
       if (files && files.length > 0) {
         files.forEach((file) => {
@@ -122,9 +125,9 @@ const ChatComponent: React.FC = () => {
         });
       }
 
-      const userMessage = { 
-        role: 'user' as const, 
-        content: message, 
+      const userMessage = {
+        role: 'user' as const,
+        content: message,
         ai_model_details: model,
         files: fileInfo
       };
@@ -140,28 +143,56 @@ const ChatComponent: React.FC = () => {
       const reader = response.getReader();
       const decoder = new TextDecoder('utf-8');
 
-      const processText = async ({ done, value }: ReadableStreamReadResult<Uint8Array>): Promise<void> => {
-        if (done) {
-          setIsStreaming(false);
-          return;
-        }
-
-        const chunk = decoder.decode(value, { stream: true });
-        assistantMessage += chunk;
-        setMessages(prevMessages => [
-          ...prevMessages.slice(0, -1),
-          { role: 'assistant', content: assistantMessage, ai_model_details: model }
-        ]);
-
-        return reader.read().then(processText);
+      const processText = async (): Promise<void> => {
+        await bufferStream(
+          reader,
+          decoder,
+          (char: string) => {
+            assistantMessage += char;
+            setMessages(prevMessages => [
+              ...prevMessages.slice(0, -1),
+              { role: 'assistant', content: assistantMessage, ai_model_details: model }
+            ]);
+          },
+          200 // Adjust this value to change the streaming speed (characters per second)
+        );
+        setIsStreaming(false);
       };
 
-      reader.read().then(processText);
+      processText();
 
     } catch (error) {
       console.error('Error sending message:', error);
       setIsStreaming(false);
     }
+  };
+
+  const bufferStream = async (
+    reader: ReadableStreamDefaultReader<Uint8Array>,
+    decoder: TextDecoder,
+    callback: (chunk: string) => void,
+    speed: number = 100 // Characters per second
+  ): Promise<void> => {
+    let buffer = '';
+    const interval = 1000 / speed; // Milliseconds between each character
+
+    const processChunk = async (): Promise<void> => {
+      const { done, value } = await reader.read();
+      if (done) return;
+
+      buffer += decoder.decode(value, { stream: true });
+
+      while (buffer.length > 0) {
+        const char = buffer.charAt(0);
+        buffer = buffer.slice(1);
+        callback(char);
+        await new Promise(resolve => setTimeout(resolve, interval));
+      }
+
+      return processChunk();
+    };
+
+    return processChunk();
   };
 
   return (
@@ -194,8 +225,8 @@ const ChatComponent: React.FC = () => {
                   />
                   <div className="absolute bottom-0 left-0 mb-[-76px] hidden group-hover:block">
                     <div className="bg-[var(--bordeaux)] text-white px-4 py-2 rounded-lg shadow-lg whitespace-nowrap ">
-                      <p className="font-bold mb-1">Vezmir Intelligence</p>
-                      <p className="text-sm">Chooses the best AI model for your prompt</p>
+                      <p className="font-bold mb-1">{locale('chat_vezmir_intelligence')}</p>
+                      <p className="text-sm">{locale('chat_vezmir_intelligence_description')}</p>
                     </div>
                   </div>
                 </div>
@@ -237,7 +268,9 @@ const ChatComponent: React.FC = () => {
                   />
                 </div>
               )}
-              <p className="text-4xl font-bold text-white">How can I help you today?</p>
+              <p className="text-4xl font-bold text-white">      {isVezmirIntelligence
+        ? locale('chat_vezmir_intelligence_activated')
+        : locale('chat_how_can_i_help_you_today')}</p>
             </div>
           ) : (
             <ChatMessages
@@ -249,7 +282,7 @@ const ChatComponent: React.FC = () => {
         </div>
 
         {/* Feedback Button */}
-        <div className="fixed bottom-10 right-4 z-20">
+        <div className="fixed bottom-28 right-2 z-20 xl:bottom-10 xl:right-4">
           <button
             onClick={() => setShowFeedbackForm(true)}
             className="p-2 rounded-full bg-[var(--bordeaux)] hover:bg-[var(--bordeaux-hover)] transition-colors duration-200"
