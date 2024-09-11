@@ -173,7 +173,7 @@ jobs:
 
             sudo mv /var/www/vezmir.ai.new /var/www/vezmir.ai
             sudo mv /home/azureuser/backend-vezmir.ai.new /home/azureuser/backend-vezmir.ai
-            sudo mv /home/azureuser/backend-vezmir.ai.old/chat/chat_uploads /home/azureuser/backend-vezmir.ai/chat/chat_uploads
+            sudo mv /home/azureuser/backend-vezmir.ai.old/chat_uploads /home/azureuser/backend-vezmir.ai/
         continue-on-error: false
 
       - name: Deployment failed
