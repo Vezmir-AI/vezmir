@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "react-lottie": "^1.2.4"
+  },
+  "devDependencies": {
+    "@types/react-lottie": "^1.2.10"
   }
 }

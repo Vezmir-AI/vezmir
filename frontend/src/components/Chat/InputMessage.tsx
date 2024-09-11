@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { PaperClipIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import arrowSend from '@/assets/arrowSend.svg';
 import { useTheme } from '@/context/ThemeContext';
+import { AIModel } from '@/types';
 
 interface InputMessageProps {
   selectedModel: string | null;
