@@ -137,4 +137,5 @@ export default {
     model_hint_claude_haiku: "Modèle le plus rapide d'Anthropic, bon pour les tâches de base",
     model_hint_gemini_pro: "Meilleur modèle pour la rédaction et la recherche d'informations",
     model_hint_gemini_flash: "Modèle le plus rapide de Google, bon pour les tâches de base",
+    chat_loading: "La réponse prend plus de temps que prévu...",
 };
