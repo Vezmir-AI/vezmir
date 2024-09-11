@@ -10,9 +10,11 @@ import ChatMessages from './ChatMessages';
 import InputMessage from './InputMessage';
 import VezmirLogo from '@/assets/vezmir.svg';
 import FeedbackForm from './FeedbackForm';
+import { useTheme } from '@/context/ThemeContext';
 
 const ChatComponent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const { locale } = useTheme();
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -223,8 +225,8 @@ const ChatComponent: React.FC = () => {
                   />
                   <div className="absolute bottom-0 left-0 mb-[-76px] hidden group-hover:block">
                     <div className="bg-[var(--bordeaux)] text-white px-4 py-2 rounded-lg shadow-lg whitespace-nowrap ">
-                      <p className="font-bold mb-1">Vezmir Intelligence</p>
-                      <p className="text-sm">Chooses the best AI model for your prompt</p>
+                      <p className="font-bold mb-1">{locale('chat_vezmir_intelligence')}</p>
+                      <p className="text-sm">{locale('chat_vezmir_intelligence_description')}</p>
                     </div>
                   </div>
                 </div>
@@ -266,7 +268,9 @@ const ChatComponent: React.FC = () => {
                   />
                 </div>
               )}
-              <p className="text-4xl font-bold text-white">How can I help you today?</p>
+              <p className="text-4xl font-bold text-white">      {isVezmirIntelligence
+        ? locale('chat_vezmir_intelligence_activated')
+        : locale('chat_how_can_i_help_you_today')}</p>
             </div>
           ) : (
             <ChatMessages
