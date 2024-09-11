@@ -16,7 +16,7 @@ const ChatComponent: React.FC = () => {
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { currentAIModel, addConversation, selectedAIModel, setCurrentAIModel, resetSelectedAIModel, fetchConversations, conversations } = useConversation();
+  const { currentAIModel, addConversation, selectedAIModel, setSelectedAIModel, setCurrentAIModel, resetSelectedAIModel, fetchConversations, conversations } = useConversation();
   const [isVezmirIntelligence, setIsVezmirIntelligence] = useState(() => {
     const saved = localStorage.getItem('isVezmirIntelligence');
     return saved ? JSON.parse(saved) : false;
@@ -28,7 +28,7 @@ const ChatComponent: React.FC = () => {
       resetMessages();
       resetSelectedAIModel();
     } else {
-      resetSelectedAIModel(chatId);
+      resetSelectedAIModel(chatId, selectedAIModel);
     }
   }, [chatId, conversations]);
 
@@ -90,6 +90,7 @@ const ChatComponent: React.FC = () => {
       }
       setIsStreaming(true);
       setCurrentAIModel(model.display_name);
+      setSelectedAIModel(model);
 
       if (!chatId) {
         const newConversationResponse = await addConversation();
@@ -109,7 +110,7 @@ const ChatComponent: React.FC = () => {
       const formData = new FormData();
       formData.append('content', message);
       formData.append('model_name', model.name);
-      
+
       let fileInfo: { name: string, url: string, type: string }[] = [];
       if (files && files.length > 0) {
         files.forEach((file) => {
@@ -122,9 +123,9 @@ const ChatComponent: React.FC = () => {
         });
       }
 
-      const userMessage = { 
-        role: 'user' as const, 
-        content: message, 
+      const userMessage = {
+        role: 'user' as const,
+        content: message,
         ai_model_details: model,
         files: fileInfo
       };

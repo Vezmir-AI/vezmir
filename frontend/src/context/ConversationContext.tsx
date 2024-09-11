@@ -15,7 +15,7 @@ interface ConversationContext {
     fetchConversations: () => Promise<void>;
     setSelectedAIModel: (model: AIModel) => void;
     setCurrentAIModel: (model: string) => void;
-    resetSelectedAIModel: (chatId?: string) => void;
+    resetSelectedAIModel: (chatId?: string, selectedAIModel?: AIModel) => void;
     setConversationAIModel: (chatId: string, newAIModel: string) => void;
 }
 
@@ -43,10 +43,10 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
     const setConversationAIModel = async (chatId: string, newAIModel: string) => {
         try {
             await api.put(`/chat/conversations/${chatId}/`, { ai_model: newAIModel });
-            setConversations(prevConversations => 
-                prevConversations.map(conv => 
-                    conv.id === chatId 
-                        ? { ...conv, ai_model: newAIModel } 
+            setConversations(prevConversations =>
+                prevConversations.map(conv =>
+                    conv.id === chatId
+                        ? { ...conv, ai_model: newAIModel }
                         : conv
                 )
             );
@@ -55,11 +55,11 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
         }
     };
 
-    const resetSelectedAIModel = (chatId: string = "") => {
+    const resetSelectedAIModel = (chatId: string = "", selectedAIModel: AIModel) => {
         if (chatId) {
             const chat = conversations.find(conversation => conversation.id === chatId);
             if (chat) {
-                const defaultModel = aiModels.find(model => model.id === chat.ai_model) || aiModels.find(model => model.id === user?.preferred_model) || aiModels[0];
+                const defaultModel = selectedAIModel || aiModels.find(model => model.id === chat.ai_model) || aiModels.find(model => model.id === user?.preferred_model) || aiModels[0];
                 setSelectedAIModel(defaultModel);
             }
         } else {
