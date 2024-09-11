@@ -134,15 +134,7 @@ const ChatComponent: React.FC = () => {
       setMessages(prevMessages => [...prevMessages, userMessage]);
 
       let assistantMessage = '';
-      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: model }]);
-
-      // Add a timeout to show the waiting message
-      const waitingMessageTimeout = setTimeout(() => {
-        setMessages(prevMessages => [
-          ...prevMessages.slice(0, -1),
-          { role: 'assistant', content: locale('chat_loading'), ai_model_details: model }
-        ]);
-      }, 2000);
+      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: model, isStreaming: true }]);
 
       const response = await api.post(url, formData, true, true);
       if (!response) {
@@ -151,15 +143,7 @@ const ChatComponent: React.FC = () => {
       const reader = response.getReader();
       const decoder = new TextDecoder('utf-8');
 
-      clearTimeout(waitingMessageTimeout);
-      setMessages(prevMessages => [
-        ...prevMessages.slice(0, -1),
-        { role: 'assistant', content: "", ai_model_details: model }
-      ]);
-
       const processText = async (): Promise<void> => {
-        // Clear the timeout when we start receiving the actual response
-
         await bufferStream(
           reader,
           decoder,
@@ -167,12 +151,16 @@ const ChatComponent: React.FC = () => {
             assistantMessage += char;
             setMessages(prevMessages => [
               ...prevMessages.slice(0, -1),
-              { role: 'assistant', content: assistantMessage, ai_model_details: model }
+              { role: 'assistant', content: assistantMessage, ai_model_details: model, isStreaming: true }
             ]);
           },
-          200 // Adjust this value to change the streaming speed (characters per second)
+          200
         );
         setIsStreaming(false);
+        setMessages(prevMessages => [
+          ...prevMessages.slice(0, -1),
+          { role: 'assistant', content: assistantMessage, ai_model_details: model, isStreaming: false }
+        ]);
       };
 
       processText();
@@ -311,6 +299,7 @@ const ChatComponent: React.FC = () => {
         <div className="bg-[var(--gray-800)] sticky bottom-0 z-10">
           <InputMessage
             selectedModel={currentAIModel}
+            selectedAIModel={selectedAIModel}
             isStreaming={isStreaming}
             onSendMessage={handleSendMessageToStream}
           />
