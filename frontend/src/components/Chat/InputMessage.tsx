@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PaperClipIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import arrowSend from '@/assets/arrowSend.svg';
+import { useTheme } from '@/context/ThemeContext';
 
 interface InputMessageProps {
   selectedModel: string | null;
@@ -10,6 +11,7 @@ interface InputMessageProps {
 
 const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming, onSendMessage }) => {
   const [inputMessage, setInputMessage] = useState<string>('');
+  const { locale } = useTheme();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -117,7 +119,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           <PaperClipIcon className="h-6 w-6 stroke-width-4 -rotate-45" />
           {showTooltip && (
             <div className="absolute bottom-full left-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap">
-              Upload images (Max 5, 30MB each)
+              {locale('chat_upload_pdf')}
             </div>
           )}
         </button>

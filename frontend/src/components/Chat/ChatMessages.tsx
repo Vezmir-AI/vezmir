@@ -5,6 +5,10 @@ import renderContent from './renderContent/renderContent';
 import { getProviderLogo, getProviderColor } from '@/utils/providerUtils';
 import { ClipboardDocumentIcon, CheckIcon, PaperClipIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
+<<<<<<< HEAD
+import { useTheme } from '@/context/ThemeContext';
+=======
+>>>>>>> dev
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -14,6 +18,7 @@ interface ChatMessagesProps {
 const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) => {
   const { chatId } = useParams();
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+  const { locale } = useTheme();
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
@@ -131,12 +136,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
                     {copiedStates[msg.content] ? (
                       <>
                         <CheckIcon className="h-4 w-4 text-white" />
-                        <span className="text-xs text-white">Copy</span>
+                        <span className="text-xs text-white">{locale('chat_copy')}</span>
                       </>
                     ) : (
                       <>
                         <ClipboardDocumentIcon className="h-4 w-4 text-white" />
-                        <span className="text-xs text-white">Copy</span>
+                        <span className="text-xs text-white">{locale('chat_copy')}</span>
                       </>
                     )}
                   </button>

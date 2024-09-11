@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
+import { useTheme } from '@/context/ThemeContext';
 
 interface FeedbackFormProps {
   isOpen: boolean;
@@ -9,7 +10,7 @@ interface FeedbackFormProps {
 
 const FeedbackForm: React.FC<FeedbackFormProps> = ({ isOpen, onClose }) => {
   const [feedback, setFeedback] = useState('');
-
+  const { locale } = useTheme();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -29,7 +30,7 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-[var(--gray-800)] p-6 rounded-lg w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-white">Send Feedback</h2>
+          <h2 className="text-xl font-bold text-white">{locale('feedback_send')}</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white">
             <XMarkIcon className="h-6 w-6" />
           </button>
@@ -45,7 +46,7 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ isOpen, onClose }) => {
             type="submit"
             className="w-full bg-[var(--bordeaux)] hover:bg-[var(--bordeaux-hover)] text-white font-bold py-2 px-4 rounded"
           >
-            Send Feedback
+            {locale('feedback_send')}
           </button>
         </form>
       </div>

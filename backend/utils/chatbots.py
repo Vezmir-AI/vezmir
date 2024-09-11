@@ -1,5 +1,3 @@
-import random
-
 from .lib import AnthropicAPI, GoogleAPI, GroqAPI, OpenAIAPI, PerplexityAPI
 
 
@@ -60,11 +58,6 @@ def choose_model(user_message):
         chosen_model = mapping[category]
     except KeyError:
         chosen_model = "gpt-4o-mini-2024-07-18"
-
-    if chosen_model == "gpt-4o-mini-2024-07-18" and random.random() < 0.3:
-        chosen_model = "gemini-1.5-flash"
-    elif chosen_model == "gpt-4o-2024-08-06" and random.random() < 0.3:
-        chosen_model = "gemini-1.5-pro"
 
     return chosen_model
 
