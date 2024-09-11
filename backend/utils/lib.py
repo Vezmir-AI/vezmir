@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from django.conf import settings
 from langchain.schema import AIMessage, HumanMessage
 from langchain_anthropic import ChatAnthropic
+from langchain_community.chat_models import ChatPerplexity
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
@@ -72,6 +73,19 @@ class GroqAPI:
             model=model_name,
         )
         return completion.invoke(messages)
+
+
+class PerplexityAPI(AbstractAPI):
+    API_KEY = settings.PPLX_API_KEY
+
+    @classmethod
+    def _get_response(cls, messages: list[dict], model_name: str) -> str:
+        chat = ChatPerplexity(api_key=cls.API_KEY, model=model_name)
+
+        formatted_messages = format_messages(messages)
+
+        for chunk in chat.stream(formatted_messages):
+            yield chunk
 
 
 def format_messages(messages):
