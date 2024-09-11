@@ -136,6 +136,14 @@ const ChatComponent: React.FC = () => {
       let assistantMessage = '';
       setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: model }]);
 
+      // Add a timeout to show the waiting message
+      const waitingMessageTimeout = setTimeout(() => {
+        setMessages(prevMessages => [
+          ...prevMessages.slice(0, -1),
+          { role: 'assistant', content: locale('chat_loading'), ai_model_details: model }
+        ]);
+      }, 2000);
+
       const response = await api.post(url, formData, true, true);
       if (!response) {
         throw new Error('Response body is null');
@@ -143,7 +151,15 @@ const ChatComponent: React.FC = () => {
       const reader = response.getReader();
       const decoder = new TextDecoder('utf-8');
 
+      clearTimeout(waitingMessageTimeout);
+      setMessages(prevMessages => [
+        ...prevMessages.slice(0, -1),
+        { role: 'assistant', content: "", ai_model_details: model }
+      ]);
+
       const processText = async (): Promise<void> => {
+        // Clear the timeout when we start receiving the actual response
+
         await bufferStream(
           reader,
           decoder,
