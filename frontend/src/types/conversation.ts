@@ -24,11 +24,14 @@ interface File {
 }
 
 interface Message {
-    role: 'user' | 'assistant';
+    id: string | null;
+    role: 'user' | 'assistant' | null;
     content: string;
     ai_model_details: AIModel;
     files?: File[];
     isStreaming?: boolean;
+    parent: string | null;
+    children?: string[];
 }
 // TODO add Message? api request and response schema,
 

@@ -1,5 +1,4 @@
 import os
-import time
 
 from django.core.files.storage import default_storage
 from django.db.models import F
@@ -18,6 +17,7 @@ from chat.serializers import (
     FormattedMessageSerializer,
 )
 from utils.chatbots import choose_model, generate_title, get_api_response
+from utils.json import serialize_to_json
 from utils.mail import send_feedback_email
 from utils.permissions import HasPositiveBalance, IsOwner
 
@@ -59,15 +59,23 @@ class UserConversationView(generics.ListCreateAPIView):
         data["user"] = request.user.id
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=self.request.user)
+        conversation = serializer.save(user=self.request.user)
+
+        # Create an initial "ghost" message
+        ghost_message = ChatMessage.objects.create(
+            chat_conversation=conversation, role=None, content=None, user=request.user
+        )
+
+        return_response = serializer.data
+        return_response["initial_message"] = ghost_message.id
         return Response(
-            {"data": serializer.data},
+            {"data": return_response},
             status=status.HTTP_201_CREATED,
         )
 
 
 class ChatMessageView(APIView):
-    permission_classes = (IsAuthenticated, IsOwner, HasPositiveBalance)
+    permission_classes = (IsAuthenticated, IsOwner)
 
     # get all the messages in a conversation, in chronological order
     def get(self, request, conv_id):
@@ -92,7 +100,7 @@ class ChatMessageView(APIView):
     def post(self, request, conv_id):
         # verify that the conversation exists
         try:
-            conversation = ChatConversation.objects.get(id=conv_id, user=request.user.id)
+            conversation = ChatConversation.objects.get(id=conv_id, user=request.user)
         except ChatConversation.DoesNotExist:
             return Response(
                 {"message": "conversation_not_found", "status": "error"},
@@ -100,10 +108,14 @@ class ChatMessageView(APIView):
             )
 
         # Query model name and its provider
-        model_name = request.data.get("model_name")
+        model_name = request.data.get("model_name", None)
+        is_vezmir_intelligence = request.data.get("is_vezmir_intelligence", False)
+        if is_vezmir_intelligence:
+            # TODO: call vezmir intelligence API
+            model_name = "gpt-4o-mini"
+
         try:
             model = AIModel.objects.select_related("provider").get(name=model_name)
-            model_provider = model.provider.name
             conversation.ai_model = model
             conversation.save()
         except AIModel.DoesNotExist:
@@ -116,20 +128,21 @@ class ChatMessageView(APIView):
         uploaded_files = request.FILES.getlist("files")
         file_info = []
 
-        # Create the directory structure
-        upload_dir = os.path.join("chat_uploads", str(conv_id))
-        os.makedirs(upload_dir, exist_ok=True)
+        if uploaded_files:
+            # Create the directory structure
+            upload_dir = os.path.join("chat_uploads", str(conv_id))
+            os.makedirs(upload_dir, exist_ok=True)
 
-        for file in uploaded_files:
-            file_name = default_storage.get_valid_name(file.name)
-            file_path = os.path.join(upload_dir, file_name)
+            for file in uploaded_files:
+                file_name = default_storage.get_valid_name(file.name)
+                file_path = os.path.join(upload_dir, file_name)
 
-            with default_storage.open(file_path, "wb+") as destination:
-                for chunk in file.chunks():
-                    destination.write(chunk)
+                with default_storage.open(file_path, "wb+") as destination:
+                    for chunk in file.chunks():
+                        destination.write(chunk)
 
-            file_url = request.build_absolute_uri(f"/api/chat/file/{conv_id}/{file_name}")
-            file_info.append({"name": file_name, "url": file_url, "path": file_path, "type": file.content_type})
+                file_url = request.build_absolute_uri(f"/api/chat/file/{conv_id}/{file_name}")
+                file_info.append({"name": file_name, "url": file_url, "path": file_path, "type": file.content_type})
 
         # Create and save the user message with file information
         user_message_serializer = ChatMessageSerializer(
@@ -140,72 +153,17 @@ class ChatMessageView(APIView):
                 "role": "user",
                 "ai_model": model.id,
                 "files": file_info,
+                "parent": request.data.get("parent"),
             }
         )
-        user_message_serializer.is_valid(raise_exception=True)
-        user_message = user_message_serializer.save()
+        if user_message_serializer.is_valid():
+            user_message_serializer.save()
+            return Response({"data": user_message_serializer.data}, status=status.HTTP_201_CREATED)
 
-        conv_messages = FormattedMessageSerializer(
-            ChatMessage.objects.filter(chat_conversation=conversation).order_by("date_created"),
-            many=True,
-        ).data
-
-        def stream_and_save():
-            full_response = ""
-            token_in = token_out = None
-            char_count = 0
-            for chunk in get_api_response(model_name=model_name, model_provider=model_provider, messages=conv_messages):
-                # this allows to send the response to the client as it is being generated
-                if content := chunk.content:
-                    full_response += content
-                    yield content
-                    if model_provider == "Perplexity":
-                        char_count += len(content)
-
-                if model_provider != "Perplexity":
-                    if usage := chunk.usage_metadata:
-                        if token_in := usage.get("input_tokens"):
-                            ChatMessage.objects.filter(id=user_message.id).update(num_tokens=F("num_tokens") + token_in)
-                        if token_out := usage.get("output_tokens"):
-                            pass
-
-                # Perplexity specific handling
-                if response := chunk.response_metadata:
-                    if model_provider == "Perplexity" and response.get("finish_reason") == "stop":
-                        estimated_tokens = char_count // 4  # Rough estimate: 1 token ≈ 4 characters
-                        token_in = (
-                            len("".join(msg["content"] for msg in conv_messages)) // 4 + 5000
-                        )  # Add the 0.005$ of Perplexity request cost
-                        token_out = estimated_tokens
-                        ChatMessage.objects.filter(id=user_message.id).update(num_tokens=token_in + token_out)
-                    # TODO implement response metadata, e.g. stop reason
-
-            # Save the complete response to the database
-            ai_message_serializer = ChatMessageSerializer(
-                data={
-                    "user": request.user.id,
-                    "chat_conversation": conv_id,
-                    "content": full_response,
-                    "role": "assistant",
-                    "ai_model": model.id,
-                    "num_tokens": token_out,
-                }
-            )
-            ai_message_serializer.is_valid(raise_exception=True)
-            ai_message_serializer.save()
-
-            # updates the user's balance
-            user_message_cost = request.user.calculate_message_cost(token_in, model, is_input=True)
-            ai_message_cost = request.user.calculate_message_cost(token_out, model, is_input=False)
-            total_cost = user_message_cost + ai_message_cost
-            request.user.update_balance(total_cost)
-
-        response = StreamingHttpResponse(stream_and_save(), content_type="text/event-stream")
-        # do not remove this, it is used by nginx to stream the response
-        # https://discovergen.ai/article/creating-a-streaming-chat-application-with-django/
-        response["X-Accel-Buffering"] = "no"
-        response["Cache-Control"] = "no-cache"
-        return response
+        return Response(
+            {"message": "invalid_data", "status": "error"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     def put(self, request, conv_id):
         try:
@@ -242,24 +200,114 @@ class ChatMessageView(APIView):
         )
 
 
+class ChatStreamView(APIView):
+    permission_classes = (IsAuthenticated, HasPositiveBalance)
+
+    def post(self, request):
+        message_id = request.data.get("message_id")
+        if not message_id:
+            return Response(
+                {"message": "message_id_required", "status": "error"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            user_message = ChatMessage.objects.get(id=message_id, user=request.user)
+            model = user_message.ai_model
+        except ChatMessage.DoesNotExist:
+            return Response(
+                {"message": "message_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # TODO: implement versionning of the conversation
+        # parent_ids = []
+        # current_message = user_message
+        # while current_message.parent_id:
+        #     parent_ids.append(current_message.parent_id)
+        #     current_message = ChatMessage.objects.get(id=current_message.parent_id)
+
+        # conversation_messages = FormattedMessageSerializer(
+        #     ChatMessage.objects.filter(Q(id=message_id) | Q(id__in=parent_ids)).order_by("date_created"),
+        #     many=True,
+        # ).data
+
+        conversation_messages = FormattedMessageSerializer(
+            ChatMessage.objects.filter(chat_conversation=user_message.chat_conversation).order_by("date_created"),
+            many=True,
+        ).data
+
+        def stream_and_save():
+            full_response = ""
+            token_in = token_out = None
+            ai_message_serializer = ChatMessageSerializer(
+                data={
+                    "user": request.user.id,
+                    "chat_conversation": user_message.chat_conversation.id,
+                    "content": None,
+                    "role": "assistant",
+                    "ai_model": model.id,
+                    "parent": user_message.id,
+                }
+            )
+            ai_message_serializer.is_valid(
+                raise_exception=True
+            )  # TODO: handle API problems, like stop generation (i.e. data.completed=False)
+            ai_message = ai_message_serializer.save()
+            yield f"data: {serialize_to_json(ai_message_serializer.data)}\n\n"
+            char_count = 0
+            for chunk in get_api_response(
+                model_name=model.name, model_provider=model.provider.name, messages=conversation_messages
+            ):
+                # this allows to send the response to the client as it is being generated
+                if content := chunk.content:
+                    full_response += content
+                    # Update the serializer with the new content
+                    ChatMessage.objects.filter(id=ai_message.id).update(content=full_response)
+                    ai_message_serializer = ChatMessageSerializer(ChatMessage.objects.get(id=ai_message.id))
+                    # Convert the serializer data to a JSON string
+                    serialized_data = serialize_to_json(ai_message_serializer.data)
+                    char_count += len(content)
+                    yield f"data: {serialized_data}\n\n"
+
+                if model.provider != "Perplexity":
+                    if usage := chunk.usage_metadata:
+                        if token_in := usage.get("input_tokens"):
+                            ChatMessage.objects.filter(id=user_message.id).update(num_tokens=F("num_tokens") + token_in)
+                        if token_out := usage.get("output_tokens"):
+                            pass
+
+                # Perplexity specific handling
+                if response := chunk.response_metadata:
+                    if model.provider == "Perplexity" and response.get("finish_reason") == "stop":
+                        print(len(full_response), char_count)
+                        estimated_tokens = char_count // 4  # Rough estimate: 1 token ≈ 4 characters
+                        token_in = (
+                            len("".join(msg["content"] for msg in conversation_messages)) // 4 + 5000
+                        )  # Add the 0.005$ of Perplexity request cost
+                        token_out = estimated_tokens
+                        ChatMessage.objects.filter(id=user_message.id).update(num_tokens=token_in + token_out)
+                    # TODO: also implement response metadata, e.g. stop reason
+
+            # updates the user's balance
+            user_message_cost = request.user.calculate_message_cost(token_in, model, is_input=True)
+            ai_message_cost = request.user.calculate_message_cost(token_out, model, is_input=False)
+            total_cost = user_message_cost + ai_message_cost
+            request.user.update_balance(total_cost)
+
+        response = StreamingHttpResponse(stream_and_save(), content_type="text/event-stream")
+        # do not remove this, it is used by nginx to stream the response
+        # https://discovergen.ai/article/creating-a-streaming-chat-application-with-django/
+        response["X-Accel-Buffering"] = "no"
+        response["Cache-Control"] = "no-cache"
+        return response
+
+
 class ChatConversationTitleView(APIView):
     permission_classes = (IsAuthenticated, IsOwner)
 
-    def post(self, request, conv_id, _retry=True):
-        try:
-            conversation = ChatConversation.objects.get(id=conv_id, user=request.user)
-        except ChatConversation.DoesNotExist:
-            if _retry:
-                time.sleep(1)
-                return self.post(request, conv_id, _retry=False)
-            return Response(
-                {"message": "conversation_not_found", "status": "error"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+    def post(self, request):
         title = generate_title(request.data.get("user_message"))
-        conversation.name = title
-        conversation.save()
-        return Response({"data": {"title": title}})
+        return Response({"data": {"name": title}})
 
 
 class ChooseModelView(APIView):

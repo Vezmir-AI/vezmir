@@ -10,7 +10,7 @@ interface ConversationContext {
     aiModels: AIModel[];
     selectedAIModel: AIModel;
     currentAIModel: string;
-    addConversation: () => Promise<Conversation>;
+    addConversation: (title: string) => Promise<any>;
     deleteConversation: (id: string) => void;
     fetchConversations: () => Promise<void>;
     setSelectedAIModel: (model: AIModel) => void;
@@ -73,11 +73,10 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
         setConversations(convs);
     }
 
-    const addConversation = async () => {
-        const newConversation = await api.post('/chat/conversations/');
-        // removed because it was causing a re-render of the conversations
-        // will refetch conversations in the Chat component when title is generated
-        // setConversations([...conversations, newConversation]);
+    const addConversation = async (user_message: string) => {
+        const { name } = await api.post(`/chat/conversations/title/`, { user_message });
+        const newConversation = await api.post('/chat/conversations/', { name });
+        setConversations([...conversations, newConversation]);
         navigate(`/chat/${newConversation.id}`);
         return newConversation;
     }
