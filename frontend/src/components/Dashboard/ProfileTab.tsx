@@ -299,7 +299,7 @@ const ProfileTab: React.FC = () => {
                         >
                           {locale("dashboard_new_password")}
                         </label>
-                        {passwordError && <p className="text-[var(--bordeaux)] text-sm mt-1">{passwordError}</p>}
+                        {passwordError && <p className="text-[var(--purple)] text-sm mt-1">{passwordError}</p>}
                       </div>
                     </div>
 
@@ -310,7 +310,7 @@ const ProfileTab: React.FC = () => {
                           name="confirm_password"
                           type="password"
                           autoComplete="new-password"
-                          className={`input-field peer ${!passwordsMatch ? 'border-[var(--bordeaux)]' : ''}`}
+                          className={`input-field peer ${!passwordsMatch ? 'border-[var(--purple)]' : ''}`}
                           placeholder=" "
                           onChange={handleConfirmPasswordChange}
                         />
@@ -321,7 +321,7 @@ const ProfileTab: React.FC = () => {
                           {locale("dashboard_confirm_password")}
                         </label>
                         {!passwordsMatch && confirmPassword !== '' && (
-                          <p className="text-[var(--bordeaux)] text-sm mt-1">{locale('auth_password_not_match')}</p>
+                          <p className="text-[var(--purple)] text-sm mt-1">{locale('auth_password_not_match')}</p>
                         )}
                       </div>
                     </div>

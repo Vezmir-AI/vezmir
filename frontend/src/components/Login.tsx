@@ -96,7 +96,7 @@ const Login: React.FC = () => {
           </div>
           <button
             type="submit"
-            className="w-full px-4 py-3 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--bordeaux-hover)] focus:ring-opacity-50"
+            className="w-full px-4 py-3 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--purple-hover)] focus:ring-opacity-50"
           >
             {locale('auth_login')}
           </button>
@@ -116,8 +116,8 @@ const Login: React.FC = () => {
         <p className="my-4 text-center text-sm font-light text-gray-700 text-white">
           {' '}
           {locale('auth_no_account')}{' '}
-          <Link to="/register" className="p-1 text-[var(--bordeaux-clear)]">
-          {/* <a href="https://docs.google.com/forms/d/e/1FAIpQLSfzyV-GXIeiBWBkDuV2rNGQCfue6wJPSXAIFP2rx_w78N8fWA/viewform" className="p-1 text-[var(--bordeaux-clear)]"> */}
+          <Link to="/register" className="p-1 text-[var(--purple-clear)]">
+          {/* <a href="https://docs.google.com/forms/d/e/1FAIpQLSfzyV-GXIeiBWBkDuV2rNGQCfue6wJPSXAIFP2rx_w78N8fWA/viewform" className="p-1 text-[var(--purple-clear)]"> */}
           {locale('auth_sign_up')}
           </Link>
         </p>
