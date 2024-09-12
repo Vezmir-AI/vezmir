@@ -48,7 +48,7 @@ const ProfileTab: React.FC = () => {
 
   const handleSubmitProfile = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const model = aiModels.find((model) => model.name == e.currentTarget['preferred-model'].value);
+    const model = aiModels.find((model) => model.name === preferredModel);
     const data = {
       first_name: e.currentTarget['first-name'].value,
       last_name: e.currentTarget['last-name'].value,
