@@ -37,7 +37,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
     }, [isAuthenticated]);
 
     useEffect(() => {
-        setProfileComplete(!!user.first_name && !!user.last_name && !!user.preferred_model && !!user.email_verified && !!user.stripe_payment_method_id);
+        setProfileComplete(!!user.first_name && !!user.last_name && !!user.preferred_model && !!user.email_verified);// && !!user.stripe_payment_method_id);
         setShowCompleteProfileModal(!profileComplete);
     }, [user]);
 

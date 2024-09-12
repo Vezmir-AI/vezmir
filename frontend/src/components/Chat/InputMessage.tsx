@@ -2,21 +2,24 @@ import React, { useState, useRef, useEffect } from 'react';
 import { PaperClipIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import arrowSend from '@/assets/arrowSend.svg';
 import { useTheme } from '@/context/ThemeContext';
+import { AIModel } from '@/types';
 
 interface InputMessageProps {
   selectedModel: string | null;
+  selectedAIModel: AIModel | null;
   isStreaming: boolean;
   onSendMessage: (message: string, files?: File[]) => void;
 }
 
-const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming, onSendMessage }) => {
+const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIModel, isStreaming, onSendMessage }) => {
   const [inputMessage, setInputMessage] = useState<string>('');
   const { locale } = useTheme();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showTooltip, setShowTooltip] = useState(false);
-  const isFileInputDisabled = selectedFiles.length >= 5;
+  const isPerplexityModel = selectedAIModel?.provider === 'Perplexity';
+  const isFileInputDisabled = selectedFiles.length >= 5 || isPerplexityModel;
   const [enableHorizontalScroll, setEnableHorizontalScroll] = useState(false);
 
   useEffect(() => {
@@ -112,7 +115,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, isStreaming,
           className={`absolute left-3 bottom-2.5 p-2 rounded-full text-lg flex items-center justify-center ${
             isFileInputDisabled ? 'text-gray-400 cursor-not-allowed hover:bg-[var(--bordeaux)]' : 'text-white hover:bg-[var(--bordeaux-hover)]'
           }`}
-          onMouseEnter={() => !isFileInputDisabled && setShowTooltip(true)}
+          onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
           disabled={isFileInputDisabled}
         >

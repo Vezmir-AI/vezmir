@@ -1,3 +1,7 @@
+import base64
+
+from langchain.schema import AIMessage, HumanMessage
+
 from .lib import AnthropicAPI, GoogleAPI, GroqAPI, OpenAIAPI, PerplexityAPI
 
 
@@ -65,4 +69,28 @@ def choose_model(user_message):
 def format_messages(messages: list[dict], model_provider: str):
     match model_provider:
         case _:
-            return messages
+            formatted_messages = []
+            for msg in messages:
+                if msg["role"] == "user":
+                    formatted_messages.append(HumanMessage(content=msg["content"]))
+                    if msg["files"]:
+                        formatted_messages.extend(format_image_messages(msg["files"]))
+                elif msg["role"] == "assistant":
+                    formatted_messages.append(AIMessage(content=msg["content"]))
+            return formatted_messages
+
+
+def format_image_messages(files):
+    image_messages = []
+    for file in files:
+        with open(file["path"], "rb") as image_file:
+            base64_image = base64.b64encode(image_file.read()).decode("utf-8")
+            image_messages.append(
+                HumanMessage(
+                    content=[
+                        {"type": "text", "text": "Here's an image:"},
+                        {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}"}},
+                    ]
+                )
+            )
+    return image_messages

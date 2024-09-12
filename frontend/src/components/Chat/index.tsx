@@ -134,7 +134,7 @@ const ChatComponent: React.FC = () => {
       setMessages(prevMessages => [...prevMessages, userMessage]);
 
       let assistantMessage = '';
-      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: model }]);
+      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: model, isStreaming: true }]);
 
       const response = await api.post(url, formData, true, true);
       if (!response) {
@@ -151,12 +151,16 @@ const ChatComponent: React.FC = () => {
             assistantMessage += char;
             setMessages(prevMessages => [
               ...prevMessages.slice(0, -1),
-              { role: 'assistant', content: assistantMessage, ai_model_details: model }
+              { role: 'assistant', content: assistantMessage, ai_model_details: model, isStreaming: true }
             ]);
           },
-          200 // Adjust this value to change the streaming speed (characters per second)
+          200
         );
         setIsStreaming(false);
+        setMessages(prevMessages => [
+          ...prevMessages.slice(0, -1),
+          { role: 'assistant', content: assistantMessage, ai_model_details: model, isStreaming: false }
+        ]);
       };
 
       processText();
@@ -275,7 +279,6 @@ const ChatComponent: React.FC = () => {
           ) : (
             <ChatMessages
               messages={messages}
-              isStreaming={isStreaming}
             />
           )}
           <div ref={messagesEndRef} />
@@ -295,6 +298,7 @@ const ChatComponent: React.FC = () => {
         <div className="bg-[var(--gray-800)] sticky bottom-0 z-10">
           <InputMessage
             selectedModel={currentAIModel}
+            selectedAIModel={selectedAIModel}
             isStreaming={isStreaming}
             onSendMessage={handleSendMessageToStream}
           />

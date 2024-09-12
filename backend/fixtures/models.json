@@ -110,9 +110,9 @@
         "pk": 7,
         "fields": {
             "name": "llama-3.1-sonar-large-128k-online",
-            "display_name": "Llama 3.1 Online",
+            "display_name": "Perplexity 3.1",
             "provider": "Perplexity",
-            "hint": "Model that can search the internet",
+            "hint": "model_hint_perplexity_3_1",
             "is_active": true,
             "price_per_1K_token_input": 0.001,
             "price_per_1K_token_output": 0.001
