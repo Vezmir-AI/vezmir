@@ -48,6 +48,7 @@ jobs:
           echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> backend/.env.temp
           echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> backend/.env.temp
           echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> backend/.env.temp
+          echo "PPLX_API_KEY=${{ secrets.PPLX_API_KEY }}" >> backend/.env.temp
           echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" >> backend/.env.temp
           echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> backend/.env.temp
           echo "DJANGO_GOOGLE_OAUTH2_CLIENT_ID=${{ secrets.DJANGO_GOOGLE_OAUTH2_CLIENT_ID }}" >> backend/.env.temp
@@ -172,6 +173,7 @@ jobs:
 
             sudo mv /var/www/vezmir.ai.new /var/www/vezmir.ai
             sudo mv /home/azureuser/backend-vezmir.ai.new /home/azureuser/backend-vezmir.ai
+            sudo mv /home/azureuser/backend-vezmir.ai.old/chat_uploads /home/azureuser/backend-vezmir.ai/
         continue-on-error: false
 
       - name: Deployment failed
@@ -205,5 +207,5 @@ jobs:
             sudo rm -rf /home/azureuser/backend-vezmir.ai.old
 
             sudo systemctl daemon-reload
-            sudo systemctl reload gunicorn
-            sudo systemctl reload nginx
+            sudo systemctl restart gunicorn
+            sudo systemctl restart nginx

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { ExclamationTriangleIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { useTheme } from '@/context/ThemeContext';
 
 interface ConfirmDeletePopupType {
   open: boolean,
@@ -9,6 +10,8 @@ interface ConfirmDeletePopupType {
 }
 
 const ConfirmDeletePopup: React.FC<ConfirmDeletePopupType> = ({ open, setOpen, onConfirm }) => {
+  const { locale } = useTheme();
+
   return (
     <Dialog open={open} onClose={setOpen} className="relative z-10">
       <DialogBackdrop
@@ -28,7 +31,7 @@ const ConfirmDeletePopup: React.FC<ConfirmDeletePopupType> = ({ open, setOpen, o
                 onClick={() => onConfirm(false)}
                 className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
-                <span className="sr-only">Close</span>
+                <span className="sr-only">{locale("dashboard_close")}</span>
                 <XMarkIcon aria-hidden="true" className="h-6 w-6" />
               </button>
             </div>
@@ -38,12 +41,11 @@ const ConfirmDeletePopup: React.FC<ConfirmDeletePopupType> = ({ open, setOpen, o
               </div>
               <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                 <DialogTitle as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                  Deactivate account
+                  {locale("dashboard_deactivate_account")}
                 </DialogTitle>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Are you sure you want to deactivate your account? All of your data will be permanently removed from
-                    our servers forever within 30 days.
+                    {locale("dashboard_deactivate_account_description")}
                   </p>
                 </div>
               </div>
@@ -54,14 +56,14 @@ const ConfirmDeletePopup: React.FC<ConfirmDeletePopupType> = ({ open, setOpen, o
                 onClick={() => onConfirm(true)}
                 className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
               >
-                Deactivate
+                {locale("dashboard_deactivate")}
               </button>
               <button
                 type="button"
                 onClick={() => onConfirm(false)}
                 className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
               >
-                Cancel
+                {locale("dashboard_cancel")}
               </button>
             </div>
           </DialogPanel>

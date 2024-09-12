@@ -11,8 +11,10 @@ import { useProfile } from '@/context/ProfileContext';
 import NewChatButton from '../Chat/NewChatButton';
 import ChatHistory from '../Chat/ChatHistory';
 import WizardIcon from '@/assets/Wizard.svg';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function SideBar() {
+  const { locale } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [userName, setUserName] = useState('')
@@ -63,7 +65,7 @@ export default function SideBar() {
                       />
                     </Link>
                     <button type="button" onClick={() => setSidebarOpen(false)} className="p-2 rounded-md bg-[var(--gray-700)] hover:bg-[var(--gray-600)] text-gray-400 hover:text-white">
-                      <span className="sr-only">Close sidebar</span>
+                      <span className="sr-only">{locale("sidebar_close")}</span>
                       <ChevronLeftIcon aria-hidden="true" className="h-6 w-6" />
                     </button>
                   </div>
@@ -83,7 +85,7 @@ export default function SideBar() {
                       <div onClick={() => navigate('/dashboard/profile')} className="flex items-center gap-x-4 flex-grow">
                         <img src={WizardIcon} alt="Wizard" className="h-8 w-8 text-gray-400" />
                         <span aria-hidden="true" className={`text-${textSize} font-semibold text-white`}>{userName}</span>
-                        <span className="sr-only">Your profile</span>
+                        <span className="sr-only">{locale("sidebar_profile")}</span>
                       </div>
                       <div className="ml-auto p-2 rounded-lg">
                         <ArrowLeftEndOnRectangleIcon
@@ -152,7 +154,7 @@ export default function SideBar() {
                     >
                       <img src={WizardIcon} alt="Wizard" className="mt-1 h-14 w-14 text-gray-400 invert" />
                       <span aria-hidden="true" className={`text-${textSize} font-semibold text-white`}>{userName}</span>
-                      <span className="sr-only">Your profile</span>
+                      <span className="sr-only">{locale("sidebar_profile")}</span>
                     </div>
                     <div
                       className="p-2 overflow-hidden rounded-lg hover:bg-[var(--gray-800)]"
@@ -175,7 +177,7 @@ export default function SideBar() {
         {/* Mobile toggle button */}
         <div className={`sticky top-0 z-40 flex items-center gap-x-6 ${isDashboard ? 'bg-[var(--gray-900)]' : 'bg-[var(--gray-800)]'} px-4 py-4 shadow-sm sm:px-6 lg:hidden`}>
           <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400 lg:hidden bg-[var(--gray-700)] hover:bg-[var(--gray-600)]">
-            <span className="sr-only">Open sidebar</span>
+            <span className="sr-only">{locale("sidebar_open")}</span>
             <Bars3Icon aria-hidden="true" className="h-6 w-6" />
           </button>
         </div>

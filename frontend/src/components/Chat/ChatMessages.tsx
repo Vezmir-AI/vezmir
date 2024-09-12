@@ -1,16 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Message } from '@/types';
 import renderContent from './renderContent/renderContent';
 import { getProviderLogo, getProviderColor } from '@/utils/providerUtils';
-import { ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { ClipboardDocumentIcon, CheckIcon, PaperClipIcon } from '@heroicons/react/24/outline';
+import api from '@/api';
+import { useTheme } from '@/context/ThemeContext';
+import Lottie from 'react-lottie';
+import animationData from '@/assets/animation/vezmir_moving.json';
 
 interface ChatMessagesProps {
   messages: Message[];
-  isStreaming: boolean;
 }
 
-const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) => {
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: animationData,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
+
+const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
+  const { chatId } = useParams();
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+  const { locale } = useTheme();
+  const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const newImageUrls: { [key: string]: string } = {};
+      for (const msg of messages) {
+        if (msg.files) {
+          for (const file of msg.files) {
+            if (file.type.startsWith('image/') && !imageUrls[file.url]) {
+              try {
+                const url = `/chat/file/${chatId}/${file.name}/`;
+                const blob = await api.get(url);
+                const objectUrl = URL.createObjectURL(blob);
+                newImageUrls[file.url] = objectUrl;
+              } catch (error) {
+                console.error('Error fetching image:', error);
+              }
+            }
+          }
+        }
+      }
+      setImageUrls(prev => ({ ...prev, ...newImageUrls }));
+    };
+
+    fetchImages();
+
+    return () => {
+      Object.values(imageUrls).forEach(URL.revokeObjectURL);
+    };
+  }, [messages]);
 
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content);
@@ -30,8 +75,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
           <div
             className={`max-w-[80%] ${
               msg.role === 'user'
-                ? 'bg-[var(--gray-700)] text-white rounded-3xl rounded-br-sm'
-                : 'bg-[var(--gray-800)] text-white rounded-3xl rounded-tl-sm'
+                ? 'bg-[var(--gray-700)] text-white rounded-2xl rounded-br-sm'
+                : 'bg-[var(--gray-800)] text-white rounded-3xl rounded-tl-sm mb-6'
             } px-3 py-2 text-base flex items-start relative`}
           >
             {msg.role !== 'user' && (
@@ -53,10 +98,39 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
                 )}
               </div>
             )}
-            <div className="relative flex-grow">
+            <div className="w-full break-words">
+              {msg.files && msg.files.length > 0 && (
+                <>
+                  <div className="mb-2 flex flex-wrap gap-2">
+                    {msg.files.map((file, fileIndex) => (
+                      <div key={fileIndex} className="flex flex-col items-center bg-[var(--gray-600)] text-white rounded-lg p-2">
+                        {file.type.startsWith('image/') ? (
+                          <img
+                            src={imageUrls[file.url] || file.url}
+                            alt={file.name}
+                            className="w-40 h-40 object-cover rounded-md mb-1"
+                          />
+                        ) : (
+                          <div className="w-20 h-20 flex items-center justify-center bg-[var(--gray-700)] rounded-md mb-1">
+                            <PaperClipIcon className="h-8 w-8" />
+                          </div>
+                        )}
+                        <span className="truncate max-w-[80px] text-xs">
+                          {file.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
               {renderContent(msg.content, index, copiedStates, setCopiedStates)}
-              {!isStreaming && msg.role === 'assistant' && (
-                <div className="absolute -bottom-6 left-0 flex space-x-2 mt-2">
+              {msg.isStreaming && (
+                <div className="inline-block w-12 h-12">
+                  <Lottie options={defaultOptions} height={40} width={40} />
+                </div>
+              )}
+              {!msg.isStreaming && msg.role === 'assistant' && (
+                <div className="absolute -bottom-6 left-0 flex space-x-2 mt-2 ml-12">
                   <button
                     onClick={() => handleCopy(msg.content)}
                     className="p-1 rounded bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1"
@@ -65,23 +139,15 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
                     {copiedStates[msg.content] ? (
                       <>
                         <CheckIcon className="h-4 w-4 text-white" />
-                        <span className="text-xs text-white">Copy</span>
+                        <span className="text-xs text-white">{locale('chat_copy')}</span>
                       </>
                     ) : (
                       <>
                         <ClipboardDocumentIcon className="h-4 w-4 text-white" />
-                        <span className="text-xs text-white">Copy</span>
+                        <span className="text-xs text-white">{locale('chat_copy')}</span>
                       </>
                     )}
                   </button>
-                  {/* <button
-                    onClick={() => onRegenerateMessage(index)}
-                    className="p-1 rounded bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1"
-                    title="Regenerate response"
-                  >
-                    <ArrowPathIcon className="h-4 w-4 text-white" />
-                    <span className="text-xs text-white">Retry</span>
-                  </button> */}
                 </div>
               )}
             </div>

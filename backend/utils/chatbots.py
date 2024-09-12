@@ -1,6 +1,8 @@
-import random
+import base64
 
-from .lib import AnthropicAPI, GoogleAPI, GroqAPI, OpenAIAPI
+from langchain.schema import AIMessage, HumanMessage
+
+from .lib import AnthropicAPI, GoogleAPI, GroqAPI, OpenAIAPI, PerplexityAPI
 
 
 def get_api_response(model_name: str, model_provider: str, messages: list[dict]):
@@ -12,6 +14,8 @@ def get_api_response(model_name: str, model_provider: str, messages: list[dict])
             yield from AnthropicAPI.get_response(formatted_messages, model_name)
         case "Google":
             yield from GoogleAPI.get_response(formatted_messages, model_name)
+        case "Perplexity":
+            yield from PerplexityAPI.get_response(formatted_messages, model_name)
 
 
 def generate_title(user_message):
@@ -59,15 +63,34 @@ def choose_model(user_message):
     except KeyError:
         chosen_model = "gpt-4o-mini-2024-07-18"
 
-    if chosen_model == "gpt-4o-mini-2024-07-18" and random.random() < 0.3:
-        chosen_model = "gemini-1.5-flash"
-    elif chosen_model == "gpt-4o-2024-08-06" and random.random() < 0.3:
-        chosen_model = "gemini-1.5-pro"
-
     return chosen_model
 
 
 def format_messages(messages: list[dict], model_provider: str):
     match model_provider:
         case _:
-            return messages
+            formatted_messages = []
+            for msg in messages:
+                if msg["role"] == "user":
+                    formatted_messages.append(HumanMessage(content=msg["content"]))
+                    if msg["files"]:
+                        formatted_messages.extend(format_image_messages(msg["files"]))
+                elif msg["role"] == "assistant":
+                    formatted_messages.append(AIMessage(content=msg["content"]))
+            return formatted_messages
+
+
+def format_image_messages(files):
+    image_messages = []
+    for file in files:
+        with open(file["path"], "rb") as image_file:
+            base64_image = base64.b64encode(image_file.read()).decode("utf-8")
+            image_messages.append(
+                HumanMessage(
+                    content=[
+                        {"type": "text", "text": "Here's an image:"},
+                        {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}"}},
+                    ]
+                )
+            )
+    return image_messages

@@ -29,17 +29,17 @@ const Register: React.FC = () => {
     let hasError = false;
 
     if (!email) {
-      setEmailError(locale('com_auth_email_required'));
+      setEmailError(locale('auth_email_required'));
       hasError = true;
     }
 
     if (!password) {
-      setPasswordError(locale('com_auth_password_required'));
+      setPasswordError(locale('auth_password_required'));
       hasError = true;
     }
 
     if (!confirmPassword) {
-      setConfirmPasswordError(locale('com_auth_password_required'));
+      setConfirmPasswordError(locale('auth_password_required'));
       hasError = true;
     }
 
@@ -77,7 +77,7 @@ const Register: React.FC = () => {
     const email = e.target.value;
     setEmail(email);
     if (email && !isValidEmail(email)) {
-      setEmailError(locale('com_auth_email_pattern'));
+      setEmailError(locale('auth_email_pattern'));
     } else {
       setEmailError('');
     }
@@ -87,7 +87,7 @@ const Register: React.FC = () => {
     const newPassword = e.target.value.slice(0, 128); // Limit to 128 characters
     setPassword(newPassword);
     if (newPassword.length > 0 && newPassword.length < 8) {
-      setPasswordError(locale('com_auth_password_min_length'));
+      setPasswordError(locale('auth_password_min_length'));
     } else {
       setPasswordError('');
     }
@@ -116,7 +116,7 @@ const Register: React.FC = () => {
         <h1
           className="mb-4 text-center text-4xl font-bold text-gray-700 text-white"
         >
-          {locale('com_auth_create_account')}
+          {locale('auth_create_account')}
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-2 relative">
@@ -125,7 +125,7 @@ const Register: React.FC = () => {
               id="email"
               value={email}
               autoComplete="email"
-              aria-label={locale('com_auth_email')}
+              aria-label={locale('auth_email')}
               onChange={handleEmailChange}
               className="input-field peer"
               placeholder=" "
@@ -134,7 +134,7 @@ const Register: React.FC = () => {
               htmlFor="email"
               className="floating-label"
             >
-              {locale('com_auth_email_address')}
+              {locale('auth_email_address')}
             </label>
             {emailError && <p className="text-[var(--bordeaux)] text-sm mt-1">{emailError}</p>}
           </div>
@@ -144,7 +144,7 @@ const Register: React.FC = () => {
               id="password"
               value={password}
               autoComplete="new-password"
-              aria-label={locale('com_auth_password')}
+              aria-label={locale('auth_password')}
               onChange={handlePasswordChange}
               className="input-field peer"
               placeholder=" "
@@ -153,7 +153,7 @@ const Register: React.FC = () => {
               htmlFor="password"
               className="floating-label"
             >
-              {locale('com_auth_password')}
+              {locale('auth_password')}
             </label>
             {passwordError && <p className="text-[var(--bordeaux)] text-sm mt-1">{passwordError}</p>}
           </div>
@@ -163,7 +163,7 @@ const Register: React.FC = () => {
               id="confirmPassword"
               value={confirmPassword}
               autoComplete="new-password"
-              aria-label={locale('com_auth_confirm_password')}
+              aria-label={locale('auth_password_confirm')}
               onChange={handleConfirmPasswordChange}
               className={`input-field peer ${!passwordsMatch ? 'border-[var(--bordeaux)]' : ''}`}
               placeholder=" "
@@ -172,24 +172,24 @@ const Register: React.FC = () => {
               htmlFor="confirmPassword"
               className="floating-label"
             >
-              {locale('com_auth_password_confirm')}
+              {locale('auth_password_confirm')}
             </label>
             {confirmPasswordError && <p className="text-[var(--bordeaux)] text-sm mt-1">{confirmPasswordError}</p>}
           </div>
           {!passwordsMatch && confirmPassword !== '' && (
-            <p className="text-[var(--bordeaux)] text-sm mb-2">{locale('com_auth_password_not_match')}</p>
+            <p className="text-[var(--bordeaux)] text-sm mb-2">{locale('auth_password_not_match')}</p>
           )}
           <button
             type="submit"
             className="w-full transform rounded-md bg-[var(--bordeaux)] px-4 py-3 tracking-wide text-white transition-colors duration-200 hover:bg-[var(--bordeaux-hover)] focus:bg-[var(--bordeaux-hover)] focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:hover:bg-[var(--bordeaux)]"
             disabled={!passwordsMatch || confirmPassword === ''}
           >
-            {locale('com_auth_register')}
+            {locale('auth_register')}
           </button>
         </form>
         <div className="relative mt-6 flex w-full items-center justify-center border border-t border-gray-300 uppercase border-gray-600">
           <div className="absolute bg-[var(--black)] px-3 text-xs text-white text-white">
-            {locale('com_auth_or')}
+            {locale('auth_or')}
           </div>
         </div>
         <div className="mt-4 w-full">
@@ -201,9 +201,9 @@ const Register: React.FC = () => {
           />
         </div>
         <p className="my-4 text-center text-sm font-light text-gray-700 text-white">
-          {locale('com_auth_already_have_account')}{' '}
+          {locale('auth_already_have_account')}{' '}
           <Link to="/login" aria-label="Login" className="p-1 text-[var(--bordeaux-clear)]">
-            {locale('com_auth_login')}
+            {locale('auth_login')}
           </Link>
         </p>
       </div>
