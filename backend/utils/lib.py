@@ -1,10 +1,9 @@
-import base64
 from abc import ABC, abstractmethod
 
 from django.conf import settings
-from langchain.schema import AIMessage, HumanMessage
 from langchain_anthropic import ChatAnthropic
 from langchain_community.chat_models import ChatPerplexity
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
@@ -13,104 +12,50 @@ from langchain_openai import ChatOpenAI
 class AbstractAPI(ABC):
     @classmethod
     def get_response(cls, messages: list[dict], model_name: str):
-        yield from cls._get_response(messages, model_name)
+        chat: BaseChatModel = cls.get_chat_model(model_name)
+        for chunk in chat.stream(messages, stream_usage=True):
+            yield chunk
 
     @classmethod
     @abstractmethod
-    def _get_response(self, messages: list[dict], model_name: str) -> str:
+    def get_chat_model(self, model_name: str) -> BaseChatModel:
         pass
 
 
 class OpenAIAPI(AbstractAPI):
-    API_KEY = settings.OPENAI_API_KEY
-
     @classmethod
-    def _get_response(cls, messages: list[dict], model_name: str) -> str:
-        chat = ChatOpenAI(
-            api_key=cls.API_KEY,
-            model=model_name,
-        )
-
-        formatted_messages = format_messages(messages)
-
-        for chunk in chat.stream(formatted_messages, stream_usage=True):
-            yield chunk
+    def get_chat_model(self, model_name: str) -> BaseChatModel:
+        API_KEY = settings.OPENAI_API_KEY
+        return ChatOpenAI(api_key=API_KEY, model=model_name)
 
 
 class AnthropicAPI(AbstractAPI):
-    API_KEY = settings.ANTHROPIC_API_KEY
-
     @classmethod
-    def _get_response(cls, messages: list[dict], model_name: str) -> str:
-        chat = ChatAnthropic(api_key=cls.API_KEY, model=model_name)
-
-        formatted_messages = format_messages(messages)
-
-        for chunk in chat.stream(formatted_messages, stream_usage=True):
-            yield chunk
+    def get_chat_model(self, model_name: str) -> BaseChatModel:
+        API_KEY = settings.ANTHROPIC_API_KEY
+        return ChatAnthropic(api_key=API_KEY, model=model_name)
 
 
 class GoogleAPI(AbstractAPI):
-    API_KEY = settings.GOOGLE_API_KEY
-
     @classmethod
-    def _get_response(cls, messages: list[dict], model_name: str) -> str:
-        chat = ChatGoogleGenerativeAI(api_key=cls.API_KEY, model=model_name)
-
-        formatted_messages = format_messages(messages)
-
-        for chunk in chat.stream(formatted_messages):
-            yield chunk
-
-
-class GroqAPI:
-    API_KEY = settings.GROQ_API_KEY
-
-    @classmethod
-    def get_response(cls, messages: list[dict], model_name: str) -> str:
-        completion = ChatGroq(
-            api_key=cls.API_KEY,
-            model=model_name,
-        )
-        return completion.invoke(messages)
+    def get_chat_model(self, model_name: str) -> BaseChatModel:
+        API_KEY = settings.GOOGLE_API_KEY
+        return ChatGoogleGenerativeAI(api_key=API_KEY, model=model_name)
 
 
 class PerplexityAPI(AbstractAPI):
-    API_KEY = settings.PPLX_API_KEY
-
     @classmethod
-    def _get_response(cls, messages: list[dict], model_name: str) -> str:
-        chat = ChatPerplexity(api_key=cls.API_KEY, model=model_name)
-
-        formatted_messages = format_messages(messages)
-
-        for chunk in chat.stream(formatted_messages):
-            yield chunk
+    def get_chat_model(self, model_name: str) -> BaseChatModel:
+        API_KEY = settings.PPLX_API_KEY
+        return ChatPerplexity(api_key=API_KEY, model=model_name)
 
 
-def format_messages(messages):
-    formatted_messages = []
-    for msg in messages:
-        if msg["role"] == "user":
-            formatted_messages.append(HumanMessage(content=msg["content"]))
-            if msg["files"]:
-                formatted_messages.extend(format_image_messages(msg["files"]))
-        elif msg["role"] == "assistant":
-            formatted_messages.append(AIMessage(content=msg["content"]))
-    return formatted_messages
-
-
-def format_image_messages(files):
-    image_messages = []
-    for file in files:
-        with open(file["path"], "rb") as image_file:
-            base64_image = base64.b64encode(image_file.read()).decode("utf-8")
-            image_messages.append(
-                HumanMessage(
-                    content=[
-                        {"type": "text", "text": "Here's an image:"},
-                        {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}"}},
-                    ]
-                )
-            )
-    return image_messages
+class GroqAPI:
+    @classmethod
+    def get_response(cls, messages: list[dict], model_name: str) -> str:
+        API_KEY = settings.GROQ_API_KEY
+        completion = ChatGroq(
+            api_key=API_KEY,
+            model=model_name,
+        )
+        return completion.invoke(messages)

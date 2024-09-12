@@ -6,13 +6,23 @@ import { getProviderLogo, getProviderColor } from '@/utils/providerUtils';
 import { ClipboardDocumentIcon, CheckIcon, PaperClipIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
 import { useTheme } from '@/context/ThemeContext';
+import Lottie from 'react-lottie';
+import animationData from '@/assets/animation/vezmir_moving.json';
 
 interface ChatMessagesProps {
   messages: Message[];
-  isStreaming: boolean;
 }
 
-const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) => {
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: animationData,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
+
+const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   const { chatId } = useParams();
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
   const { locale } = useTheme();
@@ -40,17 +50,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
       setImageUrls(prev => ({ ...prev, ...newImageUrls }));
     };
 
-    const retryFetchImages = () => {
-      if (isStreaming) {
-        setTimeout(retryFetchImages, 1000);
-      } else {
-        fetchImages();
-      }
-    };
+    fetchImages();
 
-    retryFetchImages();
-
-    // Cleanup function to revoke object URLs
     return () => {
       Object.values(imageUrls).forEach(URL.revokeObjectURL);
     };
@@ -123,7 +124,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) =>
                 </>
               )}
               {renderContent(msg.content, index, copiedStates, setCopiedStates)}
-              {!isStreaming && msg.role === 'assistant' && (
+              {msg.isStreaming && (
+                <div className="inline-block w-12 h-12">
+                  <Lottie options={defaultOptions} height={40} width={40} />
+                </div>
+              )}
+              {!msg.isStreaming && msg.role === 'assistant' && (
                 <div className="absolute -bottom-6 left-0 flex space-x-2 mt-2 ml-12">
                   <button
                     onClick={() => handleCopy(msg.content)}
