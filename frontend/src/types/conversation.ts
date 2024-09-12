@@ -17,10 +17,18 @@ interface AIModel {
     hint: string;
 }
 
+interface File {
+    name: string;
+    url: string;
+    type: string;
+}
+
 interface Message {
     role: 'user' | 'assistant';
     content: string;
     ai_model_details: AIModel;
+    files?: File[];
+    isStreaming?: boolean;
 }
 // TODO add Message? api request and response schema,
 

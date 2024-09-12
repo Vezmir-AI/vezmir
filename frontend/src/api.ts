@@ -1,14 +1,14 @@
 const api = {
   baseURL: import.meta.env.VITE_API_URL,
-  getHeaders: function () {
+  getHeaders: function (): { [key: string]: string } {
     const accessToken = localStorage.getItem('accessToken');
     return {
       'Content-Type': 'application/json',
       ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-    };
+    } as { [key: string]: string };
   },
-  post: async function (url: string, body: any = {}, stream: boolean = false) {
-    return this._fetch(url, body, 'POST', true, stream);
+  post: async function (url: string, body: any = {}, stream: boolean = false, formData: boolean = false) {
+    return this._fetch(url, body, 'POST', true, stream, formData);
   },
   get: async function (url: string, params: { [key: string]: string } | null = null) {
     if (params) {
@@ -23,12 +23,16 @@ const api = {
   delete: async function (url: string) {
     return this._fetch(url, null, 'DELETE');
   },
-  _fetch: async function (url: string, options: any, method: string, _retry: boolean = true, stream: boolean = false): Promise<any> {
+  _fetch: async function (url: string, options: any, method: string, _retry: boolean = true, stream: boolean = false, formData: boolean = false): Promise<any> {
     const fetchUrl = this.baseURL + url;
+    const headers: { [key: string]: string } = this.getHeaders();
+    if (formData) {
+      delete headers['Content-Type'];
+    }
     const response = await fetch(fetchUrl, {
       method,
-      headers: this.getHeaders(),
-      body: options ? JSON.stringify(options) : undefined,
+      headers,
+      body: formData ? options : (options ? JSON.stringify(options) : undefined),
     });
     if (response.status === 401 && _retry) {
 
@@ -51,6 +55,9 @@ const api = {
     }
     if (stream) {
       return response.body;
+    }
+    if (url.startsWith("/chat/file/")){
+      return response.blob();
     }
     // prevent errors on api.delete request, which contains no response data
     // as 204 responses doesn't have a body

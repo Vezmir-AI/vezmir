@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ConversationProvider } from './context/ConversationContext';
 import { ProfileProvider } from './context/ProfileContext';
@@ -36,6 +36,7 @@ function App() {
                   <Route element={<PrivateRoute />}>
                     <Route path="/resend-verification-email" element={<ResendVerificationEmail />} />
                     <Route path="/" element={<ChatComponent />} />
+                    <Route path="/chat" element={<Navigate to="/" replace />} />
                     <Route path="/chat/:chatId" element={<ChatComponent />} />
                     <Route path="/dashboard/:section" element={<Dashboard />} />
                   </Route>
