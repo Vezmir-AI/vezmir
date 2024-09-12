@@ -79,7 +79,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                 : 'bg-[var(--gray-800)] text-white rounded-3xl rounded-tl-sm mb-6'
             } px-3 py-2 text-base flex items-start relative`}
           >
-            {msg.role !== 'user' && (
+            {msg.role === 'assistant' && (
               <div className="mr-3 flex-shrink-0 mt-1 relative group">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getProviderColor(msg.ai_model_details?.provider || 'vezmir')}`}>
                   <img
@@ -98,7 +98,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                 )}
               </div>
             )}
-            <div className="w-full break-words">
+            {msg.role && (<div className="w-full break-words">
               {msg.files && msg.files.length > 0 && (
                 <>
                   <div className="mb-2 flex flex-wrap gap-2">
@@ -150,7 +150,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                   </button>
                 </div>
               )}
-            </div>
+            </div>)}
           </div>
         </div>
       ))}
