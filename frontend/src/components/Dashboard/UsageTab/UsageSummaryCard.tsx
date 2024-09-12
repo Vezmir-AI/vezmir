@@ -41,7 +41,7 @@ const UsageSummaryCard: React.FC = () => {
                         <div className="flex-1 flex flex-col justify-center px-2 py-4 sm:p-4">
                             <dt className="text-xs font-normal text-[var(--gray-400)] mb-1">{locale('dashboard_current_spending')}</dt>
                             <dd className="flex flex-col items-start">
-                                <span className="text-2xl font-semibold text-[var(--bordeaux-clear)]">${currentSpending.toFixed(2)}</span>
+                                <span className="text-2xl font-semibold text-[var(--purple-clear)]">${currentSpending.toFixed(2)}</span>
                                 <span className="text-xs text-[var(--gray-400)]">{locale('dashboard_out_of_20$')}</span>
                             </dd>
                         </div>

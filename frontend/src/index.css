@@ -129,16 +129,19 @@
   --gray-800: #212121;
   --gray-850: #171717;
   --gray-900: #0d0d0d;
-  --bordeaux: #8F22FC;
-  --bordeaux-hover: #521A8B;
-  --bordeaux-clear: #B469FF;
+  --purple: #8F22FC;
+  --purple-hover: #521A8B;
+  --purple-clear: #B469FF;
   --background-dark: var(--gray-800);
-  --bite: #6D071A;
 }
 
 body {
   background-color: var(--black);
   color: var(--white);
+}
+
+pre {
+  overflow-x: auto;
 }
 
 body, html {
@@ -152,13 +155,13 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: var(--bordeaux);
+  background-color: var(--purple);
   color: var(--white);
   cursor: pointer;
   transition: background-color 0.25s;
 }
 button:hover {
-  background-color: var(--bordeaux-hover);
+  background-color: var(--purple-hover);
 }
 
 /* Override global button styles for usage switches */
@@ -167,21 +170,21 @@ button:hover {
   background-color: var(--gray-400);
 }
 .usage-switch:hover {
-  background-color: var(--bordeaux-hover);
+  background-color: var(--purple-hover);
 }
 .usage-switch:focus {
   outline: 4px auto -webkit-focus-ring-color;
-  outline-color: var(--bordeaux-clear);
+  outline-color: var(--purple-clear);
 }
 .usage-switch:focus-visible {
-  outline-color: var(--bordeaux-clear);
+  outline-color: var(--purple-clear);
 }
 .usage-switch[aria-checked="true"] {
-  background-color: var(--bordeaux);
+  background-color: var(--purple);
 }
 
 .input-field {
-  @apply block w-full appearance-none rounded-md border border-gray-300 bg-[var(--black)] px-3.5 pb-3.5 pt-4 text-sm text-gray-900 focus:border-[var(--bordeaux-clear)] focus:outline-none focus:ring-0 border-gray-600 text-white focus:border-[var(--bordeaux-clear)];
+  @apply block w-full appearance-none rounded-md border border-gray-300 bg-[var(--black)] px-3.5 pb-3.5 pt-4 text-sm text-gray-900 focus:border-[var(--purple-clear)] focus:outline-none focus:ring-0 border-gray-600 text-white focus:border-[var(--purple-clear)];
 }
 
 .input-field:-webkit-autofill,
@@ -201,7 +204,7 @@ button:hover {
 }
 
 .floating-label {
-  @apply absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-[var(--black)] px-3 text-sm text-gray-500 duration-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-3 peer-focus:text-[var(--bordeaux-clear)] text-gray-400 peer-focus:text-[var(--bordeaux-clear)] rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4;
+  @apply absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-[var(--black)] px-3 text-sm text-gray-500 duration-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-3 peer-focus:text-[var(--purple-clear)] text-gray-400 peer-focus:text-[var(--purple-clear)] rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4;
 }
 
 
