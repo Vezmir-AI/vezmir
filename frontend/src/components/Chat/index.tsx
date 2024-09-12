@@ -27,7 +27,9 @@ const ChatComponent: React.FC = () => {
 
   useEffect(() => {
     if (!chatId) {
-      resetMessages();
+      if (messages.length > 0) {
+        resetMessages();
+      }
       resetSelectedAIModel();
     } else {
       resetSelectedAIModel(chatId, selectedAIModel);
