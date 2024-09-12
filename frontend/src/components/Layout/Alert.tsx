@@ -39,7 +39,7 @@ const Alert: React.FC<AlertProps> = ({ notification }) => {
                 onClick={handleClose}
                 className={`flex items-center justify-center p-2 rounded-3xl m-2 ${
                     notification.status === 'success'
-                        ? 'bg-[var(--bordeaux)] border-4 border-[var(--bordeaux-hover)] hover:bg-[var(--bordeaux-hover)]'
+                        ? 'bg-[var(--purple)] border-4 border-[var(--purple-hover)] hover:bg-[var(--purple-hover)]'
                         : 'bg-red-600 border-2 border-red-800 hover:bg-red-800'
                 } cursor-pointer`}
             >

@@ -65,7 +65,7 @@ const BillingTab: React.FC = () => {
           <h3 className="text-lg font-semibold leading-6 text-[var(--white)] mb-4">{locale('dashboard_your_balance')}</h3>
           <p className="text-sm text-gray-400 my-2">
             {locale("dashboard_balance_beta")} <br />
-            <span className="font-bold text-xs text-[var(--bordeaux-clear)]">{locale("dashboard_balance_request")} <a href="mailto:beta@vezmir.com" className="text-[var(--bordeaux-clear)] underline">beta@vezmir.com</a>.</span>
+            <span className="font-bold text-xs text-[var(--purple-clear)]">{locale("dashboard_balance_request")} <a href="mailto:beta@vezmir.com" className="text-[var(--purple-clear)] underline">beta@vezmir.com</a>.</span>
           </p>
 
           {loading ? (
@@ -80,7 +80,7 @@ const BillingTab: React.FC = () => {
           <h3 className="px-2 text-lg font-semibold leading-6 text-[var(--white)]">{locale("dashboard_your_payment_methods")}</h3>
           <Link
             to="/setup-payment"
-            className="inline-flex items-center rounded-md px-3 py-2 bg-[var(--bordeaux)] text-sm font-semibold text-[var(--white)] shadow-sm hover:bg-[var(--bordeaux-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--bordeaux-clear)] focus:ring-offset-2 focus:ring-offset-[var(--gray-800)]"
+            className="inline-flex items-center rounded-md px-3 py-2 bg-[var(--purple)] text-sm font-semibold text-[var(--white)] shadow-sm hover:bg-[var(--purple-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--purple-clear)] focus:ring-offset-2 focus:ring-offset-[var(--gray-800)]"
           >
             {locale("dashboard_add_payment_method")}
           </Link>
