@@ -137,5 +137,6 @@ export default {
     model_hint_claude_haiku: "Fastest model of Anthropic, good for basic tasks",
     model_hint_gemini_pro: "Best model for writing and searching information",
     model_hint_gemini_flash: "Fastest model of Google, good for basic tasks",
+    model_hint_perplexity_3_1: "Model that can search the internet",
     chat_loading: "Response is taking longer than expected...",
   };
