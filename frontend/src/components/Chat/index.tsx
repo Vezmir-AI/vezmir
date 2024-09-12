@@ -242,7 +242,7 @@ const ChatComponent: React.FC = () => {
                       localStorage.setItem('isVezmirIntelligence', JSON.stringify(!isVezmirIntelligence));
                     }}
                   />
-                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer bg-gray-700 peer-focus:ring-2 peer-focus:ring-[var(--bordeaux-clear)] peer-focus:ring-[var(--bordeaux)] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-[var(--bordeaux)]"></div>
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer bg-gray-700 peer-focus:ring-2 peer-focus:ring-[var(--purple-clear)] peer-focus:ring-[var(--purple)] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-[var(--purple)]"></div>
                 </label>
                 <div className="flex items-center ml-4 mr-4 h-10 relative group">
                   <img
@@ -251,7 +251,7 @@ const ChatComponent: React.FC = () => {
                     className="w-8 h-8 mr-2 invert"
                   />
                   <div className="absolute bottom-0 left-0 mb-[-76px] hidden group-hover:block">
-                    <div className="bg-[var(--bordeaux)] text-white px-4 py-2 rounded-lg shadow-lg whitespace-nowrap ">
+                    <div className="bg-[var(--purple)] text-white px-4 py-2 rounded-lg shadow-lg whitespace-nowrap ">
                       <p className="font-bold mb-1">{locale('chat_vezmir_intelligence')}</p>
                       <p className="text-sm">{locale('chat_vezmir_intelligence_description')}</p>
                     </div>
@@ -296,7 +296,7 @@ const ChatComponent: React.FC = () => {
         <div className="fixed bottom-28 right-2 z-20 xl:bottom-10 xl:right-4">
           <button
             onClick={() => setShowFeedbackForm(true)}
-            className="p-2 rounded-full bg-[var(--bordeaux)] hover:bg-[var(--bordeaux-hover)] transition-colors duration-200"
+            className="p-2 rounded-full bg-[var(--purple)] hover:bg-[var(--purple-hover)] transition-colors duration-200"
           >
             <ChatBubbleLeftIcon className="w-8 h-8 text-white" />
           </button>

@@ -44,7 +44,7 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ isOpen, onClose }) => {
           />
           <button
             type="submit"
-            className="w-full bg-[var(--bordeaux)] hover:bg-[var(--bordeaux-hover)] text-white font-bold py-2 px-4 rounded"
+            className="w-full bg-[var(--purple)] hover:bg-[var(--purple-hover)] text-white font-bold py-2 px-4 rounded"
           >
             {locale('feedback_send')}
           </button>

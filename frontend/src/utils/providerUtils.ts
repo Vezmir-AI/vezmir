@@ -30,6 +30,6 @@ export const getProviderColor = (provider: string): string => {
     case 'perplexity':
       return 'bg-[#2aaac9] text-white';
     default:
-      return 'bg-[var(--bordeaux-clear)] text-white';
+      return 'bg-[var(--purple-clear)] text-white';
   }
 };

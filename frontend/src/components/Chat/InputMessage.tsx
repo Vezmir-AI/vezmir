@@ -78,7 +78,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
       {selectedFiles.length > 0 && (
         <div className="flex flex-wrap gap-2 max-w-4xl mx-auto pl-6">
           {selectedFiles.map((file, index) => (
-            <div key={index} className="flex items-center bg-[var(--bordeaux)] text-white rounded-t-[15px] px-3 py-1">
+            <div key={index} className="flex items-center bg-[var(--purple)] text-white rounded-t-[15px] px-3 py-1">
               <span className="text-sm truncate max-w-[150px]">
                 {file.name.length > 20
                   ? file.name.slice(0, 6) + '...' + file.name.split('.').pop()
@@ -113,7 +113,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
           type="button"
           onClick={() => !isFileInputDisabled && fileInputRef.current?.click()}
           className={`absolute left-3 bottom-2.5 p-2 rounded-full text-lg flex items-center justify-center ${
-            isFileInputDisabled ? 'text-gray-400 cursor-not-allowed hover:bg-[var(--bordeaux)]' : 'text-white hover:bg-[var(--bordeaux-hover)]'
+            isFileInputDisabled ? 'text-gray-400 cursor-not-allowed hover:bg-[var(--purple)]' : 'text-white hover:bg-[var(--purple-hover)]'
           }`}
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
