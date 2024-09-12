@@ -141,6 +141,10 @@ body {
   color: var(--white);
 }
 
+pre {
+  overflow-x: auto;
+}
+
 body, html {
   font-family: 'Plus-Jakarta-Sans', sans-serif !important;
 }
