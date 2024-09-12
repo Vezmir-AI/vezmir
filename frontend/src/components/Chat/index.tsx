@@ -279,7 +279,6 @@ const ChatComponent: React.FC = () => {
           ) : (
             <ChatMessages
               messages={messages}
-              isStreaming={isStreaming}
             />
           )}
           <div ref={messagesEndRef} />
