@@ -45,10 +45,10 @@ const ChatComponent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (chatId) {
+    if (chatId && !isStreaming) {
       fetchMessages(chatId);
     }
-  }, [chatId]);
+  }, [chatId, isStreaming]);
 
   useEffect(() => {
     scrollToBottom();
