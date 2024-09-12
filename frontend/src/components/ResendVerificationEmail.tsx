@@ -32,7 +32,7 @@ const ResendVerificationEmail: React.FC = () => {
             <h2 className="text-2xl font-bold">{locale("auth_resend_verification_email_title")}</h2>
             {isLoading ? <p>Loading...</p> : (
                 <>
-                    {message && <p className="text-[var(--bordeaux-clear)]">{message}</p>}
+                    {message && <p className="text-[var(--purple-clear)]">{message}</p>}
                     {error && <p className="text-red-500">{locale("auth_resend_verification_email_error")} {error}</p>}
                     <button className="mt-4 text-white" onClick={() => navigate('/')}>{locale("auth_resend_verification_email_button")}</button>
                 </>

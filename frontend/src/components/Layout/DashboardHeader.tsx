@@ -48,7 +48,7 @@ const DashboardHeader: React.FC = () => {
                     <button
                         id="settings-button"
                         type="button"
-                        className="relative w-full cursor-default rounded-md bg-[var(--gray-700)] py-1.5 pl-3 pr-10 text-left text-white shadow-sm ring-1 ring-inset ring-[var(--gray-600)] focus:bg-[var(--gray-600)] focus:outline-none focus:ring-2 focus:ring-[var(--bordeaux-clear)] sm:text-sm sm:leading-6"
+                        className="relative w-full cursor-default rounded-md bg-[var(--gray-700)] py-1.5 pl-3 pr-10 text-left text-white shadow-sm ring-1 ring-inset ring-[var(--gray-600)] focus:bg-[var(--gray-600)] focus:outline-none focus:ring-2 focus:ring-[var(--purple-clear)] sm:text-sm sm:leading-6"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                     >
                         <span className="flex items-center">
@@ -80,7 +80,7 @@ const DashboardHeader: React.FC = () => {
                                         </span>
                                     </div>
                                     {tab === currentTab && (
-                                        <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-[var(--bordeaux-clear)]">
+                                        <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-[var(--purple-clear)]">
                                             <CheckIcon className="h-5 w-5" aria-hidden="true" />
                                         </span>
                                     )}
@@ -91,7 +91,7 @@ const DashboardHeader: React.FC = () => {
                 </div>
                 <Link to="/" className="mr-2">
                     <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
-                        <PencilSquareIcon className="w-6 h-6 text-[var(--bordeaux-clear)]" />
+                        <PencilSquareIcon className="w-6 h-6 text-[var(--purple-clear)]" />
                     </div>
                 </Link>
             </div>
@@ -105,14 +105,14 @@ const DashboardHeader: React.FC = () => {
                                 aria-current={tab === currentTab ? 'page' : undefined}
                                 className={classNames(
                                     tab === currentTab
-                                        ? 'border-[var(--bordeaux-clear)] text-[var(--bordeaux-clear)] text-xl font-bold relative'
+                                        ? 'border-[var(--purple-clear)] text-[var(--purple-clear)] text-xl font-bold relative'
                                         : 'border-transparent text-gray-500 text-base hover:border-gray-300 hover:text-gray-700 font-medium',
                                     'flex-1 px-1 py-4 text-center',
                                 )}
                             >
                                 {tab.name}
                                 {tab === currentTab && (
-                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--bordeaux-clear)]" />
+                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--purple-clear)]" />
                                 )}
                             </Link>
                         ))}
