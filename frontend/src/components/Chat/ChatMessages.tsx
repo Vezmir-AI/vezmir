@@ -11,7 +11,6 @@ import animationData from '@/assets/animation/vezmir_moving.json';
 
 interface ChatMessagesProps {
   messages: Message[];
-  isStreaming: boolean;
 }
 
 const defaultOptions = {
@@ -23,7 +22,7 @@ const defaultOptions = {
   }
 };
 
-const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isStreaming }) => {
+const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   const { chatId } = useParams();
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
   const { locale } = useTheme();
