@@ -64,7 +64,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         return (num_tokens / 1000) * price_per_1k
 
     def update_balance(self, cost):
-        print("Updating balance", cost)
         self.balance -= Decimal(str(cost))
         self.save()
 

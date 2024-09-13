@@ -35,7 +35,7 @@ class ChatMessage(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="messages")
     chat_conversation = models.ForeignKey(ChatConversation, on_delete=models.CASCADE, related_name="messages")
     role = models.CharField(max_length=100, choices=[("assistant", "Assistant"), ("user", "User")], null=True)
-    content = models.TextField(null=True)
+    content = models.TextField(null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     completed = models.BooleanField(default=True)
     ai_model = models.ForeignKey(AIModel, on_delete=models.SET_NULL, null=True)

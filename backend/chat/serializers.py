@@ -32,7 +32,7 @@ class ChatConversationSerializer(serializers.ModelSerializer):
 
 class ChatMessageSerializer(serializers.ModelSerializer):
     role = serializers.CharField(max_length=100, required=True, allow_null=True)
-    content = serializers.CharField(max_length=10000, required=True, allow_null=True)
+    content = serializers.CharField(max_length=10000, required=True, allow_null=True, allow_blank=True)
     ai_model = serializers.PrimaryKeyRelatedField(queryset=AIModel.objects.all(), write_only=True, allow_null=True)
     ai_model_details = AIModelSerializer(source="ai_model", read_only=True)
     files = serializers.JSONField(required=False)

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
 import { useConversation } from '@/context/ConversationContext';
-import { Message, AIModel } from '@/types';
+import { Message } from '@/types';
 import { getProviderLogo } from '@/utils';
 import ModelSelector from './ModelSelector';
 import ChatMessages from './ChatMessages';
@@ -27,9 +27,7 @@ const ChatComponent: React.FC = () => {
 
   useEffect(() => {
     if (!chatId) {
-      if (messages.length > 0) {
-        resetMessages();
-      }
+      resetMessages();
       resetSelectedAIModel();
     } else {
       resetSelectedAIModel(chatId, selectedAIModel);
@@ -38,6 +36,7 @@ const ChatComponent: React.FC = () => {
 
   useEffect(() => {
     if (!isStreaming) {
+      setMessages(prevMessages => [...prevMessages.map(message => ({ ...message, isStreaming: false }))])
       setCurrentAIModel(isVezmirIntelligence ? "Vezmir Intelligence 🔮" : selectedAIModel?.display_name);
     }
   }, [isStreaming, isVezmirIntelligence, selectedAIModel]);
@@ -47,7 +46,7 @@ const ChatComponent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (chatId) {
+    if (chatId && !isStreaming) {
       fetchMessages(chatId);
     }
   }, [chatId]);
@@ -85,9 +84,36 @@ const ChatComponent: React.FC = () => {
 
   const handleSendMessageToStream = async (message: string, files?: File[]): Promise<void> => {
     try {
+      setIsStreaming(true);
+
+      // Create temporary file objects for immediate display
+      // const tempFiles = files?.map(file => ({
+      //   name: file.name,
+      //   url: URL.createObjectURL(file),
+      //   type: file.type
+      // }));
+
+      // Add user message with temporary file URLs
+      setMessages(prevMessages => [...prevMessages,
+      {
+        id: null,
+        role: 'user',
+        content: message,
+        ai_model_details: selectedAIModel,
+        isStreaming: false,
+        parent: null,
+        // files: tempFiles
+      }, {
+        id: null,
+        role: 'assistant',
+        content: '',
+        ai_model_details: selectedAIModel,
+        isStreaming: true,
+        parent: null
+      }]);
 
       // I. Initialize the process
-      let url: string, newChatId: string, model: AIModel, previousMessageId: string;
+      let url: string, newChatId: string, previousMessageId: string;
 
       if (!chatId) {
         const newConversationResponse = await addConversation(message);
@@ -98,22 +124,15 @@ const ChatComponent: React.FC = () => {
         newChatId = newConversationResponse.id;
         url = `/chat/conversations/${newChatId}/`;
       } else {
-        previousMessageId = messages[messages.length - 1].id || '';
+        previousMessageId = messages[messages.length - 1]?.id || '';
         url = `/chat/conversations/${chatId}/`;
       }
-      setIsStreaming(true);
 
       // II. Send the message to the backend
-      if (isVezmirIntelligence) {
-        model = await api.post(`/chat/choose_model/`, { user_message: message });
-      } else {
-        model = selectedAIModel;
-      }
-      setCurrentAIModel(model.display_name);
-      setSelectedAIModel(model);
       const formData = new FormData();
       formData.append('content', message);
-      formData.append('model_name', model.name);
+      formData.append('model_name', selectedAIModel.name);
+      formData.append('is_vezmir_intelligence', isVezmirIntelligence);
       formData.append('parent', previousMessageId);
 
       let fileInfo: { name: string, url: string, type: string }[] = [];
@@ -128,35 +147,78 @@ const ChatComponent: React.FC = () => {
         });
       }
 
-      const userMessage = await api.post(url, formData, false, true);
-      setMessages(prevMessages => [...prevMessages, userMessage]);
+      const { userMessageId } = await api.post(url, formData, false, true)
+        .then(({ user_message, model }) => {
+          setCurrentAIModel(model.display_name);
+          setSelectedAIModel(model);
+          setMessages(prevMessages => [
+            ...prevMessages.slice(0, -2),
+            {
+              ...user_message,
+              // files: user_message.files || tempFiles // Use server-provided files or keep temp files
+            },
+            {
+              id: null,
+              role: 'assistant',
+              content: '',
+              ai_model_details: selectedAIModel,
+              isStreaming: true,
+              parent: user_message.id
+            }
+          ]);
+          return { userMessageId: user_message.id };
+        })
+        .catch((error) => {
+          setIsStreaming(false);
+          console.error('Error sending message:', error);
+          throw error;
+        });
 
       // III. Stream the response from the backend
-      let assistantMessage = '';
-      setMessages(prevMessages => [
-        ...prevMessages,
-        { id: null, role: 'assistant', content: assistantMessage, ai_model_details: model, isStreaming: true, parent: previousMessageId }
-      ]);
-
-      const response = await api.post("/chat/conversations/stream/", { message_id: userMessage.id }, true);
+      const response = await api.post("/chat/conversations/stream/", { message_id: userMessageId }, true);
       if (!response) {
         throw new Error('Response body is null');
       }
+
+      let assistantMessage = '';
       const reader = response.getReader();
       const decoder = new TextDecoder('utf-8');
 
       const processText = async (): Promise<void> => {
-        await bufferStream(
-          reader,
-          decoder,
-          (data: any) => {
-              setMessages(prevMessages => [
-                ...prevMessages.slice(0, -1),
-                data
-              ]);
-            },
-          50 // ça a l'air pas mal là
-        );
+        let buffer = '';
+        const speed = 700; // Characters per second
+        const interval = 1000 / speed; // Milliseconds between each character
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.trim().startsWith('data:')) {
+              try {
+                const jsonStr = line.trim().slice(5).trim();
+                const data = JSON.parse(jsonStr);
+                const newContent = data.content || '';
+
+                for (const char of newContent) {
+                  assistantMessage += char;
+                  setMessages(prevMessages => [
+                    ...prevMessages.slice(0, -1),
+                    { ...data, content: assistantMessage, isStreaming: true }
+                  ]);
+                  await new Promise(resolve => setTimeout(resolve, interval));
+                }
+              } catch (error) {
+                console.error('Error parsing JSON:', error, 'Line:', line);
+              }
+            }
+          }
+        }
         setIsStreaming(false);
       };
 
@@ -168,47 +230,6 @@ const ChatComponent: React.FC = () => {
     }
   };
 
-  const bufferStream = async (
-    reader: ReadableStreamDefaultReader<Uint8Array>,
-    decoder: TextDecoder,
-    callback: (data: any) => void,
-    speed: number = 100 // Characters per second
-  ): Promise<void> => {
-    // let buffer = '';
-    const interval = 1000 / speed; // Milliseconds between each character
-
-    const processChunk = async (): Promise<void> => {
-      const { done, value } = await reader.read();
-      if (done) return;
-
-      // buffer += decoder.decode(value, { stream: true });
-
-      // while (buffer.length > 0) {
-      //   const char = buffer.charAt(0);
-      //   buffer = buffer.slice(1);
-      //   callback(char);
-      //   await new Promise(resolve => setTimeout(resolve, interval));
-      // }
-      const rawData = decoder.decode(value, { stream: true });
-      const dataChunks = rawData.split('\n\n').filter(chunk => chunk.trim().startsWith('data:'));
-
-      for (const chunk of dataChunks) {
-        if (chunk.trim().startsWith('data:')) {
-          try {
-            const data = JSON.parse(chunk.slice(5).trim());
-            callback(data);
-            await new Promise(resolve => setTimeout(resolve, interval));
-          } catch (error) {
-            console.error('Error parsing JSON:', error);
-          }
-        }
-      }
-
-      return processChunk();
-    };
-
-    return processChunk();
-  };
 
   return (
     <div className="flex h-screen bg-[var(--gray-800)]">
@@ -250,23 +271,6 @@ const ChatComponent: React.FC = () => {
                 {!isVezmirIntelligence && <ModelSelector />}
               </div>
             </div>
-            {/* <div className="flex space-x-2 ml-4" className="md:hidden">
-              <Link to="/dashboard/billing">
-                <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
-                  <CreditCardIcon className="w-6 h-6 text-[var(--bordeaux)]" />
-                </div>
-              </Link>
-              <Link to="/dashboard/usage" className="md:hidden">
-                <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
-                  <ChartPieIcon className="w-6 h-6 text-[var(--bordeaux)]" />
-                </div>
-              </Link>
-              <Link to="/" className="md:hidden">
-                <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
-                  <PencilSquareIcon className="w-6 h-6 text-[var(--bordeaux)]" />
-                </div>
-              </Link>
-            </div> */}
           </div>
         </div>
 
@@ -283,9 +287,11 @@ const ChatComponent: React.FC = () => {
                   />
                 </div>
               )}
-              <p className="text-4xl font-bold text-white">      {isVezmirIntelligence
-                ? locale('chat_vezmir_intelligence_activated')
-                : locale('chat_how_can_i_help_you_today')}</p>
+              <p className="text-4xl font-bold text-white">
+                {isVezmirIntelligence
+                  ? locale('chat_vezmir_intelligence_activated')
+                  : locale('chat_how_can_i_help_you_today')}
+              </p>
             </div>
           ) : (
             <ChatMessages

@@ -50,7 +50,9 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
       setImageUrls(prev => ({ ...prev, ...newImageUrls }));
     };
 
-    fetchImages();
+    if (chatId) {
+      fetchImages();
+    }
 
     return () => {
       Object.values(imageUrls).forEach(URL.revokeObjectURL);
