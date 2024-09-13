@@ -76,7 +76,7 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
     const addConversation = async (user_message: string) => {
         const { name } = await api.post(`/chat/conversations/title/`, { user_message });
         const newConversation = await api.post('/chat/conversations/', { name });
-        setConversations([...conversations, newConversation]);
+        setConversations([newConversation, ...conversations]);
         navigate(`/chat/${newConversation.id}`);
         return newConversation;
     }

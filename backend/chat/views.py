@@ -108,17 +108,19 @@ class ChatMessageView(APIView):
             )
 
         # Query model name and its provider
+        message = request.data.get("content")
         model_name = request.data.get("model_name", None)
-        is_vezmir_intelligence = request.data.get("is_vezmir_intelligence", False)
+        is_vezmir_intelligence = request.data.get("is_vezmir_intelligence", "false").lower() == "true"
         if is_vezmir_intelligence:
-            # TODO: call vezmir intelligence API
-            model_name = "gpt-4o-mini"
+            model_name = choose_model(message)
 
         try:
             model = AIModel.objects.select_related("provider").get(name=model_name)
+            model_data = AIModelSerializer(model).data
             conversation.ai_model = model
             conversation.save()
-        except AIModel.DoesNotExist:
+        except AIModel.DoesNotExist as e:
+            print(f"ERROR: {e}, {model_name=}")
             return Response(
                 {"message": "model_not_found", "status": "error"},
                 status=status.HTTP_404_NOT_FOUND,
@@ -149,7 +151,7 @@ class ChatMessageView(APIView):
             data={
                 "user": request.user.id,
                 "chat_conversation": conv_id,
-                "content": request.data.get("content"),
+                "content": message,
                 "role": "user",
                 "ai_model": model.id,
                 "files": file_info,
@@ -158,7 +160,10 @@ class ChatMessageView(APIView):
         )
         if user_message_serializer.is_valid():
             user_message_serializer.save()
-            return Response({"data": user_message_serializer.data}, status=status.HTTP_201_CREATED)
+            return Response(
+                {"data": {"model": model_data, "user_message": user_message_serializer.data}},
+                status=status.HTTP_201_CREATED,
+            )
 
         return Response(
             {"message": "invalid_data", "status": "error"},
@@ -243,7 +248,7 @@ class ChatStreamView(APIView):
                 data={
                     "user": request.user.id,
                     "chat_conversation": user_message.chat_conversation.id,
-                    "content": None,
+                    "content": "",
                     "role": "assistant",
                     "ai_model": model.id,
                     "parent": user_message.id,
@@ -253,6 +258,7 @@ class ChatStreamView(APIView):
                 raise_exception=True
             )  # TODO: handle API problems, like stop generation (i.e. data.completed=False)
             ai_message = ai_message_serializer.save()
+            _ai_message_data = ai_message_serializer.data
             yield f"data: {serialize_to_json(ai_message_serializer.data)}\n\n"
             char_count = 0
             for chunk in get_api_response(
@@ -263,11 +269,10 @@ class ChatStreamView(APIView):
                     full_response += content
                     # Update the serializer with the new content
                     ChatMessage.objects.filter(id=ai_message.id).update(content=full_response)
-                    ai_message_serializer = ChatMessageSerializer(ChatMessage.objects.get(id=ai_message.id))
+                    _ai_message_data["content"] = content
                     # Convert the serializer data to a JSON string
-                    serialized_data = serialize_to_json(ai_message_serializer.data)
                     char_count += len(content)
-                    yield f"data: {serialized_data}\n\n"
+                    yield f"data: {serialize_to_json(_ai_message_data)}\n\n"
 
                 if model.provider != "Perplexity":
                     if usage := chunk.usage_metadata:
@@ -278,11 +283,10 @@ class ChatStreamView(APIView):
 
                 # Perplexity specific handling
                 if response := chunk.response_metadata:
-                    if model.provider == "Perplexity" and response.get("finish_reason") == "stop":
-                        print(len(full_response), char_count)
+                    if model.provider.name == "Perplexity" and response.get("finish_reason") == "stop":
                         estimated_tokens = char_count // 4  # Rough estimate: 1 token ≈ 4 characters
                         token_in = (
-                            len("".join(msg["content"] for msg in conversation_messages)) // 4 + 5000
+                            len("".join(msg["content"] for msg in conversation_messages if msg["content"])) // 4 + 5000
                         )  # Add the 0.005$ of Perplexity request cost
                         token_out = estimated_tokens
                         ChatMessage.objects.filter(id=user_message.id).update(num_tokens=token_in + token_out)
@@ -308,22 +312,6 @@ class ChatConversationTitleView(APIView):
     def post(self, request):
         title = generate_title(request.data.get("user_message"))
         return Response({"data": {"name": title}})
-
-
-class ChooseModelView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def post(self, request):
-        user_message = request.data.get("user_message")
-        if not user_message:
-            return Response({"status": "error", "message": "no_user_message"}, status=status.HTTP_400_BAD_REQUEST)
-
-        chosen_model = choose_model(user_message)
-        try:
-            model = AIModelSerializer(AIModel.objects.get(name=chosen_model)).data
-        except AIModel.DoesNotExist:
-            return Response({"status": "error", "message": "model_not_found"}, status=status.HTTP_404_NOT_FOUND)
-        return Response({"data": model})
 
 
 class FeedbackView(APIView):
@@ -368,6 +356,7 @@ class FileAccessView(APIView):
             response["Content-Disposition"] = f'inline; filename="{filename}"'
             return response
         else:
+            print(f"File not found: {file_path}")
             return Response(
                 {"message": "file_not_found", "status": "error"},
                 status=status.HTTP_404_NOT_FOUND,
