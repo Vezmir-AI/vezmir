@@ -34,6 +34,16 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AlterField(
+            model_name='chatmessage',
+            name='role',
+            field=models.CharField(
+                max_length=100,
+                choices=[("assistant", "Assistant"), ("user", "User")],
+                null=True,
+                blank=True
+            ),
+        ),
         migrations.AddField(
             model_name='chatmessage',
             name='parent',
