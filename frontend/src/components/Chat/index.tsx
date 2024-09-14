@@ -86,13 +86,6 @@ const ChatComponent: React.FC = () => {
     try {
       setIsStreaming(true);
 
-      // Create temporary file objects for immediate display
-      // const tempFiles = files?.map(file => ({
-      //   name: file.name,
-      //   url: URL.createObjectURL(file),
-      //   type: file.type
-      // }));
-
       // Add user message with temporary file URLs
       setMessages(prevMessages => [...prevMessages,
       {
@@ -102,7 +95,6 @@ const ChatComponent: React.FC = () => {
         ai_model_details: selectedAIModel,
         isStreaming: false,
         parent: null,
-        // files: tempFiles
       }, {
         id: null,
         role: 'assistant',
@@ -127,107 +119,107 @@ const ChatComponent: React.FC = () => {
         previousMessageId = messages[messages.length - 1]?.id || '';
         url = `/chat/conversations/${chatId}/`;
       }
+      const { userMessage, model } = await sendMessageAndGetId(message, previousMessageId, url, files);
 
-      // II. Send the message to the backend
-      const formData = new FormData();
-      formData.append('content', message);
-      formData.append('model_name', selectedAIModel.name);
-      formData.append('is_vezmir_intelligence', isVezmirIntelligence);
-      formData.append('parent', previousMessageId);
+      setCurrentAIModel(model.display_name);
+      setSelectedAIModel(model);
+      setMessages(prevMessages => [
+        ...prevMessages.slice(0, -2), { ...userMessage, }, {
+          id: null,
+          role: 'assistant',
+          content: '',
+          ai_model_details: selectedAIModel,
+          isStreaming: true,
+          parent: userMessage.id
+        },
+      ]);
 
-      let fileInfo: { name: string, url: string, type: string }[] = [];
-      if (files && files.length > 0) {
-        files.forEach((file) => {
-          formData.append(`files`, file);
-          fileInfo.push({
-            name: file.name,
-            url: URL.createObjectURL(file),
-            type: file.type
-          });
-        });
-      }
-
-      const { userMessageId } = await api.post(url, formData, false, true)
-        .then(({ user_message, model }) => {
-          setCurrentAIModel(model.display_name);
-          setSelectedAIModel(model);
-          setMessages(prevMessages => [
-            ...prevMessages.slice(0, -2),
-            {
-              ...user_message,
-              // files: user_message.files || tempFiles // Use server-provided files or keep temp files
-            },
-            {
-              id: null,
-              role: 'assistant',
-              content: '',
-              ai_model_details: selectedAIModel,
-              isStreaming: true,
-              parent: user_message.id
-            }
-          ]);
-          return { userMessageId: user_message.id };
-        })
-        .catch((error) => {
-          setIsStreaming(false);
-          console.error('Error sending message:', error);
-          throw error;
-        });
-
-      // III. Stream the response from the backend
-      const response = await api.post("/chat/conversations/stream/", { message_id: userMessageId }, true);
-      if (!response) {
-        throw new Error('Response body is null');
-      }
-
-      let assistantMessage = '';
-      const reader = response.getReader();
-      const decoder = new TextDecoder('utf-8');
-
-      const processText = async (): Promise<void> => {
-        let buffer = '';
-        const speed = 700; // Characters per second
-        const interval = 1000 / speed; // Milliseconds between each character
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
-
-          for (const line of lines) {
-            if (line.trim().startsWith('data:')) {
-              try {
-                const jsonStr = line.trim().slice(5).trim();
-                const data = JSON.parse(jsonStr);
-                const newContent = data.content || '';
-
-                for (const char of newContent) {
-                  assistantMessage += char;
-                  setMessages(prevMessages => [
-                    ...prevMessages.slice(0, -1),
-                    { ...data, content: assistantMessage, isStreaming: true }
-                  ]);
-                  await new Promise(resolve => setTimeout(resolve, interval));
-                }
-              } catch (error) {
-                console.error('Error parsing JSON:', error, 'Line:', line);
-              }
-            }
-          }
-        }
-        setIsStreaming(false);
-      };
-
-      processText();
+      await streamResponse(userMessage.id);
 
     } catch (error) {
       console.error('Error sending message:', error);
       setIsStreaming(false);
     }
+  };
+
+      }
+
+  const sendMessageAndGetId = async (message: string, previousMessageId: string, url: string, files?: File[]): Promise<{ userMessage: any, model: any }> => {
+    const formData = new FormData();
+    formData.append('content', message);
+    formData.append('model_name', selectedAIModel.name);
+    formData.append('is_vezmir_intelligence', isVezmirIntelligence);
+    formData.append('parent', previousMessageId);
+
+    if (files && files.length > 0) {
+      files.forEach((file) => {
+        formData.append(`files`, file);
+      });
+    }
+
+    return api.post(url, formData, false, true)
+      .then(({ user_message, model }) => {
+        return { userMessage: user_message, model };
+      })
+      .catch((error) => {
+        setIsStreaming(false);
+        console.error('Error sending message:', error);
+        throw error;
+      });
+  };
+
+  const streamResponse = async (userMessageId: string): Promise<void> => {
+    setMessages(prevMessages => [
+      ...prevMessages,
+    ]);
+
+    const response = await api.post("/chat/conversations/stream/", { message_id: userMessageId }, true);
+    if (!response) {
+      throw new Error('Response body is null');
+    }
+
+    let assistantMessage = '';
+    const reader = response.getReader();
+    const decoder = new TextDecoder('utf-8');
+
+    const processText = async (): Promise<void> => {
+      let buffer = '';
+      const speed = 800; // Characters per second
+      const interval = 1000 / speed; // Milliseconds between each character
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.trim().startsWith('data:')) {
+            try {
+              const jsonStr = line.trim().slice(5).trim();
+              const data = JSON.parse(jsonStr);
+              const newContent = data.content || '';
+
+              for (const char of newContent) {
+                assistantMessage += char;
+                setMessages(prevMessages => [
+                  ...prevMessages.slice(0, -1),
+                  { ...data, content: assistantMessage, isStreaming: true }
+                ]);
+                await new Promise(resolve => setTimeout(resolve, interval));
+              }
+            } catch (error) {
+              console.error('Error parsing JSON:', error, 'Line:', line);
+            }
+          }
+        }
+      }
+      setIsStreaming(false);
+    };
+
+    processText();
   };
 
 
