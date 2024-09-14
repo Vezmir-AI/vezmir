@@ -142,7 +142,6 @@ const ChatComponent: React.FC = () => {
     }
   };
 
-      }
 
   const sendMessageAndGetId = async (message: string, previousMessageId: string, url: string, files?: File[]): Promise<{ userMessage: any, model: any }> => {
     const formData = new FormData();
