@@ -24,6 +24,8 @@ const ChatComponent: React.FC = () => {
     return saved ? JSON.parse(saved) : false;
   });
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
   useEffect(() => {
     if (!chatId) {
@@ -70,7 +72,17 @@ const ChatComponent: React.FC = () => {
   }, [chatId, resetMessages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ block: "end" });
+    if (shouldAutoScroll && chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  };
+
+  const handleScroll = () => {
+    if (chatContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
+      setShouldAutoScroll(isAtBottom);
+    }
   };
 
   const fetchMessages = async (id: string): Promise<void> => {
@@ -266,7 +278,11 @@ const ChatComponent: React.FC = () => {
         </div>
 
         {/* Messages - Scrollable area */}
-        <div className="flex-grow overflow-y-auto">
+        <div
+          ref={chatContainerRef}
+          className="flex-grow overflow-y-auto"
+          onScroll={handleScroll}
+        >
           {!chatId && messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full space-y-4">
               {selectedAIModel && (
