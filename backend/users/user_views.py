@@ -164,6 +164,7 @@ class UserUsageView(ListAPIView):
                 date_created__lte=timezone.make_aware(
                     timezone.datetime.combine(end_date, timezone.datetime.max.time())
                 ),
+                content__isnull=False,
             ),
             many=True,
         ).data
