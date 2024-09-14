@@ -53,7 +53,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !isStreaming) {
       e.preventDefault();
       handleSubmit(e);
     }
@@ -107,10 +107,13 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
             adjustTextareaHeightAndFocus();
           }}
           onKeyDown={handleKeyDown}
-          className={`flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none ${enableHorizontalScroll ? 'overflow-x-auto' : 'overflow-hidden'}`}
+          className={`flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none ${
+            enableHorizontalScroll ? 'overflow-x-auto' : 'overflow-hidden'
+          } ${isStreaming ? 'cursor-not-allowed' : ''}`}
           placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel ?? ''}`}
           rows={1}
           style={{ minHeight: '56px', maxHeight: '200px' }}
+          disabled={isStreaming}
         />
         <button
           type="button"
