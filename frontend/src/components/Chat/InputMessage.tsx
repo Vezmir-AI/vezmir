@@ -105,7 +105,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
           }}
           onKeyDown={handleKeyDown}
           className={`flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none ${enableHorizontalScroll ? 'overflow-x-auto' : 'overflow-hidden'}`}
-          placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel}`}
+          placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel ?? ''}`}
           rows={1}
           style={{ minHeight: '56px', maxHeight: '200px' }}
         />

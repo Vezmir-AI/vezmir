@@ -267,7 +267,7 @@ const ChatComponent: React.FC = () => {
 
         {/* Messages - Scrollable area */}
         <div className="flex-grow overflow-y-auto">
-          {messages.length === 0 ? (
+          {!chatId && messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full space-y-4">
               {selectedAIModel && (
                 <div className="bg-white rounded-full p-2">
