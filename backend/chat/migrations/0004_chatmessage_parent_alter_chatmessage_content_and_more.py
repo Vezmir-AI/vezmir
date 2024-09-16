@@ -3,26 +3,6 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-def update_chat_message_parents(apps, schema_editor):
-    ChatMessage = apps.get_model('chat', 'ChatMessage')
-    ChatConversation = apps.get_model('chat', 'ChatConversation')
-
-    for conversation in ChatConversation.objects.all():
-        ghost_message = ChatMessage.objects.create(
-            chat_conversation=conversation,
-            role=None,
-            content=None,
-            user=conversation.user
-        )
-
-        messages = ChatMessage.objects.filter(chat_conversation=conversation).exclude(id=ghost_message.id).order_by('date_created')
-        previous_message = ghost_message
-        for message in messages:
-            if message.parent is None:
-                message.parent = previous_message
-                message.save()
-            previous_message = message
-
 
 class Migration(migrations.Migration):
 
@@ -46,5 +26,4 @@ class Migration(migrations.Migration):
             name='role',
             field=models.CharField(choices=[('assistant', 'Assistant'), ('user', 'User')], max_length=100, null=True),
         ),
-        migrations.RunPython(update_chat_message_parents),
     ]
