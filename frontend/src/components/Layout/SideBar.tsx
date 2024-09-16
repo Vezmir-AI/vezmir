@@ -38,6 +38,9 @@ export default function SideBar() {
     setTextSize(userName.length > 10 ? 'xs' : 'sm')
   }, [isDashboard, user]);
 
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location]);
 
   return (
     <>
