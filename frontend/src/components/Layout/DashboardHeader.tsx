@@ -42,8 +42,8 @@ const DashboardHeader: React.FC = () => {
     }, [isMenuOpen]);
 
     return (
-        <div className="sticky top-0 z-20 bg-[var(--gray-800)] w-auto ">
-            <div className="md:hidden flex items-center h-14 ">
+        <div className="sticky top-0 z-20 bg-[var(--gray-800)] w-auto">
+            <div className="md:hidden flex items-center h-14">
                 <div className="relative flex-grow px-4">
                     <button
                         id="settings-button"

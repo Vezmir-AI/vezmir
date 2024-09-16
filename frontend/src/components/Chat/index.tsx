@@ -11,6 +11,8 @@ import InputMessage from './InputMessage';
 import VezmirLogo from '@/assets/vezmir.svg';
 import FeedbackForm from './FeedbackForm';
 import { useTheme } from '@/context/ThemeContext';
+import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
 
 const ChatComponent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -239,7 +241,7 @@ const ChatComponent: React.FC = () => {
       <div className="flex-1 flex flex-col bg-[var(--gray-800)] pl-4">
 
         {/* Model Selector + buttons - Fixed at the top */}
-        <div className="sticky top-0 z-10 bg-[var(--gray-800)] shadow-sm w-full">
+        <div className="sticky top-0 z-10 bg-[var(--gray-800)] shadow-sm w-full pl-10">
           <div className="flex items-center p-4 h-20"> {/* Set a fixed height */}
             {/* Model Selector */}
             <div className="flex-grow flex items-center h-full"> {/* Add h-full */}
@@ -274,6 +276,13 @@ const ChatComponent: React.FC = () => {
                 {!isVezmirIntelligence && <ModelSelector />}
               </div>
             </div>
+
+            {/* New Chat Button */}
+            <Link to="/" className="ml-2">
+              <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
+                <PencilSquareIcon className="w-6 h-6 text-[var(--purple-clear)]" />
+              </div>
+            </Link>
           </div>
         </div>
 
@@ -290,11 +299,11 @@ const ChatComponent: React.FC = () => {
                   <img
                     src={isVezmirIntelligence ? getProviderLogo('vezmir') : getProviderLogo(selectedAIModel.provider)}
                     alt={`${selectedAIModel.provider} logo`}
-                    className="w-12 h-12"
+                    className="w-10 h-10 sm:w-12 sm:h-12"
                   />
                 </div>
               )}
-              <p className="text-4xl font-bold text-white">
+              <p className="text-xl sm:text-4xl font-bold text-white">
                 {isVezmirIntelligence
                   ? locale('chat_vezmir_intelligence_activated')
                   : locale('chat_how_can_i_help_you_today')}
