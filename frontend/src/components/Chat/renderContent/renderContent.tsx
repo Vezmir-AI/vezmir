@@ -36,7 +36,7 @@ const renderContent = (
   }
 
   // Process any remaining text for LaTeX
-  if (content && lastIndex < content.length) {
+  if (lastIndex < content.length) {
     const remainingText = content.slice(lastIndex);
     parts.push(...processLatex(remainingText, messageIndex, parts.length));
   }
