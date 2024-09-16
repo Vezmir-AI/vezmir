@@ -25,8 +25,10 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
   const location = useLocation();
 
   useEffect(() => {
-    adjustTextareaHeightAndFocus();
-  }, [location.pathname]);
+    if (!isStreaming) {
+      adjustTextareaHeightAndFocus();
+    }
+  }, [location.pathname, isStreaming]);
 
   const adjustTextareaHeightAndFocus = () => {
     if (textareaRef.current) {
