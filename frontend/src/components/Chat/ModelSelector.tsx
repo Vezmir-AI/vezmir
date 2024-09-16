@@ -61,7 +61,7 @@ const ModelSelector: React.FC = () => {
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex flex-col relative">
-                    <span className="font-medium">{model.display_name || model.name}</span>
+                    <span className="font-xs sm:font-medium">{model.display_name || model.name}</span>
                     <div className="flex items-center text-xs text-gray-400">
                       <span>{model.provider}</span>
                       <span

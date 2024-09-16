@@ -178,7 +178,7 @@ export default function SideBar() {
         </div>
 
         {/* Mobile toggle button */}
-        <div className={`sticky top-0 z-40 flex items-center gap-x-6 ${isDashboard ? 'bg-[var(--gray-900)]' : 'bg-[var(--gray-800)]'} px-4 py-4 shadow-sm sm:px-6 lg:hidden`}>
+        <div className="sticky top-0 z-50 flex items-center gap-x-6 bg-[var(--gray-800)] px-4 py-4 shadow-sm sm:px-6 lg:hidden">
           <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400 lg:hidden bg-[var(--gray-700)] hover:bg-[var(--gray-600)]">
             <span className="sr-only">{locale("sidebar_open")}</span>
             <Bars3Icon aria-hidden="true" className="h-6 w-6" />
