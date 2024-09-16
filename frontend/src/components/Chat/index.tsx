@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
 import { useConversation } from '@/context/ConversationContext';
-import { Message, AIModel } from '@/types';
+import { Message } from '@/types';
 import { getProviderLogo } from '@/utils';
 import ModelSelector from './ModelSelector';
 import ChatMessages from './ChatMessages';
@@ -18,12 +18,14 @@ const ChatComponent: React.FC = () => {
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { currentAIModel, addConversation, selectedAIModel, setSelectedAIModel, setCurrentAIModel, resetSelectedAIModel, fetchConversations, conversations } = useConversation();
+  const { currentAIModel, addConversation, selectedAIModel, setSelectedAIModel, setCurrentAIModel, resetSelectedAIModel, conversations } = useConversation();
   const [isVezmirIntelligence, setIsVezmirIntelligence] = useState(() => {
     const saved = localStorage.getItem('isVezmirIntelligence');
     return saved ? JSON.parse(saved) : false;
   });
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
   useEffect(() => {
     if (!chatId) {
@@ -36,6 +38,7 @@ const ChatComponent: React.FC = () => {
 
   useEffect(() => {
     if (!isStreaming) {
+      setMessages(prevMessages => [...prevMessages.map(message => ({ ...message, isStreaming: false }))])
       setCurrentAIModel(isVezmirIntelligence ? "Vezmir Intelligence 🔮" : selectedAIModel?.display_name);
     }
   }, [isStreaming, isVezmirIntelligence, selectedAIModel]);
@@ -48,7 +51,7 @@ const ChatComponent: React.FC = () => {
     if (chatId && !isStreaming) {
       fetchMessages(chatId);
     }
-  }, [chatId, isStreaming]);
+  }, [chatId]);
 
   useEffect(() => {
     scrollToBottom();
@@ -69,7 +72,17 @@ const ChatComponent: React.FC = () => {
   }, [chatId, resetMessages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ block: "end" });
+    if (shouldAutoScroll && chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  };
+
+  const handleScroll = () => {
+    if (chatContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
+      setShouldAutoScroll(isAtBottom);
+    }
   };
 
   const fetchMessages = async (id: string): Promise<void> => {
@@ -83,87 +96,57 @@ const ChatComponent: React.FC = () => {
 
   const handleSendMessageToStream = async (message: string, files?: File[]): Promise<void> => {
     try {
-      let url, newChatId, model: AIModel;
-
-      if (isVezmirIntelligence) {
-        model = await api.post(`/chat/choose_model/`, { user_message: message });
-      } else {
-        model = selectedAIModel;
-      }
       setIsStreaming(true);
-      setCurrentAIModel(model.display_name);
-      setSelectedAIModel(model);
+
+      // Add user message with temporary file URLs
+      setMessages(prevMessages => [...prevMessages,
+      {
+        id: null,
+        role: 'user',
+        content: message,
+        ai_model_details: selectedAIModel,
+        isStreaming: false,
+        parent: null,
+      }, {
+        id: null,
+        role: 'assistant',
+        content: '',
+        ai_model_details: selectedAIModel,
+        isStreaming: true,
+        parent: null
+      }]);
+
+      // I. Initialize the process
+      let url: string, newChatId: string, previousMessageId: string;
 
       if (!chatId) {
-        const newConversationResponse = await addConversation();
+        const newConversationResponse = await addConversation(message);
         if (!newConversationResponse) {
           throw new Error('Failed to create a new conversation');
         }
+        previousMessageId = newConversationResponse.initial_message;
         newChatId = newConversationResponse.id;
-        api.post(`/chat/conversations/${newChatId}/title/`, { user_message: message })
-          .then(fetchConversations)
-          .catch(fetchConversations);
         url = `/chat/conversations/${newChatId}/`;
-        await new Promise(resolve => setTimeout(resolve, 500));
       } else {
+        previousMessageId = messages[messages.length - 1]?.id || '';
         url = `/chat/conversations/${chatId}/`;
       }
+      const { userMessage, model } = await sendMessageAndGetId(message, previousMessageId, url, files);
 
-      const formData = new FormData();
-      formData.append('content', message);
-      formData.append('model_name', model.name);
+      setCurrentAIModel(model.display_name);
+      setSelectedAIModel(model);
+      setMessages(prevMessages => [
+        ...prevMessages.slice(0, -2), { ...userMessage, }, {
+          id: null,
+          role: 'assistant',
+          content: '',
+          ai_model_details: selectedAIModel,
+          isStreaming: true,
+          parent: userMessage.id
+        },
+      ]);
 
-      let fileInfo: { name: string, url: string, type: string }[] = [];
-      if (files && files.length > 0) {
-        files.forEach((file) => {
-          formData.append(`files`, file);
-          fileInfo.push({
-            name: file.name,
-            url: URL.createObjectURL(file),
-            type: file.type
-          });
-        });
-      }
-
-      const userMessage = {
-        role: 'user' as const,
-        content: message,
-        ai_model_details: model,
-        files: fileInfo
-      };
-      setMessages(prevMessages => [...prevMessages, userMessage]);
-
-      let assistantMessage = '';
-      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: assistantMessage, ai_model_details: model, isStreaming: true }]);
-
-      const response = await api.post(url, formData, true, true);
-      if (!response) {
-        throw new Error('Response body is null');
-      }
-      const reader = response.getReader();
-      const decoder = new TextDecoder('utf-8');
-
-      const processText = async (): Promise<void> => {
-        await bufferStream(
-          reader,
-          decoder,
-          (char: string) => {
-            assistantMessage += char;
-            setMessages(prevMessages => [
-              ...prevMessages.slice(0, -1),
-              { role: 'assistant', content: assistantMessage, ai_model_details: model, isStreaming: true }
-            ]);
-          },
-          200
-        );
-        setIsStreaming(false);
-        setMessages(prevMessages => [
-          ...prevMessages.slice(0, -1),
-          { role: 'assistant', content: assistantMessage, ai_model_details: model, isStreaming: false }
-        ]);
-      };
-
-      processText();
+      await streamResponse(userMessage.id);
 
     } catch (error) {
       console.error('Error sending message:', error);
@@ -171,33 +154,85 @@ const ChatComponent: React.FC = () => {
     }
   };
 
-  const bufferStream = async (
-    reader: ReadableStreamDefaultReader<Uint8Array>,
-    decoder: TextDecoder,
-    callback: (chunk: string) => void,
-    speed: number = 100 // Characters per second
-  ): Promise<void> => {
-    let buffer = '';
-    const interval = 1000 / speed; // Milliseconds between each character
 
-    const processChunk = async (): Promise<void> => {
-      const { done, value } = await reader.read();
-      if (done) return;
+  const sendMessageAndGetId = async (message: string, previousMessageId: string, url: string, files?: File[]): Promise<{ userMessage: any, model: any }> => {
+    const formData = new FormData();
+    formData.append('content', message);
+    formData.append('model_name', selectedAIModel.name);
+    formData.append('is_vezmir_intelligence', isVezmirIntelligence);
+    formData.append('parent', previousMessageId);
 
-      buffer += decoder.decode(value, { stream: true });
+    if (files && files.length > 0) {
+      files.forEach((file) => {
+        formData.append(`files`, file);
+      });
+    }
 
-      while (buffer.length > 0) {
-        const char = buffer.charAt(0);
-        buffer = buffer.slice(1);
-        callback(char);
-        await new Promise(resolve => setTimeout(resolve, interval));
+    return api.post(url, formData, false, true)
+      .then(({ user_message, model }) => {
+        return { userMessage: user_message, model };
+      })
+      .catch((error) => {
+        setIsStreaming(false);
+        console.error('Error sending message:', error);
+        throw error;
+      });
+  };
+
+  const streamResponse = async (userMessageId: string): Promise<void> => {
+    setMessages(prevMessages => [
+      ...prevMessages,
+    ]);
+
+    const response = await api.post("/chat/conversations/stream/", { message_id: userMessageId }, true);
+    if (!response) {
+      throw new Error('Response body is null');
+    }
+
+    let assistantMessage = '';
+    const reader = response.getReader();
+    const decoder = new TextDecoder('utf-8');
+
+    const processText = async (): Promise<void> => {
+      let buffer = '';
+      const speed = 800; // Characters per second
+      const interval = 1000 / speed; // Milliseconds between each character
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.trim().startsWith('data:')) {
+            try {
+              const jsonStr = line.trim().slice(5).trim();
+              const data = JSON.parse(jsonStr);
+              const newContent = data.content || '';
+
+              for (const char of newContent) {
+                assistantMessage += char;
+                setMessages(prevMessages => [
+                  ...prevMessages.slice(0, -1),
+                  { ...data, content: assistantMessage, isStreaming: true }
+                ]);
+                await new Promise(resolve => setTimeout(resolve, interval));
+              }
+            } catch (error) {
+              console.error('Error parsing JSON:', error, 'Line:', line);
+            }
+          }
+        }
       }
-
-      return processChunk();
+      setIsStreaming(false);
     };
 
-    return processChunk();
+    processText();
   };
+
 
   return (
     <div className="flex h-screen bg-[var(--gray-800)]">
@@ -239,29 +274,16 @@ const ChatComponent: React.FC = () => {
                 {!isVezmirIntelligence && <ModelSelector />}
               </div>
             </div>
-            {/* <div className="flex space-x-2 ml-4" className="md:hidden">
-              <Link to="/dashboard/billing">
-                <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
-                  <CreditCardIcon className="w-6 h-6 text-[var(--purple)]" />
-                </div>
-              </Link>
-              <Link to="/dashboard/usage" className="md:hidden">
-                <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
-                  <ChartPieIcon className="w-6 h-6 text-[var(--purple)]" />
-                </div>
-              </Link>
-              <Link to="/" className="md:hidden">
-                <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
-                  <PencilSquareIcon className="w-6 h-6 text-[var(--purple)]" />
-                </div>
-              </Link>
-            </div> */}
           </div>
         </div>
 
         {/* Messages - Scrollable area */}
-        <div className="flex-grow overflow-y-auto">
-          {messages.length === 0 ? (
+        <div
+          ref={chatContainerRef}
+          className="flex-grow overflow-y-auto"
+          onScroll={handleScroll}
+        >
+          {!chatId && messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full space-y-4">
               {selectedAIModel && (
                 <div className="bg-white rounded-full p-2">
@@ -272,9 +294,11 @@ const ChatComponent: React.FC = () => {
                   />
                 </div>
               )}
-              <p className="text-4xl font-bold text-white">      {isVezmirIntelligence
-        ? locale('chat_vezmir_intelligence_activated')
-        : locale('chat_how_can_i_help_you_today')}</p>
+              <p className="text-4xl font-bold text-white">
+                {isVezmirIntelligence
+                  ? locale('chat_vezmir_intelligence_activated')
+                  : locale('chat_how_can_i_help_you_today')}
+              </p>
             </div>
           ) : (
             <ChatMessages

@@ -3,6 +3,7 @@ import { PaperClipIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import arrowSend from '@/assets/arrowSend.svg';
 import { useTheme } from '@/context/ThemeContext';
 import { AIModel } from '@/types';
+import { useLocation } from 'react-router-dom';
 
 interface InputMessageProps {
   selectedModel: string | null;
@@ -21,6 +22,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
   const isPerplexityModel = selectedAIModel?.provider === 'Perplexity';
   const isFileInputDisabled = selectedFiles.length >= 5 || isPerplexityModel;
   const [enableHorizontalScroll, setEnableHorizontalScroll] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     if (!isStreaming) {
@@ -53,7 +55,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !isStreaming) {
       e.preventDefault();
       handleSubmit(e);
     }
@@ -104,13 +106,16 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
           value={inputMessage}
           onChange={(e) => {
             setInputMessage(e.target.value);
-            adjustTextareaHeight();
+            adjustTextareaHeightAndFocus();
           }}
           onKeyDown={handleKeyDown}
-          className={`flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none ${enableHorizontalScroll ? 'overflow-x-auto' : 'overflow-hidden'}`}
-          placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel}`}
+          className={`flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none ${
+            enableHorizontalScroll ? 'overflow-x-auto' : 'overflow-hidden'
+          } ${isStreaming ? 'cursor-not-allowed' : ''}`}
+          placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel ?? ''}`}
           rows={1}
           style={{ minHeight: '56px', maxHeight: '200px' }}
+          disabled={isStreaming}
         />
         <button
           type="button"
