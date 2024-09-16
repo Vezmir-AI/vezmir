@@ -3,7 +3,6 @@ import { PaperClipIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import arrowSend from '@/assets/arrowSend.svg';
 import { useTheme } from '@/context/ThemeContext';
 import { AIModel } from '@/types';
-import { useLocation } from 'react-router-dom';
 
 interface InputMessageProps {
   selectedModel: string | null;
@@ -22,17 +21,13 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
   const isPerplexityModel = selectedAIModel?.provider === 'Perplexity';
   const isFileInputDisabled = selectedFiles.length >= 5 || isPerplexityModel;
   const [enableHorizontalScroll, setEnableHorizontalScroll] = useState(false);
-  const location = useLocation();
 
   useEffect(() => {
-    if (!isStreaming) {
-      adjustTextareaHeightAndFocus();
-    }
-  }, [location.pathname, isStreaming]);
+    adjustTextareaHeight();
+  }, [inputMessage]);
 
-  const adjustTextareaHeightAndFocus = () => {
+  const adjustTextareaHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.focus();
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
 
@@ -55,7 +50,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && !isStreaming) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
     }
@@ -106,16 +101,13 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
           value={inputMessage}
           onChange={(e) => {
             setInputMessage(e.target.value);
-            adjustTextareaHeightAndFocus();
+            adjustTextareaHeight();
           }}
           onKeyDown={handleKeyDown}
-          className={`flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none ${
-            enableHorizontalScroll ? 'overflow-x-auto' : 'overflow-hidden'
-          } ${isStreaming ? 'cursor-not-allowed' : ''}`}
-          placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel ?? ''}`}
+          className={`flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none ${enableHorizontalScroll ? 'overflow-x-auto' : 'overflow-hidden'}`}
+          placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel}`}
           rows={1}
           style={{ minHeight: '56px', maxHeight: '200px' }}
-          disabled={isStreaming}
         />
         <button
           type="button"
