@@ -23,11 +23,14 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
   const [enableHorizontalScroll, setEnableHorizontalScroll] = useState(false);
 
   useEffect(() => {
-    adjustTextareaHeight();
-  }, [inputMessage]);
+    if (!isStreaming) {
+      adjustTextareaHeightAndFocus();
+    }
+  }, [location.pathname, isStreaming]);
 
-  const adjustTextareaHeight = () => {
+  const adjustTextareaHeightAndFocus = () => {
     if (textareaRef.current) {
+      textareaRef.current.focus();
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
 
