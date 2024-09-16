@@ -50,7 +50,9 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
       setImageUrls(prev => ({ ...prev, ...newImageUrls }));
     };
 
-    fetchImages();
+    if (chatId) {
+      fetchImages();
+    }
 
     return () => {
       Object.values(imageUrls).forEach(URL.revokeObjectURL);
@@ -98,7 +100,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                 )}
               </div>
             )}
-            <div className="w-full break-words">
+            {msg.role && (<div className="w-full break-words">
               {msg.files && msg.files.length > 0 && (
                 <>
                   <div className="mb-2 flex flex-wrap gap-2">
@@ -150,7 +152,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                   </button>
                 </div>
               )}
-            </div>
+            </div>)}
           </div>
         </div>
       ))}
