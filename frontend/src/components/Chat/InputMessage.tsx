@@ -112,7 +112,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
           } ${isStreaming ? 'cursor-not-allowed' : ''}`}
           placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel ?? ''}`}
           rows={1}
-          style={{ minHeight: '56px', maxHeight: '200px' }}
+          style={{ minHeight: '56px', maxHeight: '200px', fontSize: '16px' }}
           disabled={isStreaming}
         />
         <button
