@@ -11,6 +11,8 @@ import InputMessage from './InputMessage';
 import VezmirLogo from '@/assets/vezmir.svg';
 import FeedbackForm from './FeedbackForm';
 import { useTheme } from '@/context/ThemeContext';
+import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
 
 const ChatComponent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -236,10 +238,10 @@ const ChatComponent: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-[var(--gray-800)]">
-      <div className="flex-1 flex flex-col bg-[var(--gray-800)] pl-4">
+      <div className="flex-1 flex flex-col bg-[var(--gray-800)] pl-4 overflow-hidden">
 
         {/* Model Selector + buttons - Fixed at the top */}
-        <div className="sticky top-0 z-10 bg-[var(--gray-800)] shadow-sm w-full">
+        <div className="sticky top-0 z-10 bg-[var(--gray-800)] shadow-sm w-full pl-10">
           <div className="flex items-center p-4 h-20"> {/* Set a fixed height */}
             {/* Model Selector */}
             <div className="flex-grow flex items-center h-full"> {/* Add h-full */}
@@ -274,27 +276,34 @@ const ChatComponent: React.FC = () => {
                 {!isVezmirIntelligence && <ModelSelector />}
               </div>
             </div>
+
+            {/* New Chat Button */}
+            <Link to="/" className="ml-2">
+              <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
+                <PencilSquareIcon className="w-6 h-6 text-[var(--purple-clear)]" />
+              </div>
+            </Link>
           </div>
         </div>
 
         {/* Messages - Scrollable area */}
         <div
           ref={chatContainerRef}
-          className="flex-grow overflow-y-auto"
+          className="flex-grow overflow-y-auto w-screen"
           onScroll={handleScroll}
         >
           {!chatId && messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full space-y-4">
+            <div className="flex flex-col items-center justify-center h-full space-y-4 px-4">
               {selectedAIModel && (
-                <div className="bg-white rounded-full p-2">
+                <div className="bg-white rounded-full p-2 mx-auto">
                   <img
                     src={isVezmirIntelligence ? getProviderLogo('vezmir') : getProviderLogo(selectedAIModel.provider)}
                     alt={`${selectedAIModel.provider} logo`}
-                    className="w-12 h-12"
+                    className="w-10 h-10 sm:w-12 sm:h-12"
                   />
                 </div>
               )}
-              <p className="text-4xl font-bold text-white">
+              <p className="text-xl sm:text-4xl font-bold text-white text-center">
                 {isVezmirIntelligence
                   ? locale('chat_vezmir_intelligence_activated')
                   : locale('chat_how_can_i_help_you_today')}
