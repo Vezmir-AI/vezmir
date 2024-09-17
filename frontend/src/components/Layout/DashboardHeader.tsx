@@ -42,8 +42,8 @@ const DashboardHeader: React.FC = () => {
     }, [isMenuOpen]);
 
     return (
-        <div className="sticky top-0 z-20 bg-[var(--gray-800)] w-auto ">
-            <div className="md:hidden flex items-center h-14 ">
+        <div className="sticky top-0 z-20 bg-[var(--gray-800)] w-auto">
+            <div className="md:hidden flex items-center h-14">
                 <div className="relative flex-grow px-4">
                     <button
                         id="settings-button"
@@ -90,7 +90,7 @@ const DashboardHeader: React.FC = () => {
                     )}
                 </div>
                 <Link to="/" className="mr-2">
-                    <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
+                    <div className="p-2 m-1 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
                         <PencilSquareIcon className="w-6 h-6 text-[var(--purple-clear)]" />
                     </div>
                 </Link>
