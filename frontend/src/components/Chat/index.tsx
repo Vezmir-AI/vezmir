@@ -238,7 +238,7 @@ const ChatComponent: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-[var(--gray-800)]">
-      <div className="flex-1 flex flex-col bg-[var(--gray-800)] pl-4">
+      <div className="flex-1 flex flex-col bg-[var(--gray-800)] pl-4 overflow-hidden">
 
         {/* Model Selector + buttons - Fixed at the top */}
         <div className="sticky top-0 z-10 bg-[var(--gray-800)] shadow-sm w-full pl-10">
@@ -289,11 +289,11 @@ const ChatComponent: React.FC = () => {
         {/* Messages - Scrollable area */}
         <div
           ref={chatContainerRef}
-          className="flex-grow overflow-y-auto"
+          className="flex-grow overflow-y-auto w-screen"
           onScroll={handleScroll}
         >
           {!chatId && messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full space-y-4">
+            <div className="flex flex-col items-center justify-center h-full space-y-4 px-4">
               {selectedAIModel && (
                 <div className="bg-white rounded-full p-2 mx-auto">
                   <img
@@ -303,7 +303,7 @@ const ChatComponent: React.FC = () => {
                   />
                 </div>
               )}
-              <p className="text-xl sm:text-4xl font-bold text-white text-center px-4">
+              <p className="text-xl sm:text-4xl font-bold text-white text-center">
                 {isVezmirIntelligence
                   ? locale('chat_vezmir_intelligence_activated')
                   : locale('chat_how_can_i_help_you_today')}
