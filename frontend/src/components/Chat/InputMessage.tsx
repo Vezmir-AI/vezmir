@@ -98,7 +98,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
           ))}
         </div>
       )}
-      <div className="flex items-center max-w-4xl mx-auto relative bg-[var(--gray-800)]">
+      <div className="flex items-center max-w-4xl mx-auto relative bg-[var(--gray-800)] p-1">
         <textarea
           ref={textareaRef}
           value={inputMessage}
@@ -107,7 +107,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
             adjustTextareaHeightAndFocus();
           }}
           onKeyDown={handleKeyDown}
-          className={`flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-lg border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none ${
+          className={`flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-sm sm:text-lg items-center border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none ${
             enableHorizontalScroll ? 'overflow-x-auto' : 'overflow-hidden'
           } ${isStreaming ? 'cursor-not-allowed' : ''}`}
           placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel ?? ''}`}
