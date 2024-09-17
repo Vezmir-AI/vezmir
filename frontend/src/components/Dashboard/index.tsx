@@ -26,9 +26,13 @@ const Dashboard: React.FC = () => {
       }, 3000);
   }
   return (
-    <div className='bg-[var(--gray-800)]'>
-      <DashboardHeader />
-      <Component />
+    <div className='flex flex-col h-screen w-full bg-[var(--gray-800)]'>
+      <div className="sticky top-0 z-10 bg-[var(--gray-800)] shadow-sm ml-12 sm:ml-16">
+        <DashboardHeader />
+      </div>
+      <div className="flex-grow overflow-y-auto px-4 lg:px-0">
+        <Component />
+      </div>
     </div>
   );
 };

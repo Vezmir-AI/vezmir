@@ -7,16 +7,16 @@ import SideBar from '@/components/Layout/SideBar';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
-  const { notifications, showCompleteProfileModal } = useTheme();
+  const { notifications, showCompleteProfileModal, useMediaQuery } = useTheme();
   const [needLayout, setNeedLayout] = useState(true);
   const [showCPM, setShowCPM] = useState(false);
   const [justLoggedInOrRegistered, setJustLoggedInOrRegistered] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     const currentPath = location.pathname;
     setNeedLayout(currentPath === "/" || currentPath.startsWith("/chat") || currentPath.startsWith("/dashboard"));
 
-    // Check if user just logged in or registered
     if (currentPath === "/") {
       if (justLoggedInOrRegistered) {
         setShowCPM(showCompleteProfileModal);
@@ -38,9 +38,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {needLayout ? (
         <>
           <CompleteProfileModal open={showCPM} setOpen={setShowCPM} />
-          <div className="flex h-screen">
+          <div className="flex h-screen relative">
             <SideBar />
-            <main className="flex-1 overflow-y-auto relative">
+            <main className={`flex-1 overflow-y-auto w-full ${isMobile ? 'absolute inset-0' : 'lg:w-auto'}`}>
               {children}
             </main>
           </div>

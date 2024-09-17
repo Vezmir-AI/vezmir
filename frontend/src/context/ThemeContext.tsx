@@ -17,6 +17,7 @@ interface ThemeContextType {
     showCompleteProfileModal: boolean;
     setShowCompleteProfileModal: (show: boolean) => void;
     removeNotification: (message: string) => void;
+    useMediaQuery: (query: string) => boolean; // Add this line
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -25,6 +26,22 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [notifications, setNotifications] = useState<serverResponse[]>([]);
     const [showCompleteProfileModal, setShowCompleteProfileModal] = useState(false);
     const [translations, setTranslations] = useState<LanguageModule>(Eng);
+
+    const useMediaQuery = (query: string): boolean => {
+        const [matches, setMatches] = useState(false);
+
+        useEffect(() => {
+            const media = window.matchMedia(query);
+            if (media.matches !== matches) {
+                setMatches(media.matches);
+            }
+            const listener = () => setMatches(media.matches);
+            media.addEventListener('change', listener);
+            return () => media.removeEventListener('change', listener);
+        }, [matches, query]);
+
+        return matches;
+    };
 
     useEffect(() => {
         const handleNotification = (event: CustomEvent<{ message: string; status: "success" | "error" }>) => {
@@ -53,7 +70,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     return (
-        <ThemeContext.Provider value={{ locale, notifications, showCompleteProfileModal, setShowCompleteProfileModal, removeNotification }}>
+        <ThemeContext.Provider value={{ locale, notifications, showCompleteProfileModal, setShowCompleteProfileModal, removeNotification, useMediaQuery }}>
             {children}
         </ThemeContext.Provider>
     );
