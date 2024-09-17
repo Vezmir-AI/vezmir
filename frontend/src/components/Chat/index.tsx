@@ -295,7 +295,7 @@ const ChatComponent: React.FC = () => {
           {!chatId && messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full space-y-4">
               {selectedAIModel && (
-                <div className="bg-white rounded-full p-2">
+                <div className="bg-white rounded-full p-2 mx-auto">
                   <img
                     src={isVezmirIntelligence ? getProviderLogo('vezmir') : getProviderLogo(selectedAIModel.provider)}
                     alt={`${selectedAIModel.provider} logo`}
@@ -303,7 +303,7 @@ const ChatComponent: React.FC = () => {
                   />
                 </div>
               )}
-              <p className="text-xl sm:text-4xl font-bold text-white">
+              <p className="text-xl sm:text-4xl font-bold text-white text-center px-4">
                 {isVezmirIntelligence
                   ? locale('chat_vezmir_intelligence_activated')
                   : locale('chat_how_can_i_help_you_today')}
