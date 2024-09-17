@@ -4,11 +4,10 @@ import { useTheme } from '@/context/ThemeContext';
 import Alert from '@/components/Layout/Alert';
 import CompleteProfileModal from '@/components/Layout/CompleteProfileModal';
 import SideBar from '@/components/Layout/SideBar';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
-  const { notifications, showCompleteProfileModal } = useTheme();
+  const { notifications, showCompleteProfileModal, useMediaQuery } = useTheme();
   const [needLayout, setNeedLayout] = useState(true);
   const [showCPM, setShowCPM] = useState(false);
   const [justLoggedInOrRegistered, setJustLoggedInOrRegistered] = useState(false);
