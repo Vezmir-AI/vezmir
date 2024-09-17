@@ -18,7 +18,6 @@ export default function SideBar() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [userName, setUserName] = useState('')
-  const [textSize, setTextSize] = useState('sm')
   const { logout } = useAuth();
   const { user } = useProfile()
   const navigate = useNavigate();
@@ -35,7 +34,6 @@ export default function SideBar() {
     if (!user.first_name && !user.last_name) {
       setUserName("Your Profile")
     }
-    setTextSize(userName.length > 10 ? 'xs' : 'sm')
   }, [isDashboard, user]);
 
   useEffect(() => {
@@ -55,50 +53,50 @@ export default function SideBar() {
           <div className="fixed inset-0 flex h-full">
             <DialogPanel
               transition
-              className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full"
+              className="relative flex w-64 max-w-sm flex-1 flex-col bg-[var(--gray-900)] pb-4 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full"
             >
-              <div className="flex h-full flex-col bg-[var(--gray-900)] px-6 pb-2 ring-1 ring-white/10">
-                <div className="flex-shrink-0">
-                  <div className="flex h-16 items-center justify-between">
+              <div className="flex h-full flex-col overflow-y-scroll bg-[var(--gray-900)] ">
+                <div className="px-4 sm:px-6">
+                  <div className="flex items-center justify-between py-4">
                     <Link to="/">
                       <img
                         alt="vezmir-logo"
                         src="/assets/white.svg"
-                        className="h-8 w-auto cursor-pointer"
+                        className="h-12 w-auto cursor-pointer"
                       />
                     </Link>
                     <button type="button" onClick={() => setSidebarOpen(false)} className="p-2 rounded-md bg-[var(--gray-700)] hover:bg-[var(--gray-600)] text-gray-400 hover:text-white">
                       <span className="sr-only">{locale("sidebar_close")}</span>
-                      <ChevronLeftIcon aria-hidden="true" className="h-6 w-6" />
+                      <ChevronLeftIcon className="h-6 w-6" aria-hidden="true" />
                     </button>
                   </div>
                   <div className="mt-2 mb-4">
                     <NewChatButton />
                   </div>
                 </div>
-                <div className="flex-grow overflow-y-auto">
+                <div className="flex-1 overflow-y-auto px-4 sm:px-6">
                   <ChatHistory />
                 </div>
-                <div className="flex-shrink-0 mt-auto pr-2">
+                <div className="mt-auto px-4 sm:px-6">
                   <div
                     ref={profileRef}
-                    className="relative rounded-lg shadow-md bg-[var(--gray-800)] hover:bg-[var(--gray-700)] transition-colors duration-200 cursor-pointer"
+                    className="rounded-lg shadow-md bg-[var(--gray-800)] hover:bg-[var(--gray-700)] transition-colors duration-200 cursor-pointer"
                   >
-                    <div className="flex items-center gap-x-4 px-4 py-3">
-                      <div onClick={() => navigate('/dashboard/profile')} className="flex items-center gap-x-4 flex-grow">
-                        <img src={WizardIcon} alt="Wizard" className="h-8 w-8 text-gray-400" />
-                        <span aria-hidden="true" className={`text-${textSize} font-semibold text-white`}>{userName}</span>
+                    <div className="flex items-center px-3 py-2">
+                      <div onClick={() => navigate('/dashboard/profile')} className="flex items-center flex-grow">
+                        <img src={WizardIcon} alt="Wizard" className="h-8 w-8 text-gray-400 invert mr-3" />
+                        <span aria-hidden="true" className={`text-sm font-semibold text-white truncate`}>{userName}</span>
                         <span className="sr-only">{locale("sidebar_profile")}</span>
                       </div>
-                      <div className="ml-auto p-2 rounded-lg">
-                        <ArrowLeftEndOnRectangleIcon
-                          className="h-5 w-5 text-gray-400"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            logout();
-                          }}
-                        />
-                      </div>
+                      <button
+                        className="p-1 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] text-gray-400 hover:text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          logout();
+                        }}
+                      >
+                        <ArrowLeftEndOnRectangleIcon className="h-5 w-5 text-gray-400"/>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -153,14 +151,14 @@ export default function SideBar() {
                   <div className="flex items-center gap-x-4 px-2 py-1 hover:bg-[var(--gray-700)] rounded-lg">
                     <div
                       onClick={() => navigate('/dashboard/profile')}
-                      className="flex items-center gap-x-4 flex-grow cursor-pointer"
+                      className="flex items-center flex-grow cursor-pointer overflow-hidden"
                     >
-                      <img src={WizardIcon} alt="Wizard" className="mt-1 h-14 w-14 text-gray-400 invert" />
-                      <span aria-hidden="true" className={`text-${textSize} font-semibold text-white`}>{userName}</span>
+                      <img src={WizardIcon} alt="Wizard" className="mt-1 h-14 w-14 text-gray-400 invert flex-shrink-0" />
+                      <span aria-hidden="true" className="text-sm font-semibold text-white truncate">{userName}</span>
                       <span className="sr-only">{locale("sidebar_profile")}</span>
                     </div>
                     <div
-                      className="p-2 overflow-hidden rounded-lg hover:bg-[var(--gray-800)]"
+                      className="pr-2 rounded-lg hover:bg-[var(--gray-800)] flex-shrink-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         logout();
