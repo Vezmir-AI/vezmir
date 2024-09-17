@@ -289,7 +289,7 @@ const ChatComponent: React.FC = () => {
         {/* Messages - Scrollable area */}
         <div
           ref={chatContainerRef}
-          className="flex-grow overflow-y-auto w-screen"
+          className="flex-grow overflow-y-auto w-screen sm:w-full"
           onScroll={handleScroll}
         >
           {!chatId && messages.length === 0 ? (
