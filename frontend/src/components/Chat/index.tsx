@@ -241,7 +241,7 @@ const ChatComponent: React.FC = () => {
       <div className="flex-1 flex flex-col bg-[var(--gray-800)] pl-4 overflow-hidden">
 
         {/* Model Selector + buttons - Fixed at the top */}
-        <div className="sticky top-0 z-10 bg-[var(--gray-800)] shadow-sm w-full pl-10">
+        <div className="sticky top-0 z-10 bg-[var(--gray-800)] shadow-sm w-full pl-12 md:pl-0">
           <div className="flex items-center p-4 h-20"> {/* Set a fixed height */}
             {/* Model Selector */}
             <div className="flex-grow flex items-center h-full"> {/* Add h-full */}
@@ -278,7 +278,7 @@ const ChatComponent: React.FC = () => {
             </div>
 
             {/* New Chat Button */}
-            <Link to="/" className="ml-2">
+            <Link to="/" className="ml-2 sm:hidden">
               <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
                 <PencilSquareIcon className="w-6 h-6 text-[var(--purple-clear)]" />
               </div>
