@@ -62,7 +62,7 @@ const ChatComponent: React.FC = () => {
   }, [discussion]);
 
   useEffect(() => {
-    if (messages.length === 0 || isStreaming || discussion.length) return;
+    if (messages.length === 0 || isStreaming) return;
 
     const getParent = (message: Message) => {
       let navigation;
@@ -76,17 +76,14 @@ const ChatComponent: React.FC = () => {
         console.error("Message parent has no children")
         return { parent, navigation };
       };
-      if (message.id === "e9d0175d-7e51-4b85-8f6f-c4acfed51bea") {
-        console.log("tthis message", message)
-        console.log("parent", parent.children)
-      }
       if (parent.children.length === 1) {
         return { parent, navigation }
       } else {
+        const position = parent.children.indexOf(message.id || '')
         navigation = {
           next: null,
-          previous: parent.children[0],
-          position: `${message.id ? parent.children.indexOf(message.id) + 1 : 0}/${parent.children.length}`
+          previous: parent.children[position - 1],
+          position: `${position + 1}/${parent.children.length}`
         };
         return { parent, navigation };
       }
@@ -122,7 +119,6 @@ const ChatComponent: React.FC = () => {
   }, [chatId, resetDiscussion]);
 
   const getChildren = (message: Message, position?: number): DiscussionMessage[] => {
-    console.log("heeer", message)
     if (!message.children) return [];
     position = position || message.children.length - 1;
     let navigation;
@@ -226,8 +222,23 @@ const ChatComponent: React.FC = () => {
         previousMessageId = messages[messages.length - 1]?.id || '';
         url = `/chat/conversations/${chatId}/`;
       }
+
       const { userMessage, model } = await sendMessageAndGetId(message, previousMessageId, url, files);
-      setMessages(prevMessages => [...prevMessages, userMessage])
+
+      setMessages(prevMessages => {
+        const updatedMessages = [...prevMessages];
+        if (previousMessageId) {
+          const parentIndex = updatedMessages.findIndex(msg => msg.id === previousMessageId);
+          if (parentIndex !== -1) {
+            updatedMessages[parentIndex] = {
+              ...updatedMessages[parentIndex],
+              children: [...(updatedMessages[parentIndex].children || []), userMessage.id]
+            };
+          }
+        }
+        return [...updatedMessages, userMessage];
+      });
+
       setCurrentAIModel(model.display_name);
       setSelectedAIModel(model);
       setDiscussion(prevDiscussion => [
@@ -249,13 +260,15 @@ const ChatComponent: React.FC = () => {
     }
   };
 
-  const handleRegeneration = async (parentId: string): Promise<void> => {
+  const handleRegeneration = async (messageId: string): Promise<void> => {
     try {
       setIsStreaming(true);
-      const index = discussion.findIndex(msg => msg.id === parentId);
+      const message = discussion.find(msg => msg.id === messageId);
+      if (!message) throw "Message Regeneration not found";
+      const index = discussion.findIndex(msg => msg.id === message.parent);
       if (index === -1) throw "Message Regeneration not found";
       setDiscussion(prevDiscussion => [...prevDiscussion.slice(0, index + 1)]);
-      handleRewrite(parentId, discussion[index].content);
+      handleRewrite(message.id!, message.content);
     } catch (error) {
       console.error('Error regenerating message:', error);
     }
@@ -264,9 +277,9 @@ const ChatComponent: React.FC = () => {
   const handleRewrite = async (messageId: string, newMessage: string): Promise<void> => {
     try {
       setIsStreaming(true)
-      const index = messages.findIndex(msg => msg.id === messageId)
+      const index = discussion.findIndex(msg => msg.id === messageId)
       if (index === -1) throw "Message Rewrite not found"
-      const selectedModel = messages[index].ai_model_details
+      const selectedModel = discussion[index].ai_model_details
       setSelectedAIModel(selectedModel)
       setDiscussion(prevDiscussion => [
         ...prevDiscussion.slice(0, index),
@@ -280,13 +293,26 @@ const ChatComponent: React.FC = () => {
           parent: null
         }
       ]);
-      if (messages[index].role !== 'user') throw "Message Rewrite is not a user message"
+      if (discussion[index].role !== 'user') throw "Message Rewrite is not a user message"
       const url = `/chat/conversations/${chatId}/`;
-      const files = (messages[index].files as File[] | undefined)
-      const parent = messages[index].parent;
+      const files = (discussion[index].files as File[] | undefined)
+      const parent = discussion[index].parent;
       if (!parent) throw "Message Rewrite has no parent"
       const { userMessage, model } = await sendMessageAndGetId(newMessage, parent!, url, files);
-      setMessages(prevMessages => [...prevMessages, userMessage])
+
+      setMessages(prevMessages => {
+        const updatedMessages = [...prevMessages];
+        if (parent) {
+          const parentIndex = updatedMessages.findIndex(msg => msg.id === parent);
+          if (parentIndex !== -1) {
+            updatedMessages[parentIndex] = {
+              ...updatedMessages[parentIndex],
+              children: [...(updatedMessages[parentIndex].children || []), userMessage.id]
+            };
+          }
+        }
+        return [...updatedMessages, userMessage];
+      });
       setCurrentAIModel(model.display_name);
       setSelectedAIModel(model);
       setDiscussion(prevDiscussion => [

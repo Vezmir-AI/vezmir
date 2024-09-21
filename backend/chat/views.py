@@ -235,7 +235,6 @@ class ChatStreamView(APIView):
             ChatMessage.objects.filter(Q(id__in=parent_ids)).order_by("date_created"),
             many=True,
         ).data
-        print(conversation_messages)
 
         def stream_and_save():
             full_response = ""
