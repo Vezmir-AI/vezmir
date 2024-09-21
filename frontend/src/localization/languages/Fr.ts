@@ -139,4 +139,5 @@ export default {
     model_hint_gemini_flash: "Modèle le plus rapide de Google, bon pour les tâches de base",
     model_hint_perplexity_3_1: "Modèle qui peut rechercher sur internet",
     chat_loading: "La réponse prend plus de temps que prévu...",
+    chat_regenerate: "Regénérer",
 };
