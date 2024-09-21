@@ -208,7 +208,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                     )}
                   </button>
                   <button
-                    onClick={() => handleRegeneration(msg.parent ?? "")}
+                    onClick={() => handleRegeneration(msg.parent!)}
                     className="p-1 rounded bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1"
                     title="Regenerate response"
                   >
