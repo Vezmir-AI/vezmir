@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Message } from '@/types';
+import { DiscussionMessage } from '@/types';
 import renderContent from './renderContent/renderContent';
 import { getProviderLogo, getProviderColor } from '@/utils/providerUtils';
-import { ClipboardDocumentIcon, CheckIcon, PaperClipIcon } from '@heroicons/react/24/outline';
+import { ClipboardDocumentIcon, CheckIcon, PaperClipIcon, ArrowPathIcon, ChevronLeftIcon, ChevronRightIcon, PencilIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
 import { useTheme } from '@/context/ThemeContext';
 import Lottie from 'react-lottie';
 import animationData from '@/assets/animation/vezmir_moving.json';
 
 interface ChatMessagesProps {
-  messages: Message[];
+  messages: DiscussionMessage[];
+  handleRewrite: (messageId: string, content: string) => Promise<void>;
+  handleRegeneration: (messageId: string) => Promise<void>;
+  handleNavigation: (messageId: string, targetId: string) => void;
 }
 
 const defaultOptions = {
@@ -22,11 +25,14 @@ const defaultOptions = {
   }
 };
 
-const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
+const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, handleRegeneration, handleNavigation }) => {
   const { chatId } = useParams();
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
   const { locale } = useTheme();
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
+  const [editingMessageId, setEditingMessageId] = useState<string>(""); // if null then will show eveytime new messages are added
+  const [editedContent, setEditedContent] = useState<string>('');
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -59,10 +65,38 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
     };
   }, [messages]);
 
+  useEffect(() => {
+    if (editingMessageId && editTextareaRef.current) {
+      editTextareaRef.current.focus();
+      editTextareaRef.current.setSelectionRange(editedContent.length, editedContent.length);
+      editTextareaRef.current.style.height = 'auto';
+      editTextareaRef.current.style.height = `${editTextareaRef.current.scrollHeight}px`;
+
+    }
+  }, [editingMessageId]);
+
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content);
     setCopiedStates(prev => ({ ...prev, [content]: true }));
     setTimeout(() => setCopiedStates(prev => ({ ...prev, [content]: false })), 2000);
+  };
+
+  const handleEditClick = (messageId: string, content: string) => {
+    setEditingMessageId(messageId);
+    setEditedContent(content);
+  };
+
+  const handleEditCancel = () => {
+    setEditingMessageId("");
+    setEditedContent('');
+  };
+
+  const handleEditSubmit = async () => {
+    if (editingMessageId) {
+      await handleRewrite(editingMessageId, editedContent);
+      setEditingMessageId("");
+      setEditedContent('');
+    }
   };
 
   return (
@@ -70,16 +104,13 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
       {messages.map((msg, index) => (
         <div
           key={index}
-          className={`flex ${
-            msg.role === 'user' ? 'justify-end' : 'justify-start'
-          }`}
+          className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
         >
           <div
-            className={`max-w-[80%] ${
-              msg.role === 'user'
-                ? 'bg-[var(--gray-700)] text-white rounded-2xl rounded-br-sm'
-                : 'bg-[var(--gray-800)] text-white rounded-3xl rounded-tl-sm mb-6'
-            } px-3 py-2 text-base flex items-start relative`}
+            className={`max-w-[80%] ${msg.role === 'user'
+              ? 'bg-[var(--gray-700)] text-white rounded-2xl rounded-br-sm'
+              : 'bg-[var(--gray-800)] text-white rounded-3xl rounded-tl-sm mb-6'
+              } px-3 py-2 text-base flex items-start relative`}
           >
             {msg.role === 'assistant' && (
               <div className="mr-3 flex-shrink-0 mt-1 relative group">
@@ -125,13 +156,39 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                   </div>
                 </>
               )}
-              {renderContent(msg.content, index, copiedStates, setCopiedStates)}
+              {editingMessageId === msg.id ? (
+                <div className="mt-2">
+                  <textarea
+                    ref={editTextareaRef}
+                    value={editedContent}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                    className="w-full p-2 text-black rounded"
+                    rows={3}
+                  />
+                  <div className="flex justify-end mt-2 space-x-2">
+                    <button
+                      onClick={handleEditCancel}
+                      className="px-2 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleEditSubmit}
+                      className="px-2 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                renderContent(msg.content, index, copiedStates, setCopiedStates)
+              )}
               {msg.isStreaming && (
                 <div className="inline-block w-12 h-12">
                   <Lottie options={defaultOptions} height={40} width={40} />
                 </div>
               )}
-              {!msg.isStreaming && msg.role === 'assistant' && (
+              {!msg.isStreaming && (msg.role === 'assistant' ? (
                 <div className="absolute -bottom-6 left-0 flex space-x-2 mt-2 ml-12">
                   <button
                     onClick={() => handleCopy(msg.content)}
@@ -150,9 +207,59 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                       </>
                     )}
                   </button>
+                  <button
+                    onClick={() => handleRegeneration(msg.parent ?? "")}
+                    className="p-1 rounded bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1"
+                    title="Regenerate response"
+                  >
+                    <ArrowPathIcon className="h-4 w-4 text-white" />
+                    <span className="text-xs text-white">{locale('chat_regenerate')}</span>
+                  </button>
                 </div>
-              )}
-            </div>)}
+              ) : (
+                <>
+                  <div className="absolute -bottom-6 right-0 flex items-center space-x-2 mt-2 mr-2">
+                    <button
+                      onClick={() => handleEditClick(msg.id || '', msg.content)}
+                      className={`p-1 rounded bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1 ${editingMessageId === msg.id ? 'hidden' : ''}`}
+                      title="Rewrite message"
+                    >
+                      <PencilIcon className="h-4 w-4 text-white" />
+                    </button>
+                    {msg.navigation && (
+                      <>
+                        <button
+                          className={`p-1 rounded ${msg.navigation.previous ? 'bg-[var(--gray-700)] hover:bg-[var(--gray-600)] cursor-pointer' : 'bg-[var(--gray-700)] hover:bg-[var(--gray-700)]'} transition-colors`}
+                          title={msg.navigation.previous ? "Previous message" : "No previous message"}
+                          disabled={!msg.navigation.previous}
+                          onClick={() => {
+                            if (msg.id && msg.navigation && msg.navigation.previous) {
+                              handleNavigation(msg.id, msg.navigation.previous)
+                            }
+                          }}
+                        >
+                          <ChevronLeftIcon className="h-4 w-4 text-white" />
+                        </button>
+                        <span className="text-xs text-white">{msg.navigation.position}</span>
+                        <button
+                          className={`p-1 rounded ${msg.navigation.next ? 'bg-[var(--gray-700)] hover:bg-[var(--gray-600)] cursor-pointer' : 'bg-[var(--gray-700)] hover:bg-[var(--gray-700)]'} transition-colors`}
+                          title="Next message"
+                          disabled={!msg.navigation.next}
+                          onClick={() => {
+                            if (msg.id && msg.navigation && msg.navigation.next) {
+                              handleNavigation(msg.id, msg.navigation.next)
+                            }
+                          }}
+                        >
+                          <ChevronRightIcon className="h-4 w-4 text-white" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </>
+              ))}
+            </div>
+            )}
           </div>
         </div>
       ))}
