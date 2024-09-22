@@ -61,47 +61,67 @@ const ChatComponent: React.FC = () => {
     scrollToBottom();
   }, [discussion]);
 
+
+  const updateDiscussionWithMessages = () => {
+    for (let i = 0; i < discussion.length - 1; i++) {
+      if (!discussion[i].children!.includes(discussion[i + 1].id!)) {
+        discussion[i].children!.push(discussion[i + 1].id!);
+        messages[i].children!.push(messages[i + 1].id!);
+        const updatedDiscussion = discussion.map(msg => {
+          const { navigation } = getParent(msg);
+          return { ...msg, isStreaming: false, navigation: navigation || undefined };
+        });
+        setDiscussion(updatedDiscussion);
+        setMessages(messages);
+        console.log("oui", discussion[i].id);
+        return;
+      }
+    }
+  };
+
+  const getParent = (message: Message) => {
+    let navigation;
+    if (!message.parent) throw "Message has no parent";
+    const parent = messages.find(msg => msg.id === message.parent);
+    if (!parent) {
+      console.error("Parent message not found")
+      return { parent, navigation };
+    };
+    if (!parent.children) {
+      console.error("Message parent has no children");
+      return { parent, navigation };
+    }
+    const position = parent.children.indexOf(message.id || '');
+    navigation = parent.children.length === 1 ? null : {
+      next: null,
+      previous: parent.children[position - 1],
+      position: `${position + 1}/${parent.children.length}`
+    };
+    return { parent, navigation };
+  };
+
+  const buildCurrentDiscussion = () => {
+    let current = messages[messages.length - 1];
+    const currentDiscussion = [];
+    do {
+      const { parent, navigation } = getParent(current);
+      currentDiscussion.push({
+        ...current,
+        navigation: navigation || undefined
+      });
+      current = parent!;
+    } while (current.parent);
+    return currentDiscussion.reverse();
+  };
+
   useEffect(() => {
     if (messages.length === 0 || isStreaming) return;
 
-    const getParent = (message: Message) => {
-      let navigation;
-      if (!message.parent) throw "Message has no parent";
-      const parent = messages.find(msg => msg.id === message.parent);
-      if (!parent) {
-        console.error("Parent message not found")
-        return { parent, navigation };
-      };
-      if (!parent.children) {
-        console.error("Message parent has no children")
-        return { parent, navigation };
-      };
-      if (parent.children.length === 1) {
-        return { parent, navigation }
-      } else {
-        const position = parent.children.indexOf(message.id || '')
-        navigation = {
-          next: null,
-          previous: parent.children[position - 1],
-          position: `${position + 1}/${parent.children.length}`
-        };
-        return { parent, navigation };
-      }
+    if (discussion.length > 0) {
+      updateDiscussionWithMessages();
+    } else {
+      setDiscussion(buildCurrentDiscussion());
     }
-
-    setDiscussion([])
-    let current = messages[messages.length - 1];
-    const currentDiscussion = []
-    do {
-      const { parent, navigation } = getParent(current)
-      if (!parent) break;
-      currentDiscussion.push({
-        ...current,
-        navigation
-      });
-      current = parent;
-    } while (current.parent)
-    setDiscussion(currentDiscussion.reverse());
   }, [messages]);
 
   useEffect(() => {
@@ -263,12 +283,10 @@ const ChatComponent: React.FC = () => {
   const handleRegeneration = async (messageId: string): Promise<void> => {
     try {
       setIsStreaming(true);
-      const message = discussion.find(msg => msg.id === messageId);
-      if (!message) throw "Message Regeneration not found";
-      const index = discussion.findIndex(msg => msg.id === message.parent);
+      const index = discussion.findIndex(msg => msg.id === messageId);
       if (index === -1) throw "Message Regeneration not found";
-      setDiscussion(prevDiscussion => [...prevDiscussion.slice(0, index + 1)]);
-      handleRewrite(message.id!, message.content);
+      setDiscussion(prevDiscussion => [...prevDiscussion.slice(0, index)]);
+      handleRewrite(messageId, discussion[index].content);
     } catch (error) {
       console.error('Error regenerating message:', error);
     }
