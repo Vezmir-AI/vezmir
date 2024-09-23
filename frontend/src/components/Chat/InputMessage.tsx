@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PaperClipIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { StopIcon } from '@heroicons/react/24/solid'; // Import the square icon
 import arrowSend from '@/assets/arrowSend.svg';
 import { useTheme } from '@/context/ThemeContext';
 import { AIModel } from '@/types';
@@ -10,9 +11,10 @@ interface InputMessageProps {
   selectedAIModel: AIModel | null;
   isStreaming: boolean;
   onSendMessage: (message: string, files?: File[]) => void;
+  onAbortStream: () => void; // Add the onAbortStream prop
 }
 
-const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIModel, isStreaming, onSendMessage }) => {
+const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIModel, isStreaming, onSendMessage, onAbortStream }) => {
   const [inputMessage, setInputMessage] = useState<string>('');
   const { locale } = useTheme();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -132,20 +134,30 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
             </div>
           )}
         </button>
-        <button
-          type="submit"
-          className={`absolute right-3 bottom-2.5 p-2 rounded-full text-lg flex items-center justify-center transition-colors duration-200 ${
-            inputMessage.trim() ? 'bg-white hover:bg-gray-200' : 'bg-gray-400 hover:bg-gray-400'
-          } ${(isStreaming || !inputMessage.trim()) ? 'cursor-not-allowed opacity-50' : ''}`}
-          disabled={isStreaming || !inputMessage.trim()}
-        >
-          <div className="w-6 h-6 flex items-center justify-center">
-            <img
-              src={arrowSend}
-              className={`w-5 h-5`}
-            />
-          </div>
-        </button>
+        {isStreaming ? (
+          <button
+            type="button"
+            onClick={onAbortStream}
+            className="absolute right-3 bottom-2.5 p-2 rounded-full text-lg flex items-center justify-center bg-[var(--gray-500)] hover:bg-[var(--gray-400)] transition-colors duration-200"
+          >
+            <StopIcon className="w-5 h-5" />
+          </button>
+        ) : (
+          <button
+            type="submit"
+            className={`absolute right-3 bottom-2.5 p-2 rounded-full text-lg flex items-center justify-center transition-colors duration-200 ${
+              inputMessage.trim() ? 'bg-white hover:bg-gray-200' : 'bg-gray-400 hover:bg-gray-400'
+            } ${(isStreaming || !inputMessage.trim()) ? 'cursor-not-allowed opacity-50' : ''}`}
+            disabled={isStreaming || !inputMessage.trim()}
+          >
+            <div className="w-6 h-6 flex items-center justify-center">
+              <img
+                src={arrowSend}
+                className={`w-5 h-5`}
+              />
+            </div>
+          </button>
+        )}
         <input
           type="file"
           ref={fileInputRef}

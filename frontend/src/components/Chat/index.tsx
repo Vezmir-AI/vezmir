@@ -29,6 +29,7 @@ const ChatComponent: React.FC = () => {
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
 
   useEffect(() => {
     if (!chatId) {
@@ -203,6 +204,10 @@ const ChatComponent: React.FC = () => {
     try {
       setIsStreaming(true);
 
+      // Create a new AbortController instance
+      const controller = new AbortController();
+      setAbortController(controller);
+
       // Add user message with temporary file URLs
       setDiscussion(prevDiscussion => [...prevDiscussion,
       {
@@ -266,7 +271,7 @@ const ChatComponent: React.FC = () => {
         },
       ]);
 
-      await streamResponse(userMessage.id);
+      await streamResponse(userMessage.id, controller.signal);
 
     } catch (error) {
       console.error('Error sending message:', error);
@@ -289,6 +294,9 @@ const ChatComponent: React.FC = () => {
   const handleRewrite = async (messageId: string, newMessage: string): Promise<void> => {
     try {
       setIsStreaming(true);
+      const controller = new AbortController();
+      setAbortController(controller);
+
       const index = discussion.findIndex(msg => msg.id === messageId);
       if (index === -1) throw "Message Rewrite not found";
       const selectedModel = discussion[index].ai_model_details;
@@ -338,7 +346,7 @@ const ChatComponent: React.FC = () => {
         },
       ]);
 
-      await streamResponse(userMessage.id);
+      await streamResponse(userMessage.id, controller.signal);
     } catch (error) {
       console.error('Error rewriting message:', error);
     }
@@ -383,8 +391,8 @@ const ChatComponent: React.FC = () => {
       });
   };
 
-  const streamResponse = async (userMessageId: string): Promise<void> => {
-    const response = await api.post("/chat/conversations/stream/", { message_id: userMessageId }, true);
+  const streamResponse = async (userMessageId: string, signal: AbortSignal): Promise<void> => {
+    const response = await api.post("/chat/conversations/stream/", { message_id: userMessageId }, true, false, signal);
     if (!response) {
       throw new Error('Response body is null');
     }
@@ -434,6 +442,14 @@ const ChatComponent: React.FC = () => {
     processText();
   };
 
+  const handleAbortStream = () => {
+    if (abortController) {
+      abortController.abort();
+      console.error('Aborted stream');
+      setIsStreaming(false);
+      window.location.reload(); // reload is the quick fix found to display the whole last message
+    }
+  };
 
   return (
     <div className="flex h-screen bg-[var(--gray-800)]">
@@ -536,6 +552,7 @@ const ChatComponent: React.FC = () => {
             selectedAIModel={selectedAIModel}
             isStreaming={isStreaming}
             onSendMessage={handleSendMessageToStream}
+            onAbortStream={handleAbortStream} // Pass the handleAbortStream function
           />
         </div>
       </div>
