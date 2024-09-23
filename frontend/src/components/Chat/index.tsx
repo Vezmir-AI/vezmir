@@ -61,6 +61,29 @@ const ChatComponent: React.FC = () => {
     scrollToBottom();
   }, [discussion]);
 
+  useEffect(() => {
+    if (messages.length === 0 || isStreaming) return;
+
+    if (discussion.length > 0) {
+      updateDiscussionWithMessages();
+    } else {
+      setDiscussion(buildCurrentDiscussion());
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    const handleConversationDeleted = (event: CustomEvent<{ id: string }>) => {
+      if (event.detail.id === chatId) {
+        resetDiscussion();
+      }
+    };
+
+    window.addEventListener('conversationDeleted', handleConversationDeleted as EventListener);
+
+    return () => {
+      window.removeEventListener('conversationDeleted', handleConversationDeleted as EventListener);
+    };
+  }, [chatId, resetDiscussion]);
 
   const updateDiscussionWithMessages = () => {
     for (let i = 0; i < discussion.length - 1; i++) {
@@ -113,30 +136,6 @@ const ChatComponent: React.FC = () => {
     } while (current.parent);
     return currentDiscussion.reverse();
   };
-
-  useEffect(() => {
-    if (messages.length === 0 || isStreaming) return;
-
-    if (discussion.length > 0) {
-      updateDiscussionWithMessages();
-    } else {
-      setDiscussion(buildCurrentDiscussion());
-    }
-  }, [messages]);
-
-  useEffect(() => {
-    const handleConversationDeleted = (event: CustomEvent<{ id: string }>) => {
-      if (event.detail.id === chatId) {
-        resetDiscussion();
-      }
-    };
-
-    window.addEventListener('conversationDeleted', handleConversationDeleted as EventListener);
-
-    return () => {
-      window.removeEventListener('conversationDeleted', handleConversationDeleted as EventListener);
-    };
-  }, [chatId, resetDiscussion]);
 
   const getChildren = (message: Message, position?: number): DiscussionMessage[] => {
     if (!message.children) return [];
