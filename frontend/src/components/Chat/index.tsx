@@ -86,30 +86,24 @@ const ChatComponent: React.FC = () => {
   }, [chatId, resetDiscussion]);
 
   const updateDiscussionWithMessages = () => {
-    for (let i = 0; i < discussion.length - 1; i++) {
-      if (!discussion[i].children!.includes(discussion[i + 1].id!)) {
-        discussion[i].children!.push(discussion[i + 1].id!);
-        messages[i].children!.push(messages[i + 1].id!);
-        const updatedDiscussion = discussion.map(msg => {
-          const { navigation } = getParent(msg);
-          return { ...msg, isStreaming: false, navigation: navigation || undefined };
-        });
-        setDiscussion(updatedDiscussion);
-        setMessages(messages);
-        console.log("oui", discussion[i].id);
-        return;
+    setDiscussion(prevDiscussion => prevDiscussion.map((msg, index) => {
+      if (index < prevDiscussion.length - 1 && !msg.children!.includes(prevDiscussion[index + 1].id!)) {
+        msg.children!.push(prevDiscussion[index + 1].id!);
       }
-    }
+      if (!msg.parent) return { ...msg, isStreaming: false };
+      const { navigation } = getParent(msg);
+      return { ...msg, isStreaming: false, navigation: navigation || undefined };
+    }));
   };
 
   const getParent = (message: Message) => {
     let navigation;
-    if (!message.parent) throw "Message has no parent";
+    if (!message.parent) return { parent: null, navigation };
     const parent = messages.find(msg => msg.id === message.parent);
     if (!parent) {
-      console.error("Parent message not found")
+      console.error("Parent message not found");
       return { parent, navigation };
-    };
+    }
     if (!parent.children) {
       console.error("Message parent has no children");
       return { parent, navigation };
@@ -134,6 +128,7 @@ const ChatComponent: React.FC = () => {
       });
       current = parent!;
     } while (current.parent);
+    currentDiscussion.push(current)
     return currentDiscussion.reverse();
   };
 
