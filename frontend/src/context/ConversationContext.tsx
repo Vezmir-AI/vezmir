@@ -13,6 +13,7 @@ interface ConversationContext {
     addConversation: (title: string) => Promise<any>;
     deleteConversation: (id: string) => void;
     fetchConversations: () => Promise<void>;
+    fetchConversation: (id: string) => Promise<any>;
     setSelectedAIModel: (model: AIModel) => void;
     setCurrentAIModel: (model: string) => void;
     resetSelectedAIModel: (chatId?: string, selectedAIModel?: AIModel) => void;
@@ -73,6 +74,11 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
         setConversations(convs);
     }
 
+    const fetchConversation = async (id: string) => {
+        const conv = await api.get(`/chat/conversations/${id}/`);
+        return conv;
+    }
+
     const addConversation = async (user_message: string) => {
         const { name } = await api.post(`/chat/conversations/title/`, { user_message });
         const newConversation = await api.post('/chat/conversations/', { name });
@@ -104,6 +110,7 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
             addConversation,
             deleteConversation,
             fetchConversations,
+            fetchConversation,
             setSelectedAIModel,
             setCurrentAIModel,
             resetSelectedAIModel,

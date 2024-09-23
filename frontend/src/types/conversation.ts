@@ -29,10 +29,19 @@ interface Message {
     content: string;
     ai_model_details: AIModel;
     files?: File[];
-    isStreaming?: boolean;
     parent: string | null;
     children?: string[];
 }
+
+interface DiscussionMessage extends Message {
+    isStreaming?: boolean;
+    navigation?: {
+        next: string | null;
+        previous: string | null;
+        position: string;
+    }
+}
+
 // TODO add Message? api request and response schema,
 
-export type { Conversation, ChatHistoryProps, AIModel, Message };
+export type { Conversation, ChatHistoryProps, AIModel, Message, DiscussionMessage };
