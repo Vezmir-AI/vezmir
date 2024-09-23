@@ -288,11 +288,11 @@ const ChatComponent: React.FC = () => {
 
   const handleRewrite = async (messageId: string, newMessage: string): Promise<void> => {
     try {
-      setIsStreaming(true)
-      const index = discussion.findIndex(msg => msg.id === messageId)
-      if (index === -1) throw "Message Rewrite not found"
-      const selectedModel = discussion[index].ai_model_details
-      setSelectedAIModel(selectedModel)
+      setIsStreaming(true);
+      const index = discussion.findIndex(msg => msg.id === messageId);
+      if (index === -1) throw "Message Rewrite not found";
+      const selectedModel = discussion[index].ai_model_details;
+      setSelectedAIModel(selectedModel);
       setDiscussion(prevDiscussion => [
         ...prevDiscussion.slice(0, index),
         { ...prevDiscussion[index], content: newMessage },
@@ -305,11 +305,11 @@ const ChatComponent: React.FC = () => {
           parent: null
         }
       ]);
-      if (discussion[index].role !== 'user') throw "Message Rewrite is not a user message"
+      if (discussion[index].role !== 'user') throw "Message Rewrite is not a user message";
       const url = `/chat/conversations/${chatId}/`;
       const files = (discussion[index].files as File[] | undefined)
       const parent = discussion[index].parent;
-      if (!parent) throw "Message Rewrite has no parent"
+      if (!parent) throw "Message Rewrite has no parent";
       const { userMessage, model } = await sendMessageAndGetId(newMessage, parent!, url, files);
 
       setMessages(prevMessages => {
