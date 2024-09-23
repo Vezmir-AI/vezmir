@@ -23,10 +23,9 @@ def generate_title(user_message):
         {
             "role": "user",
             "content": f"""
-    You are an AI assistant. Generate a title for the following conversation.
-    The title should be a really short summary of the conversation.
+    How best can you describe this conversation?
     Conversation: \n{user_message}\n\n
-    Please respond with the title only, in the same language as the conversation.
+    Please respond with a few words, max 5.
     """,
         }
     ]
