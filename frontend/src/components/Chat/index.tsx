@@ -17,7 +17,7 @@ import { Link } from 'react-router-dom';
 const ChatComponent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [discussion, setDiscussion] = useState<DiscussionMessage[]>([]);
-  const { locale } = useTheme();
+  const { locale, isPageVisible } = useTheme();
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -30,6 +30,7 @@ const ChatComponent: React.FC = () => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const [pendingContent, setPendingContent] = useState('');
 
   useEffect(() => {
     if (!chatId) {
@@ -42,7 +43,7 @@ const ChatComponent: React.FC = () => {
 
   useEffect(() => {
     if (!isStreaming) {
-      setDiscussion(prevDiscussion => [...prevDiscussion.map(message => ({ ...message, isStreaming: false }))])
+      setDiscussion(prevDiscussion => [...prevDiscussion.map(message => ({ ...message, isStreaming }))])
       setCurrentAIModel(isVezmirIntelligence ? "Vezmir Intelligence 🔮" : selectedAIModel?.display_name);
     }
   }, [isStreaming, isVezmirIntelligence, selectedAIModel]);
@@ -91,9 +92,9 @@ const ChatComponent: React.FC = () => {
       if (index < prevDiscussion.length - 1 && !msg.children!.includes(prevDiscussion[index + 1].id!)) {
         msg.children!.push(prevDiscussion[index + 1].id!);
       }
-      if (!msg.parent) return { ...msg, isStreaming: false };
+      if (!msg.parent) return { ...msg, isStreaming };
       const { navigation } = getParent(msg);
-      return { ...msg, isStreaming: false, navigation: navigation || undefined };
+      return { ...msg, isStreaming, navigation: navigation || undefined };
     }));
   };
 
@@ -420,9 +421,13 @@ const ChatComponent: React.FC = () => {
               const jsonStr = line.trim().slice(5).trim();
               data = JSON.parse(jsonStr);
               const newContent = data.content || '';
+              assistantMessage += newContent;
 
-              for (const char of newContent) {
-                assistantMessage += char;
+              // Update pending content regardless of page visibility
+              setPendingContent(assistantMessage);
+
+              // Only update UI if page is visible
+              if (isPageVisible) {
                 setDiscussion(prevDiscussion => [
                   ...prevDiscussion.slice(0, -1),
                   { ...data, content: assistantMessage, isStreaming: true }
@@ -435,12 +440,22 @@ const ChatComponent: React.FC = () => {
           }
         }
       }
-      setMessages(prevMessages => [...prevMessages, { ...data, content: assistantMessage }])
+      setMessages(prevMessages => [...prevMessages, { ...data, content: assistantMessage }]);
       setIsStreaming(false);
     };
 
     processText();
   };
+
+  // Add this effect to update the UI when the page becomes visible
+  useEffect(() => {
+    if (isPageVisible && pendingContent) {
+      setDiscussion(prevDiscussion => [
+        ...prevDiscussion.slice(0, -1),
+        { ...prevDiscussion[prevDiscussion.length - 1], content: pendingContent, isStreaming }
+      ]);
+    }
+  }, [isPageVisible, pendingContent]);
 
   const handleAbortStream = () => {
     if (abortController) {

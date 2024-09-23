@@ -17,7 +17,8 @@ interface ThemeContextType {
     showCompleteProfileModal: boolean;
     setShowCompleteProfileModal: (show: boolean) => void;
     removeNotification: (message: string) => void;
-    useMediaQuery: (query: string) => boolean; // Add this line
+    useMediaQuery: (query: string) => boolean;
+    isPageVisible: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -26,6 +27,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [notifications, setNotifications] = useState<serverResponse[]>([]);
     const [showCompleteProfileModal, setShowCompleteProfileModal] = useState(false);
     const [translations, setTranslations] = useState<LanguageModule>(Eng);
+    const [isPageVisible, setIsPageVisible] = useState(!document.hidden);
 
     const useMediaQuery = (query: string): boolean => {
         const [matches, setMatches] = useState(false);
@@ -49,7 +51,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setNotifications(prevNotifications => [...prevNotifications, { message, status }]);
         };
 
+        const handleVisibilityChange = () => setIsPageVisible(!document.hidden);
+
         window.addEventListener('notification', handleNotification as EventListener);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         // Detect user's language
         const userLanguage = navigator.language.split('-')[0];
@@ -58,6 +63,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
         return () => {
             window.removeEventListener('notification', handleNotification as EventListener);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, []);
 
@@ -70,7 +76,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     return (
-        <ThemeContext.Provider value={{ locale, notifications, showCompleteProfileModal, setShowCompleteProfileModal, removeNotification, useMediaQuery }}>
+        <ThemeContext.Provider value={{
+            locale,
+            notifications,
+            showCompleteProfileModal,
+            setShowCompleteProfileModal,
+            removeNotification,
+            useMediaQuery,
+            isPageVisible
+        }}>
             {children}
         </ThemeContext.Provider>
     );
