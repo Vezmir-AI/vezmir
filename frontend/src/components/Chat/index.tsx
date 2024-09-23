@@ -307,10 +307,10 @@ const ChatComponent: React.FC = () => {
       ]);
       if (discussion[index].role !== 'user') throw "Message Rewrite is not a user message";
       const url = `/chat/conversations/${chatId}/`;
-      const files = (discussion[index].files as File[] | undefined)
+      const files = await fetchFiles(discussion[index].files ?? []);
       const parent = discussion[index].parent;
       if (!parent) throw "Message Rewrite has no parent";
-      const { userMessage, model } = await sendMessageAndGetId(newMessage, parent!, url, files);
+      const { userMessage, model } = await sendMessageAndGetId(newMessage, parent, url, files);
 
       setMessages(prevMessages => {
         const updatedMessages = [...prevMessages];
@@ -344,17 +344,31 @@ const ChatComponent: React.FC = () => {
     }
   };
 
+  const fetchFiles = async (fileMetadata: any[]): Promise<File[]> => {
+    const files: File[] = [];
+    for (const file of fileMetadata) {
+      try {
+        const url = `/chat/file/${chatId}/${file.name}/`;
+        const blob = await api.get(url);
+        const fetchedFile = new File([blob], file.name, { type: file.type });
+        files.push(fetchedFile);
+      } catch (error) {
+        console.error('Error fetching file:', error);
+      }
+    }
+    return files;
+  };
 
   const sendMessageAndGetId = async (message: string, previousMessageId: string, url: string, files?: File[]): Promise<{ userMessage: any, model: any }> => {
     const formData = new FormData();
     formData.append('content', message);
     formData.append('model_name', selectedAIModel.name);
-    formData.append('is_vezmir_intelligence', isVezmirIntelligence);
+    formData.append('is_vezmir_intelligence', isVezmirIntelligence.toString());
     formData.append('parent', previousMessageId);
 
     if (files && files.length > 0) {
       files.forEach((file) => {
-        formData.append(`files`, file);
+        formData.append('files', file);
       });
     }
 
