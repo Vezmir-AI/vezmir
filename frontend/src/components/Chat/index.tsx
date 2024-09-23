@@ -21,7 +21,7 @@ const ChatComponent: React.FC = () => {
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { currentAIModel, addConversation, selectedAIModel, setSelectedAIModel, setCurrentAIModel, resetSelectedAIModel, conversations } = useConversation();
+  const { currentAIModel, addConversation, selectedAIModel, setSelectedAIModel, setCurrentAIModel, resetSelectedAIModel, conversations, fetchConversation } = useConversation();
   const [isVezmirIntelligence, setIsVezmirIntelligence] = useState(() => {
     const saved = localStorage.getItem('isVezmirIntelligence');
     return saved ? JSON.parse(saved) : false;
@@ -177,7 +177,7 @@ const ChatComponent: React.FC = () => {
 
   const fetchMessages = async (id: string): Promise<void> => {
     try {
-      const response = await api.get(`/chat/conversations/${id}/`);
+      const response = await fetchConversation(id);
       setMessages(response);
     } catch (error) {
       console.error('Error fetching messages:', error);
