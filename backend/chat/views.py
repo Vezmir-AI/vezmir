@@ -1,7 +1,7 @@
 import os
 
 from django.core.files.storage import default_storage
-from django.db.models import F
+from django.db.models import F, Q
 from django.http import FileResponse, StreamingHttpResponse
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -225,19 +225,14 @@ class ChatStreamView(APIView):
             )
 
         # TODO: implement versionning of the conversation
-        # parent_ids = []
-        # current_message = user_message
-        # while current_message.parent_id:
-        #     parent_ids.append(current_message.parent_id)
-        #     current_message = ChatMessage.objects.get(id=current_message.parent_id)
-
-        # conversation_messages = FormattedMessageSerializer(
-        #     ChatMessage.objects.filter(Q(id=message_id) | Q(id__in=parent_ids)).order_by("date_created"),
-        #     many=True,
-        # ).data
+        parent_ids = [user_message.id]
+        current_message = user_message
+        while current_message.parent_id:
+            parent_ids.append(current_message.parent_id)
+            current_message = ChatMessage.objects.get(id=current_message.parent_id)
 
         conversation_messages = FormattedMessageSerializer(
-            ChatMessage.objects.filter(chat_conversation=user_message.chat_conversation).order_by("date_created"),
+            ChatMessage.objects.filter(Q(id__in=parent_ids)).order_by("date_created"),
             many=True,
         ).data
 
