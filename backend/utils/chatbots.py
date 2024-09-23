@@ -44,6 +44,24 @@ def choose_model(user_message):
         "Mathematics": "gpt-4o-2024-08-06",
     }
 
+    # First question to check if the prompt is searchable on the internet
+    internet_search_message = [
+        {
+            "role": "user",
+            "content": (
+                "Need this prompt absolutely be answered using information available on the internet? "
+                "Please respond with 'yes' or 'no'.\n\nPrompt: "
+                f"{user_message}"
+            ),
+        }
+    ]
+
+    internet_search_response = GroqAPI.get_response(internet_search_message, "llama3-8b-8192")
+    is_searchable = internet_search_response.content.strip('"').lower()
+
+    if is_searchable == "yes":
+        return "llama-3.1-sonar-large-128k-online"
+
     message = [
         {
             "role": "user",
