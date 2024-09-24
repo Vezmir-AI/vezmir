@@ -53,7 +53,6 @@ const ChatComponent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setDiscussion([])
     if (chatId && !isStreaming) {
       fetchMessages(chatId);
     }
@@ -103,7 +102,6 @@ const ChatComponent: React.FC = () => {
     if (!message.parent) return { parent: null, navigation };
     const parent = messages.find(msg => msg.id === message.parent);
     if (!parent) {
-      console.error("Parent message not found");
       return { parent, navigation };
     }
     if (!parent.children) {
