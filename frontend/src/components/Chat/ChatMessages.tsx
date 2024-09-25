@@ -218,14 +218,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                 </div>
               ) : (
                 <>
-                  <div className="absolute -bottom-6 right-0 flex items-center space-x-2 mt-2 mr-2">
-                    <button
-                      onClick={() => handleEditClick(msg.id || '', msg.content)}
-                      className={`p-1 rounded bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1 ${editingMessageId === msg.id ? 'hidden' : ''}`}
-                      title="Rewrite message"
-                    >
-                      <PencilIcon className="h-4 w-4 text-white" />
-                    </button>
+                  <div className="absolute -bottom-6 bg-[var(--gray-700)] right-0 flex items-center space-x-2 mt-2">
                     {msg.navigation && (
                       <>
                         <button
@@ -255,14 +248,26 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                         </button>
                       </>
                     )}
+
                   </div>
                 </>
               ))}
             </div>
             )}
+
           </div>
+          {msg.role === 'user' && (
+            <button
+              onClick={() => handleEditClick(msg.id || '', msg.content)}
+              className={`p-1 rounded bg-[var(--gray-800)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1 ml-2 mb-3 self-end ${editingMessageId === msg.id ? 'hidden' : ''}`}
+              title="Rewrite message"
+            >
+              <PencilIcon className="h-5 w-5 text-white" />
+            </button>
+          )}
         </div>
       ))}
+
     </div>
   );
 };
