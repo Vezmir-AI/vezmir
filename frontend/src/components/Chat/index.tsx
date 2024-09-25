@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
 import { useConversation } from '@/context/ConversationContext';
-import { Message } from '@/types';
+import { Message, DiscussionMessage } from '@/types';
 import { getProviderLogo } from '@/utils';
 import ModelSelector from './ModelSelector';
 import ChatMessages from './ChatMessages';
@@ -16,11 +16,12 @@ import { Link } from 'react-router-dom';
 
 const ChatComponent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const { locale } = useTheme();
+  const [discussion, setDiscussion] = useState<DiscussionMessage[]>([]);
+  const { locale, isPageVisible } = useTheme();
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { currentAIModel, addConversation, selectedAIModel, setSelectedAIModel, setCurrentAIModel, resetSelectedAIModel, conversations } = useConversation();
+  const { currentAIModel, addConversation, selectedAIModel, setSelectedAIModel, setCurrentAIModel, resetSelectedAIModel, conversations, fetchConversation } = useConversation();
   const [isVezmirIntelligence, setIsVezmirIntelligence] = useState(() => {
     const saved = localStorage.getItem('isVezmirIntelligence');
     return saved ? JSON.parse(saved) : false;
@@ -28,10 +29,12 @@ const ChatComponent: React.FC = () => {
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const [pendingContent, setPendingContent] = useState('');
 
   useEffect(() => {
     if (!chatId) {
-      resetMessages();
+      resetDiscussion();
       resetSelectedAIModel();
     } else {
       resetSelectedAIModel(chatId, selectedAIModel);
@@ -40,13 +43,13 @@ const ChatComponent: React.FC = () => {
 
   useEffect(() => {
     if (!isStreaming) {
-      setMessages(prevMessages => [...prevMessages.map(message => ({ ...message, isStreaming: false }))])
+      setDiscussion(prevDiscussion => [...prevDiscussion.map(message => ({ ...message, isStreaming }))])
       setCurrentAIModel(isVezmirIntelligence ? "Vezmir Intelligence 🔮" : selectedAIModel?.display_name);
     }
   }, [isStreaming, isVezmirIntelligence, selectedAIModel]);
 
-  const resetMessages = useCallback(() => {
-    setMessages([]);
+  const resetDiscussion = useCallback(() => {
+    setDiscussion([]);
   }, []);
 
   useEffect(() => {
@@ -57,12 +60,22 @@ const ChatComponent: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
+  }, [discussion]);
+
+  useEffect(() => {
+    if (messages.length === 0 || isStreaming) return;
+
+    if (discussion.length > 0) {
+      updateDiscussionWithMessages();
+    } else {
+      setDiscussion(buildCurrentDiscussion());
+    }
   }, [messages]);
 
   useEffect(() => {
     const handleConversationDeleted = (event: CustomEvent<{ id: string }>) => {
       if (event.detail.id === chatId) {
-        resetMessages();
+        resetDiscussion();
       }
     };
 
@@ -71,7 +84,76 @@ const ChatComponent: React.FC = () => {
     return () => {
       window.removeEventListener('conversationDeleted', handleConversationDeleted as EventListener);
     };
-  }, [chatId, resetMessages]);
+  }, [chatId, resetDiscussion]);
+
+  const updateDiscussionWithMessages = () => {
+    setDiscussion(prevDiscussion => prevDiscussion.map((msg, index) => {
+      if (index < prevDiscussion.length - 1 && !msg.children!.includes(prevDiscussion[index + 1].id!)) {
+        msg.children!.push(prevDiscussion[index + 1].id!);
+      }
+      if (!msg.parent) return { ...msg, isStreaming };
+      const { navigation } = getParent(msg);
+      return { ...msg, isStreaming, navigation: navigation || undefined };
+    }));
+  };
+
+  const getParent = (message: Message) => {
+    let navigation;
+    if (!message.parent) return { parent: null, navigation };
+    const parent = messages.find(msg => msg.id === message.parent);
+    if (!parent) {
+      return { parent, navigation };
+    }
+    if (!parent.children) {
+      console.error("Message parent has no children");
+      return { parent, navigation };
+    }
+    const position = parent.children.indexOf(message.id || '');
+    navigation = parent.children.length === 1 ? null : {
+      next: null,
+      previous: parent.children[position - 1],
+      position: `${position + 1}/${parent.children.length}`
+    };
+    return { parent, navigation };
+  };
+
+  const buildCurrentDiscussion = () => {
+    let current = messages[messages.length - 1];
+    const currentDiscussion = [];
+    do {
+      const { parent, navigation } = getParent(current);
+      currentDiscussion.push({
+        ...current,
+        navigation: navigation || undefined
+      });
+      current = parent!;
+    } while (current.parent);
+    currentDiscussion.push(current)
+    return currentDiscussion.reverse();
+  };
+
+  const getChildren = (message: Message, position?: number): DiscussionMessage[] => {
+    if (!message.children) return [];
+    position = position || message.children.length - 1;
+    let navigation;
+    const messageId = message.children?.[position];
+    const childMessage = messages.find(msg => msg.id === messageId);
+    if (!childMessage) return [];
+    if (message.children.length > 1) {
+      navigation = {
+        previous: message.children[position - 1],
+        next: message.children[position + 1],
+        position: `${position + 1}/${message.children.length}`
+      }
+    }
+    return [
+      {
+        ...childMessage,
+        navigation
+      },
+      ...getChildren(childMessage),
+    ]
+  }
 
   const scrollToBottom = () => {
     if (shouldAutoScroll && chatContainerRef.current) {
@@ -89,19 +171,44 @@ const ChatComponent: React.FC = () => {
 
   const fetchMessages = async (id: string): Promise<void> => {
     try {
-      const response = await api.get(`/chat/conversations/${id}/`);
+      const response = await fetchConversation(id);
       setMessages(response);
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
   };
 
+  const handleNavigation = (messageId: string, targetId: string) => {
+    const currentIndex = discussion.findIndex(msg => msg.id === messageId)
+    if (currentIndex === -1) throw "Message Navigation not found"
+    const target = messages.find(msg => msg.id === targetId)
+    if (!target) throw "Message Navigation target not found"
+
+    // Find the parent message to determine navigation
+    const parentMessage = messages.find(msg => msg.children?.includes(targetId))
+    let navigation: DiscussionMessage['navigation'] | undefined;
+    if (parentMessage && parentMessage.children) {
+      const position = parentMessage.children.indexOf(targetId)
+      navigation = {
+        previous: parentMessage.children[position - 1],
+        next: parentMessage.children[position + 1],
+        position: `${position + 1}/${parentMessage.children.length}`
+      }
+    }
+    const children = getChildren(target)
+    setDiscussion(prevDiscussion => [...prevDiscussion.slice(0, currentIndex), { ...target, navigation }, ...children])
+  }
+
   const handleSendMessageToStream = async (message: string, files?: File[]): Promise<void> => {
     try {
       setIsStreaming(true);
 
+      // Create a new AbortController instance
+      const controller = new AbortController();
+      setAbortController(controller);
+
       // Add user message with temporary file URLs
-      setMessages(prevMessages => [...prevMessages,
+      setDiscussion(prevDiscussion => [...prevDiscussion,
       {
         id: null,
         role: 'user',
@@ -133,12 +240,27 @@ const ChatComponent: React.FC = () => {
         previousMessageId = messages[messages.length - 1]?.id || '';
         url = `/chat/conversations/${chatId}/`;
       }
+
       const { userMessage, model } = await sendMessageAndGetId(message, previousMessageId, url, files);
+
+      setMessages(prevMessages => {
+        const updatedMessages = [...prevMessages];
+        if (previousMessageId) {
+          const parentIndex = updatedMessages.findIndex(msg => msg.id === previousMessageId);
+          if (parentIndex !== -1) {
+            updatedMessages[parentIndex] = {
+              ...updatedMessages[parentIndex],
+              children: [...(updatedMessages[parentIndex].children || []), userMessage.id]
+            };
+          }
+        }
+        return [...updatedMessages, userMessage];
+      });
 
       setCurrentAIModel(model.display_name);
       setSelectedAIModel(model);
-      setMessages(prevMessages => [
-        ...prevMessages.slice(0, -2), { ...userMessage, }, {
+      setDiscussion(prevDiscussion => [
+        ...prevDiscussion.slice(0, -2), { ...userMessage, }, {
           id: null,
           role: 'assistant',
           content: '',
@@ -148,7 +270,7 @@ const ChatComponent: React.FC = () => {
         },
       ]);
 
-      await streamResponse(userMessage.id);
+      await streamResponse(userMessage.id, controller.signal);
 
     } catch (error) {
       console.error('Error sending message:', error);
@@ -156,17 +278,104 @@ const ChatComponent: React.FC = () => {
     }
   };
 
+  const handleRegeneration = async (messageId: string): Promise<void> => {
+    try {
+      setIsStreaming(true);
+      const index = discussion.findIndex(msg => msg.id === messageId);
+      if (index === -1) throw "Message Regeneration not found";
+      setDiscussion(prevDiscussion => [...prevDiscussion.slice(0, index)]);
+      handleRewrite(messageId, discussion[index].content);
+    } catch (error) {
+      console.error('Error regenerating message:', error);
+    }
+  };
+
+  const handleRewrite = async (messageId: string, newMessage: string): Promise<void> => {
+    try {
+      setIsStreaming(true);
+      const controller = new AbortController();
+      setAbortController(controller);
+
+      const index = discussion.findIndex(msg => msg.id === messageId);
+      if (index === -1) throw "Message Rewrite not found";
+      const selectedModel = discussion[index].ai_model_details;
+      setSelectedAIModel(selectedModel);
+      setDiscussion(prevDiscussion => [
+        ...prevDiscussion.slice(0, index),
+        { ...prevDiscussion[index], content: newMessage },
+        {
+          id: null,
+          role: 'assistant',
+          content: '',
+          ai_model_details: selectedModel,
+          isStreaming: true,
+          parent: null
+        }
+      ]);
+      if (discussion[index].role !== 'user') throw "Message Rewrite is not a user message";
+      const url = `/chat/conversations/${chatId}/`;
+      const files = await fetchFiles(discussion[index].files ?? []);
+      const parent = discussion[index].parent;
+      if (!parent) throw "Message Rewrite has no parent";
+      const { userMessage, model } = await sendMessageAndGetId(newMessage, parent, url, files);
+
+      setMessages(prevMessages => {
+        const updatedMessages = [...prevMessages];
+        if (parent) {
+          const parentIndex = updatedMessages.findIndex(msg => msg.id === parent);
+          if (parentIndex !== -1) {
+            updatedMessages[parentIndex] = {
+              ...updatedMessages[parentIndex],
+              children: [...(updatedMessages[parentIndex].children || []), userMessage.id]
+            };
+          }
+        }
+        return [...updatedMessages, userMessage];
+      });
+      setCurrentAIModel(model.display_name);
+      setSelectedAIModel(model);
+      setDiscussion(prevDiscussion => [
+        ...prevDiscussion.slice(0, -2), { ...userMessage, }, {
+          id: null,
+          role: 'assistant',
+          content: '',
+          ai_model_details: selectedAIModel,
+          isStreaming: true,
+          parent: userMessage.id
+        },
+      ]);
+
+      await streamResponse(userMessage.id, controller.signal);
+    } catch (error) {
+      console.error('Error rewriting message:', error);
+    }
+  };
+
+  const fetchFiles = async (fileMetadata: any[]): Promise<File[]> => {
+    const files: File[] = [];
+    for (const file of fileMetadata) {
+      try {
+        const url = `/chat/file/${chatId}/${file.name}/`;
+        const blob = await api.get(url);
+        const fetchedFile = new File([blob], file.name, { type: file.type });
+        files.push(fetchedFile);
+      } catch (error) {
+        console.error('Error fetching file:', error);
+      }
+    }
+    return files;
+  };
 
   const sendMessageAndGetId = async (message: string, previousMessageId: string, url: string, files?: File[]): Promise<{ userMessage: any, model: any }> => {
     const formData = new FormData();
     formData.append('content', message);
     formData.append('model_name', selectedAIModel.name);
-    formData.append('is_vezmir_intelligence', isVezmirIntelligence);
+    formData.append('is_vezmir_intelligence', isVezmirIntelligence.toString());
     formData.append('parent', previousMessageId);
 
     if (files && files.length > 0) {
       files.forEach((file) => {
-        formData.append(`files`, file);
+        formData.append('files', file);
       });
     }
 
@@ -181,17 +390,14 @@ const ChatComponent: React.FC = () => {
       });
   };
 
-  const streamResponse = async (userMessageId: string): Promise<void> => {
-    setMessages(prevMessages => [
-      ...prevMessages,
-    ]);
-
-    const response = await api.post("/chat/conversations/stream/", { message_id: userMessageId }, true);
+  const streamResponse = async (userMessageId: string, signal: AbortSignal): Promise<void> => {
+    const response = await api.post("/chat/conversations/stream/", { message_id: userMessageId }, true, false, signal);
     if (!response) {
       throw new Error('Response body is null');
     }
 
     let assistantMessage = '';
+    let data: any;
     const reader = response.getReader();
     const decoder = new TextDecoder('utf-8');
 
@@ -199,7 +405,6 @@ const ChatComponent: React.FC = () => {
       let buffer = '';
       const speed = 800; // Characters per second
       const interval = 1000 / speed; // Milliseconds between each character
-
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -212,13 +417,17 @@ const ChatComponent: React.FC = () => {
           if (line.trim().startsWith('data:')) {
             try {
               const jsonStr = line.trim().slice(5).trim();
-              const data = JSON.parse(jsonStr);
+              data = JSON.parse(jsonStr);
               const newContent = data.content || '';
+              assistantMessage += newContent;
 
-              for (const char of newContent) {
-                assistantMessage += char;
-                setMessages(prevMessages => [
-                  ...prevMessages.slice(0, -1),
+              // Update pending content regardless of page visibility
+              setPendingContent(assistantMessage);
+
+              // Only update UI if page is visible
+              if (isPageVisible) {
+                setDiscussion(prevDiscussion => [
+                  ...prevDiscussion.slice(0, -1),
                   { ...data, content: assistantMessage, isStreaming: true }
                 ]);
                 await new Promise(resolve => setTimeout(resolve, interval));
@@ -229,12 +438,31 @@ const ChatComponent: React.FC = () => {
           }
         }
       }
+      setMessages(prevMessages => [...prevMessages, { ...data, content: assistantMessage }]);
       setIsStreaming(false);
     };
 
     processText();
   };
 
+  // Add this effect to update the UI when the page becomes visible
+  useEffect(() => {
+    if (isPageVisible && pendingContent) {
+      setDiscussion(prevDiscussion => [
+        ...prevDiscussion.slice(0, -1),
+        { ...prevDiscussion[prevDiscussion.length - 1], content: pendingContent, isStreaming }
+      ]);
+    }
+  }, [isPageVisible, pendingContent]);
+
+  const handleAbortStream = () => {
+    if (abortController) {
+      abortController.abort();
+      console.error('Aborted stream');
+      setIsStreaming(false);
+      window.location.reload(); // reload is the quick fix found to display the whole last message
+    }
+  };
 
   return (
     <div className="flex h-screen bg-[var(--gray-800)]">
@@ -311,7 +539,10 @@ const ChatComponent: React.FC = () => {
             </div>
           ) : (
             <ChatMessages
-              messages={messages}
+              messages={discussion}
+              handleRewrite={handleRewrite}
+              handleRegeneration={handleRegeneration}
+              handleNavigation={handleNavigation}
             />
           )}
           <div ref={messagesEndRef} />
@@ -334,6 +565,7 @@ const ChatComponent: React.FC = () => {
             selectedAIModel={selectedAIModel}
             isStreaming={isStreaming}
             onSendMessage={handleSendMessageToStream}
+            onAbortStream={handleAbortStream} // Pass the handleAbortStream function
           />
         </div>
       </div>

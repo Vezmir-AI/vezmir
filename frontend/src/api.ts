@@ -7,8 +7,8 @@ const api = {
       ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
     } as { [key: string]: string };
   },
-  post: async function (url: string, body: any = {}, stream: boolean = false, formData: boolean = false) {
-    return this._fetch(url, body, 'POST', true, stream, formData);
+  post: async function (url: string, body: any = {}, stream: boolean = false, formData: boolean = false, signal?: AbortSignal) {
+    return this._fetch(url, body, 'POST', true, stream, formData, signal);
   },
   get: async function (url: string, params: { [key: string]: string } | null = null) {
     if (params) {
@@ -23,7 +23,7 @@ const api = {
   delete: async function (url: string) {
     return this._fetch(url, null, 'DELETE');
   },
-  _fetch: async function (url: string, options: any, method: string, _retry: boolean = true, stream: boolean = false, formData: boolean = false): Promise<any> {
+  _fetch: async function (url: string, options: any, method: string, _retry: boolean = true, stream: boolean = false, formData: boolean = false, signal?: AbortSignal): Promise<any> {
     const fetchUrl = this.baseURL + url;
     const headers: { [key: string]: string } = this.getHeaders();
     if (formData) {
@@ -33,6 +33,7 @@ const api = {
       method,
       headers,
       body: formData ? options : (options ? JSON.stringify(options) : undefined),
+      signal,
     });
     if (response.status === 401 && _retry) {
 
