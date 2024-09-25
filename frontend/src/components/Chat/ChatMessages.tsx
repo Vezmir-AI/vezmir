@@ -218,7 +218,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                 </div>
               ) : (
                 <>
-                  <div className="absolute -bottom-6 bg-[var(--gray-700)] right-0 flex items-center space-x-2 mt-2">
+                  <div className="absolute -bottom-6 bg-[var(--gray-700)] right-0 flex items-center space-x-2 mt-2 rounded-bl-md overflow-hidden">
                     {msg.navigation && (
                       <>
                         <button
