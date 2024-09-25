@@ -23,10 +23,9 @@ def generate_title(user_message):
         {
             "role": "user",
             "content": f"""
-    You are an AI assistant. Generate a title for the following conversation.
-    The title should be a really short summary of the conversation.
+    How best can you describe this conversation?
     Conversation: \n{user_message}\n\n
-    Please respond with the title only, in the same language as the conversation.
+    Please respond with a few words, max 5.
     """,
         }
     ]
@@ -44,6 +43,24 @@ def choose_model(user_message):
         "Writing": "gpt-4o-2024-08-06",
         "Mathematics": "gpt-4o-2024-08-06",
     }
+
+    # First question to check if the prompt is searchable on the internet
+    internet_search_message = [
+        {
+            "role": "user",
+            "content": (
+                "Need this prompt absolutely be answered using information available on the internet? "
+                "Please respond with 'yes' or 'no'.\n\nPrompt: "
+                f"{user_message}"
+            ),
+        }
+    ]
+
+    internet_search_response = GroqAPI.get_response(internet_search_message, "llama3-8b-8192")
+    is_searchable = internet_search_response.content.strip('"').lower()
+
+    if is_searchable == "yes":
+        return "llama-3.1-sonar-large-128k-online"
 
     message = [
         {
