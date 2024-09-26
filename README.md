@@ -6,7 +6,7 @@ To run the site, you first need to [install docker](https://docs.docker.com/engi
 1. `docker compose up -d` will run the server in _detach_ mode (remove the `-d` if you really want the full logs).
 2. ./restart_docker.sh` will restart the containers with the following options:
     - `-p` to run `docker system prune -a`;
-    - `-r` to run `docker volume rm vesmir_postgres_data` ;
+    - `-r` to run `docker volume rm vezmir_postgres_data` ;
     - `-b` to add the `--build` command to `docker compose up -d`;
 3. `docker exec -it {dev-react|dev-django} {command} {args}` to execute each command in the appropriate containers. For example, `docker exec -it dev-django python manage.py migrate` will run the migrations in the container.
 4. `docker logs --tail 1000 -f {dev-react|dev-django}` to monitor the logs for a container (don't quit the process like without the `-d` command from 1.)

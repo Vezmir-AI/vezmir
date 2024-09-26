@@ -68,7 +68,7 @@ and /etc/systemd/system/gunicorn.service:
 --access-logfile -
 --workers 3
 --bind unix:/run/gunicorn.sock
-vesmir_app.wsgi:application
+vezmir_app.wsgi:application
 
 [Install] WantedBy=multi-user.target
 ````
