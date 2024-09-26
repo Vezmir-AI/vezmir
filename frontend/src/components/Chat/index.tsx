@@ -60,6 +60,7 @@ const ChatComponent: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
+    console.log(discussion);
   }, [discussion]);
 
   useEffect(() => {
