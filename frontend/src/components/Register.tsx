@@ -136,7 +136,7 @@ const Register: React.FC = () => {
             >
               {locale('auth_email_address')}
             </label>
-            {emailError && <p className="text-[var(--purple)] text-sm mt-1">{emailError}</p>}
+            {emailError && <p className="text-vezmir text-sm mt-1">{emailError}</p>}
           </div>
           <div className="mb-2 relative">
             <input
@@ -155,7 +155,7 @@ const Register: React.FC = () => {
             >
               {locale('auth_password')}
             </label>
-            {passwordError && <p className="text-[var(--purple)] text-sm mt-1">{passwordError}</p>}
+            {passwordError && <p className="text-vezmir text-sm mt-1">{passwordError}</p>}
           </div>
           <div className="mb-2 relative">
             <input
@@ -165,7 +165,7 @@ const Register: React.FC = () => {
               autoComplete="new-password"
               aria-label={locale('auth_password_confirm')}
               onChange={handleConfirmPasswordChange}
-              className={`input-field peer ${!passwordsMatch ? 'border-[var(--purple)]' : ''}`}
+              className={`input-field peer ${!passwordsMatch ? 'border-vezmir' : ''}`}
               placeholder=" "
             />
             <label
@@ -174,14 +174,14 @@ const Register: React.FC = () => {
             >
               {locale('auth_password_confirm')}
             </label>
-            {confirmPasswordError && <p className="text-[var(--purple)] text-sm mt-1">{confirmPasswordError}</p>}
+            {confirmPasswordError && <p className="text-vezmir text-sm mt-1">{confirmPasswordError}</p>}
           </div>
           {!passwordsMatch && confirmPassword !== '' && (
-            <p className="text-[var(--purple)] text-sm mb-2">{locale('auth_password_not_match')}</p>
+            <p className="text-vezmir text-sm mb-2">{locale('auth_password_not_match')}</p>
           )}
           <button
             type="submit"
-            className="w-full transform rounded-md bg-[var(--purple)] px-4 py-3 tracking-wide text-white transition-colors duration-200 hover:bg-[var(--purple-hover)] focus:bg-[var(--purple-hover)] focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:hover:bg-[var(--purple)]"
+            className="w-full transform rounded-md bg-vezmir px-4 py-3 tracking-wide text-white transition-colors duration-200 hover:bg-vezmir-hover focus:bg-vezmir-hover focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:hover:bg-vezmir"
             disabled={!passwordsMatch || confirmPassword === ''}
           >
             {locale('auth_register')}
@@ -202,7 +202,7 @@ const Register: React.FC = () => {
         </div>
         <p className="my-4 text-center text-sm font-light text-gray-700 text-white">
           {locale('auth_already_have_account')}{' '}
-          <Link to="/login" aria-label="Login" className="p-1 text-[var(--purple-clear)]">
+          <Link to="/login" aria-label="Login" className="p-1 text-[vezmir-clear]">
             {locale('auth_login')}
           </Link>
         </p>

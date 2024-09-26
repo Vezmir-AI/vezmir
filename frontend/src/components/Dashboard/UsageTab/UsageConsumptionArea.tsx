@@ -168,7 +168,7 @@ const UsageConsumptionArea: React.FC = () => {
                 <span className="text-sm font-medium">{formatWeekRange(currentWeek)}</span>
                 <button
                     onClick={handleNextWeek}
-                    className={`p-2 sm:pl-3 flex items-center rounded-md ${loading ? 'bg-transparent' : 'bg-[var(--gray-500) sm:bg-[var(--gray-800)'} ${futureWeekDisabled ? 'text-[var(--gray-600) bg-[var(--gray-600)] hover:bg-[var(--gray-600)]' : ''}`}
+                    className={`p-2 sm:pl-3 flex items-center rounded-md ${loading ? 'bg-transparent' : 'bg-[var(--gray-500) sm:bg-[var(--gray-800)'} ${futureWeekDisabled ? 'text-[var(--gray-600) bg-gray-600 hover:bg-gray-600' : ''}`}
                     disabled={futureWeekDisabled || loading}
                 >
                     <span className="mr-1 text-sm hidden sm:inline">{locale('dashboard_next')}</span>

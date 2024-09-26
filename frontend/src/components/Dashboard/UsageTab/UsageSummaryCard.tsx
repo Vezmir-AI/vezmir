@@ -36,18 +36,18 @@ const UsageSummaryCard: React.FC = () => {
         <>
             <h2 className="text-lg font-semibold p-2 text-white">{locale('dashboard_usage_summary')}</h2>
             <div className="h-24">
-                <div className="h-full w-full overflow-hidden rounded-lg bg-[var(--gray-800)] shadow">
+                <div className="h-full w-full overflow-hidden rounded-lg bg-gray-800 shadow">
                     <div className="flex h-full">
                         <div className="flex-1 flex flex-col justify-center px-2 py-4 sm:p-4">
-                            <dt className="text-xs font-normal text-[var(--gray-400)] mb-1">{locale('dashboard_current_spending')}</dt>
+                            <dt className="text-xs font-normal text-gray-400 mb-1">{locale('dashboard_current_spending')}</dt>
                             <dd className="flex flex-col items-start">
-                                <span className="text-2xl font-semibold text-[var(--purple-clear)]">${currentSpending.toFixed(2)}</span>
-                                <span className="text-xs text-[var(--gray-400)]">{locale('dashboard_out_of_20$')}</span>
+                                <span className="text-2xl font-semibold text-[vezmir-clear]">${currentSpending.toFixed(2)}</span>
+                                <span className="text-xs text-gray-400">{locale('dashboard_out_of_20$')}</span>
                             </dd>
                         </div>
                         <div className="flex-1 flex items-center justify-center">
                             <div className={classNames(
-                                changeType === 'increase' ? 'bg-[var(--gray-700)]' : 'bg-[var(--gray-700)]',
+                                changeType === 'increase' ? 'bg-gray-700' : 'bg-gray-700',
                                 'rounded-full p-4 flex items-center'
                             )}>
                                 {changeType === 'increase' ? (
@@ -60,7 +60,7 @@ const UsageSummaryCard: React.FC = () => {
                                         changeType === 'increase' ? 'text-green-400' : 'text-red-400',
                                         'text-xl font-bold'
                                     )}>${Math.abs(moneySaved).toFixed(2)}</span>
-                                    <span className="text-xs text-[var(--gray-400)]">
+                                    <span className="text-xs text-gray-400">
                                         {changeType === 'increase' ? 'Money Saved' : 'Over Budget'}
                                     </span>
                                 </div>

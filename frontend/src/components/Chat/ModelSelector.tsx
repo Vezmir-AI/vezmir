@@ -39,7 +39,7 @@ const ModelSelector: React.FC = () => {
       <div>
         <button
           type="button"
-          className="inline-flex justify-between w-full rounded-xl shadow-sm px-3 sm:px-5 text-sm sm:text-lg font-medium text-gray-300 bg-[var(--gray-700)] hover:bg-[var(--gray-600)] focus:outline-none focus:ring-0"
+          className="inline-flex justify-between w-full rounded-xl shadow-sm px-3 sm:px-5 text-sm sm:text-lg font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-0"
           onClick={() => setIsOpen(!isOpen)}
         >
           <span className="truncate">
@@ -50,12 +50,12 @@ const ModelSelector: React.FC = () => {
       </div>
 
       {isOpen && (
-        <div className="origin-top-left left-[50%] translate-x-[-50%] absolute w-fit sm:w-56 rounded-md shadow-lg bg-[var(--gray-700)] z-50">
+        <div className="origin-top-left left-[50%] translate-x-[-50%] absolute w-fit sm:w-56 rounded-md shadow-lg bg-gray-700 z-50">
           <div role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
             {aiModels.map((model) => (
               <button
                 key={model.display_name}
-                className="flex items-center w-full text-left px-4 text-sm text-gray-300 bg-[var(--gray-700)] hover:bg-[var(--gray-800)] hover:text-gray-100"
+                className="flex items-center w-full text-left px-4 text-sm text-gray-300 bg-gray-700 hover:bg-gray-800 hover:text-gray-100"
                 role="menuitem"
                 onClick={() => handleModelChange(model)}
               >
@@ -73,7 +73,7 @@ const ModelSelector: React.FC = () => {
                       </span>
                     </div>
                     {hoveredHint === model.display_name && (
-                      <div className="absolute z-10 p-2 left-0 top-full text-sm text-white bg-[var(--gray-700)] rounded-md shadow-lg whitespace-nowrap">
+                      <div className="absolute z-10 p-2 left-0 top-full text-sm text-white bg-gray-700 rounded-md shadow-lg whitespace-nowrap">
                         {locale(model.hint)}
                       </div>
                     )}

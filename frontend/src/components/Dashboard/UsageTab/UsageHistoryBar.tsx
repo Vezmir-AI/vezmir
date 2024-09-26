@@ -121,7 +121,7 @@ const UsageHistoryBar: React.FC = () => {
                     <div className="flex items-center justify-between w-full max-w-[280px] sm:w-64">
                         <button
                             onClick={handlePreviousMonth}
-                            className="p-2 rounded-full transition-colors duration-200 hover:bg-[var(--purple-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--purple-hover)] focus:ring-opacity-50"
+                            className="p-2 rounded-full transition-colors duration-200 hover:bg-vezmir-hover focus:outline-none focus:ring-2 focus:ring-vezmir-hover focus:ring-opacity-50"
                             disabled={loading}
                         >
                             <ChevronLeftIcon className="w-6 h-6 sm:w-5 sm:h-5" />
@@ -131,9 +131,9 @@ const UsageHistoryBar: React.FC = () => {
                         </span>
                         <button
                             onClick={handleNextMonth}
-                            className={`p-2 rounded-full transition-colors duration-200 hover:bg-[var(--purple-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--purple-hover)] focus:ring-opacity-50 ${
+                            className={`p-2 rounded-full transition-colors duration-200 hover:bg-vezmir-hover focus:outline-none focus:ring-2 focus:ring-vezmir-hover focus:ring-opacity-50 ${
                                 futureMonthDisabled
-                                    ? 'text-[var(--gray-500)] bg-[var(--gray-600)] hover:bg-[var(--gray-600)]'
+                                    ? 'text-gray-500 bg-gray-600 hover:bg-gray-600'
                                     : ''
                             }`}
                             disabled={futureMonthDisabled || loading}
@@ -143,7 +143,7 @@ const UsageHistoryBar: React.FC = () => {
                     </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <span className="text-sm text-[var(--gray-400)]">{locale('dashboard_show_details')}</span>
+                    <span className="text-sm text-gray-400">{locale('dashboard_show_details')}</span>
                     <Switch
                         checked={showDetails}
                         onChange={() => setShowDetails(!showDetails)}

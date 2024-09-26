@@ -94,7 +94,7 @@ const ProfileTab: React.FC = () => {
           setOpen={setShowConfirmationDelete}
           onConfirm={handleConfirmDelete}
         />
-        <div className="xl:px-16 bg-[var(--gray-800)]">
+        <div className="xl:px-16 bg-gray-800">
           <main>
             <h1 className="sr-only">{locale("dashboard_account_settings")}</h1>
 
@@ -196,7 +196,7 @@ const ProfileTab: React.FC = () => {
                           <div>
                             <button
                               type="button"
-                              className="inline-flex justify-between w-full rounded-xl shadow-sm px-3 sm:px-5 text-sm sm:text-lg font-medium text-gray-300 bg-[var(--gray-700)] hover:bg-[var(--gray-600)] focus:outline-none focus:ring-0"
+                              className="inline-flex justify-between w-full rounded-xl shadow-sm px-3 sm:px-5 text-sm sm:text-lg font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-0"
                               onClick={() => setIsOpen(!isOpen)}
                             >
                               <span className="truncate">
@@ -207,12 +207,12 @@ const ProfileTab: React.FC = () => {
                           </div>
 
                           {isOpen && (
-                            <div className="origin-top-right absolute right-0 mt-2 w-full rounded-md shadow-lg bg-[var(--gray-700)] z-50">
+                            <div className="origin-top-right absolute right-0 mt-2 w-full rounded-md shadow-lg bg-gray-700 z-50">
                               <div role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                                 {aiModels.map((model) => (
                                   <button
                                     key={model.name}
-                                    className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 bg-[var(--gray-700)] hover:bg-[var(--gray-800)] hover:text-gray-100"
+                                    className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 bg-gray-700 hover:bg-gray-800 hover:text-gray-100"
                                     role="menuitem"
                                     onClick={() => {
                                       setPreferredModel(model.name);
@@ -299,7 +299,7 @@ const ProfileTab: React.FC = () => {
                         >
                           {locale("dashboard_new_password")}
                         </label>
-                        {passwordError && <p className="text-[var(--purple)] text-sm mt-1">{passwordError}</p>}
+                        {passwordError && <p className="text-vezmir text-sm mt-1">{passwordError}</p>}
                       </div>
                     </div>
 
@@ -310,7 +310,7 @@ const ProfileTab: React.FC = () => {
                           name="confirm_password"
                           type="password"
                           autoComplete="new-password"
-                          className={`input-field peer ${!passwordsMatch ? 'border-[var(--purple)]' : ''}`}
+                          className={`input-field peer ${!passwordsMatch ? 'border-vezmir' : ''}`}
                           placeholder=" "
                           onChange={handleConfirmPasswordChange}
                         />
@@ -321,7 +321,7 @@ const ProfileTab: React.FC = () => {
                           {locale("dashboard_confirm_password")}
                         </label>
                         {!passwordsMatch && confirmPassword !== '' && (
-                          <p className="text-[var(--purple)] text-sm mt-1">{locale('auth_password_not_match')}</p>
+                          <p className="text-vezmir text-sm mt-1">{locale('auth_password_not_match')}</p>
                         )}
                       </div>
                     </div>

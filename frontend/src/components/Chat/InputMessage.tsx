@@ -83,7 +83,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
       {selectedFiles.length > 0 && (
         <div className="flex flex-wrap gap-2 max-w-4xl mx-auto pl-6">
           {selectedFiles.map((file, index) => (
-            <div key={index} className="flex items-center bg-[var(--purple)] text-white rounded-t-[15px] px-3 py-1">
+            <div key={index} className="flex items-center bg-vezmir text-white rounded-t-[15px] px-3 py-1">
               <span className="text-sm truncate max-w-[150px]">
                 {file.name.length > 20
                   ? file.name.slice(0, 6) + '...' + file.name.split('.').pop()
@@ -100,7 +100,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
           ))}
         </div>
       )}
-      <div className="flex items-center max-w-4xl mx-auto relative bg-[var(--gray-800)] p-1">
+      <div className="flex items-center max-w-4xl mx-auto relative bg-gray-800 p-1">
         <textarea
           ref={textareaRef}
           value={inputMessage}
@@ -109,7 +109,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
             adjustTextareaHeightAndFocus();
           }}
           onKeyDown={handleKeyDown}
-          className={`flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-[var(--gray-700)] text-white text-sm sm:text-lg items-center border border-[var(--gray-700)] focus:outline-none focus:ring-0 focus:border-[var(--gray-700)] resize-none ${
+          className={`flex-grow p-4 pl-16 pr-16 rounded-[25px] bg-gray-700 text-white text-sm sm:text-lg items-center border border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-700 resize-none ${
             enableHorizontalScroll ? 'overflow-x-auto' : 'overflow-hidden'
           } ${isStreaming ? 'cursor-not-allowed' : ''}`}
           placeholder={isStreaming ? `${selectedModel} is thinking...` : `Message ${selectedModel ?? ''}`}
@@ -120,8 +120,8 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
         <button
           type="button"
           onClick={() => !isFileInputDisabled && fileInputRef.current?.click()}
-          className={`absolute left-3 bottom-2.5 p-2 rounded-full text-lg flex items-center justify-center ${
-            isFileInputDisabled ? 'text-gray-400 cursor-not-allowed hover:bg-[var(--purple)]' : 'text-white hover:bg-[var(--purple-hover)]'
+          className={`absolute left-3 bottom-3 p-2 rounded-full text-lg flex items-center justify-center ${
+            isFileInputDisabled ? 'text-gray-400 cursor-not-allowed hover:bg-vezmir' : 'text-white hover:bg-vezmir-hover'
           }`}
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
@@ -138,7 +138,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
           <button
             type="button"
             onClick={onAbortStream}
-            className="absolute right-3 bottom-2.5 p-2 rounded-full text-lg flex items-center justify-center bg-[var(--gray-500)] hover:bg-[var(--gray-400)] transition-colors duration-200"
+            className="absolute right-3 bottom-3 p-2 rounded-full text-lg flex items-center justify-center bg-gray-500 hover:bg-gray-400 transition-colors duration-200"
           >
             <StopIcon className="w-5 h-5" />
           </button>
