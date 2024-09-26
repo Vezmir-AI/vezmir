@@ -120,7 +120,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
         <button
           type="button"
           onClick={() => !isFileInputDisabled && fileInputRef.current?.click()}
-          className={`absolute left-3 bottom-2.5 p-2 rounded-full text-lg flex items-center justify-center ${
+          className={`absolute left-3 bottom-3 p-2 rounded-full text-lg flex items-center justify-center ${
             isFileInputDisabled ? 'text-gray-400 cursor-not-allowed hover:bg-[var(--purple)]' : 'text-white hover:bg-[var(--purple-hover)]'
           }`}
           onMouseEnter={() => setShowTooltip(true)}
@@ -138,14 +138,14 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
           <button
             type="button"
             onClick={onAbortStream}
-            className="absolute right-3 bottom-2.5 p-2 rounded-full text-lg flex items-center justify-center bg-[var(--gray-500)] hover:bg-[var(--gray-400)] transition-colors duration-200"
+            className="absolute right-3 bottom-3 p-2 rounded-full text-lg flex items-center justify-center bg-[var(--gray-500)] hover:bg-[var(--gray-400)] transition-colors duration-200"
           >
             <StopIcon className="w-5 h-5" />
           </button>
         ) : (
           <button
             type="submit"
-            className={`absolute right-3 bottom-2.5 p-2 rounded-full text-lg flex items-center justify-center transition-colors duration-200 ${
+            className={`absolute right-3 bottom-3 p-2 rounded-full text-lg flex items-center justify-center transition-colors duration-200 ${
               inputMessage.trim() ? 'bg-white hover:bg-gray-200' : 'bg-gray-400 hover:bg-gray-400'
             } ${(isStreaming || !inputMessage.trim()) ? 'cursor-not-allowed opacity-50' : ''}`}
             disabled={isStreaming || !inputMessage.trim()}
