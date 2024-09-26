@@ -465,11 +465,11 @@ const ChatComponent: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-[var(--gray-800)]">
-      <div className="flex-1 flex flex-col bg-[var(--gray-800)] pl-4 overflow-hidden">
+    <div className="flex h-screen bg-gray-800">
+      <div className="flex-1 flex flex-col bg-gray-800 pl-4 overflow-hidden">
 
         {/* Model Selector + buttons - Fixed at the top */}
-        <div className="sticky top-0 z-10 bg-[var(--gray-800)] shadow-sm w-full pl-12 md:pl-0">
+        <div className="sticky top-0 z-10 bg-gray-800 shadow-sm w-full pl-12 md:pl-0">
           <div className="flex items-center p-4 h-20"> {/* Set a fixed height */}
             {/* Model Selector */}
             <div className="flex-grow flex items-center h-full"> {/* Add h-full */}
@@ -484,7 +484,7 @@ const ChatComponent: React.FC = () => {
                       localStorage.setItem('isVezmirIntelligence', JSON.stringify(!isVezmirIntelligence));
                     }}
                   />
-                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer bg-gray-700 peer-focus:ring-2 peer-focus:ring-[var(--purple-clear)] peer-focus:ring-[var(--purple)] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-[var(--purple)]"></div>
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer bg-gray-700 peer-focus:ring-2 peer-focus:ring-[vezmir-clear] peer-focus:ring-vezmir peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-vezmir"></div>
                 </label>
                 <div className="flex items-center ml-4 mr-4 h-10 relative group">
                   <img
@@ -493,7 +493,7 @@ const ChatComponent: React.FC = () => {
                     className="w-8 h-8 mr-2 invert"
                   />
                   <div className="absolute bottom-0 left-0 mb-[-76px] hidden group-hover:block">
-                    <div className="bg-[var(--purple)] text-white px-4 py-2 rounded-lg shadow-lg whitespace-nowrap ">
+                    <div className="bg-vezmir text-white px-4 py-2 rounded-lg shadow-lg whitespace-nowrap ">
                       <p className="font-bold mb-1">{locale('chat_vezmir_intelligence')}</p>
                       <p className="text-sm">{locale('chat_vezmir_intelligence_description')}</p>
                     </div>
@@ -507,8 +507,8 @@ const ChatComponent: React.FC = () => {
 
             {/* New Chat Button */}
             <Link to="/" className="ml-2 sm:hidden">
-              <div className="p-2 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
-                <PencilSquareIcon className="w-6 h-6 text-[var(--purple-clear)]" />
+              <div className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors duration-200">
+                <PencilSquareIcon className="w-6 h-6 text-[vezmir-clear]" />
               </div>
             </Link>
           </div>
@@ -552,14 +552,14 @@ const ChatComponent: React.FC = () => {
         <div className="fixed bottom-28 right-2 z-20 xl:bottom-10 xl:right-4">
           <button
             onClick={() => setShowFeedbackForm(true)}
-            className="p-2 rounded-full bg-[var(--purple)] hover:bg-[var(--purple-hover)] transition-colors duration-200"
+            className="p-2 rounded-full bg-vezmir hover:bg-vezmir-hover transition-colors duration-200"
           >
             <ChatBubbleLeftIcon className="w-8 h-8 text-white" />
           </button>
         </div>
 
         {/* Input Area - Fixed at the bottom */}
-        <div className="bg-[var(--gray-800)] sticky bottom-0 z-10">
+        <div className="bg-gray-800 sticky bottom-0 z-10">
           <InputMessage
             selectedModel={currentAIModel}
             selectedAIModel={selectedAIModel}

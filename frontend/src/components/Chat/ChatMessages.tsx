@@ -142,8 +142,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
         >
           <div
             className={`${msg.role === 'user'
-              ? 'bg-[var(--gray-700)] text-white rounded-2xl rounded-br-sm'
-              : 'bg-[var(--gray-800)] text-white rounded-3xl rounded-tl-sm mb-6'
+              ? 'bg-gray-700 text-white rounded-2xl rounded-br-sm'
+              : 'bg-gray-800 text-white rounded-3xl rounded-tl-sm mb-6'
               } px-3 py-2 text-base flex items-start relative ${editingMessageId === msg.id ? 'w-full' : 'max-w-[80%]'}`}
           >
             {msg.role === 'assistant' && (
@@ -170,7 +170,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                 <>
                   <div className="mb-2 flex flex-wrap gap-2">
                     {msg.files.map((file, fileIndex) => (
-                      <div key={fileIndex} className="flex flex-col items-center bg-[var(--gray-600)] text-white rounded-lg p-2">
+                      <div key={fileIndex} className="flex flex-col items-center bg-gray-600 text-white rounded-lg p-2">
                         {file.type.startsWith('image/') ? (
                           <img
                             src={imageUrls[file.url] || file.url}
@@ -178,7 +178,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                             className="w-40 h-40 object-cover rounded-md mb-1"
                           />
                         ) : (
-                          <div className="w-20 h-20 flex items-center justify-center bg-[var(--gray-700)] rounded-md mb-1">
+                          <div className="w-20 h-20 flex items-center justify-center bg-gray-700 rounded-md mb-1">
                             <PaperClipIcon className="h-8 w-8" />
                           </div>
                         )}
@@ -199,19 +199,19 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                       setEditedContent(e.target.value);
                       adjustTextareaHeight(e.target);
                     }}
-                    className="w-full bg-[var(--gray-700)] text-white rounded-2xl rounded-br-sm px-3 py-2 text-base resize-none outline-none break-words overflow-hidden"
+                    className="w-full bg-gray-700 text-white rounded-2xl rounded-br-sm px-3 py-2 text-base resize-none outline-none break-words overflow-hidden"
                     style={{ height: 'auto', minHeight: '56px' }}
                   />
                   <div className="flex justify-end mt-2 space-x-2">
                     <button
                       onClick={handleEditCancel}
-                      className="px-3 py-1 text-sm bg-[var(--gray-600)] text-white rounded-full hover:bg-[var(--gray-500)]"
+                      className="px-3 py-1 text-sm bg-gray-600 text-white rounded-full hover:bg-gray-500"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleEditSubmit}
-                      className="px-3 py-1 text-sm bg-[var(--purple)] text-white rounded-full hover:bg-[var(--purple-hover)]"
+                      className="px-3 py-1 text-sm bg-vezmir text-white rounded-full hover:bg-vezmir-hover"
                     >
                       Save
                     </button>
@@ -229,7 +229,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                 <div className="absolute -bottom-6 left-0 flex space-x-2 mt-2 ml-12">
                   <button
                     onClick={() => handleCopy(msg.content)}
-                    className="p-1 rounded bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1"
+                    className="p-1 rounded bg-gray-700 hover:bg-gray-600 transition-colors flex items-center space-x-1"
                     title="Copy message"
                   >
                     {copiedStates[msg.content] ? (
@@ -246,7 +246,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                   </button>
                   <button
                     onClick={() => handleRegeneration(msg.parent!)}
-                    className="p-1 rounded bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1"
+                    className="p-1 rounded bg-gray-700 hover:bg-gray-600 transition-colors flex items-center space-x-1"
                     title="Regenerate response"
                   >
                     <ArrowPathIcon className="h-4 w-4 text-white" />
@@ -255,11 +255,11 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                 </div>
               ) : (
                 <>
-                  <div className="absolute -bottom-6 bg-[var(--gray-700)] right-0 flex items-center space-x-2 mt-2 rounded-bl-md overflow-hidden">
+                  <div className="absolute -bottom-6 bg-gray-700 right-0 flex items-center space-x-2 mt-2 rounded-bl-md overflow-hidden">
                     {msg.navigation && (
                       <>
                         <button
-                          className={`p-1 rounded ${msg.navigation.previous ? 'bg-[var(--gray-700)] hover:bg-[var(--gray-600)] cursor-pointer' : 'bg-[var(--gray-700)] hover:bg-[var(--gray-700)]'} transition-colors`}
+                          className={`p-1 rounded ${msg.navigation.previous ? 'bg-gray-700 hover:bg-gray-600 cursor-pointer' : 'bg-gray-700 hover:bg-gray-700'} transition-colors`}
                           title={msg.navigation.previous ? "Previous message" : "No previous message"}
                           disabled={!msg.navigation.previous}
                           onClick={() => {
@@ -272,7 +272,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                         </button>
                         <span className="text-xs text-white">{msg.navigation.position}</span>
                         <button
-                          className={`p-1 rounded ${msg.navigation.next ? 'bg-[var(--gray-700)] hover:bg-[var(--gray-600)] cursor-pointer' : 'bg-[var(--gray-700)] hover:bg-[var(--gray-700)]'} transition-colors`}
+                          className={`p-1 rounded ${msg.navigation.next ? 'bg-gray-700 hover:bg-gray-600 cursor-pointer' : 'bg-gray-700 hover:bg-gray-700'} transition-colors`}
                           title="Next message"
                           disabled={!msg.navigation.next}
                           onClick={() => {
@@ -296,7 +296,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
           {msg.role === 'user' && !editingMessageId && (
             <button
               onClick={() => handleEditClick(msg.id || '', msg.content)}
-              className="p-1 rounded bg-[var(--gray-800)] hover:bg-[var(--gray-600)] transition-colors flex items-center space-x-1 ml-2 mb-3 self-end"
+              className="p-1 rounded bg-gray-800 hover:bg-gray-600 transition-colors flex items-center space-x-1 ml-2 mb-3 self-end"
               title="Rewrite message"
             >
               <PencilIcon className="h-5 w-5 text-white" />
