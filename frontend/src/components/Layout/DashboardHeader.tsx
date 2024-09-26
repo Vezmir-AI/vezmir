@@ -42,45 +42,45 @@ const DashboardHeader: React.FC = () => {
     }, [isMenuOpen]);
 
     return (
-        <div className="sticky top-0 z-20 bg-[var(--gray-800)] w-auto">
+        <div className="sticky top-0 z-20 bg-gray-800 w-auto">
             <div className="md:hidden flex items-center h-14">
                 <div className="relative flex-grow px-4">
                     <button
                         id="settings-button"
                         type="button"
-                        className="relative w-full cursor-default rounded-md bg-[var(--gray-700)] py-1.5 pl-3 pr-10 text-left text-white shadow-sm ring-1 ring-inset ring-[var(--gray-600)] focus:bg-[var(--gray-600)] focus:outline-none focus:ring-2 focus:ring-[var(--purple-clear)] sm:text-sm sm:leading-6"
+                        className="relative w-full cursor-default rounded-md bg-gray-700 py-1.5 pl-3 pr-10 text-left text-white shadow-sm ring-1 ring-inset ring-gray-600 focus:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-[vezmir-clear] sm:text-sm sm:leading-6"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                     >
                         <span className="flex items-center">
-                            <currentTab.icon className="h-5 w-5 text-[var(--gray-400)] mr-3" aria-hidden="true" />
+                            <currentTab.icon className="h-5 w-5 text-gray-400 mr-3" aria-hidden="true" />
                             <span className="block truncate">{currentTab.name}</span>
                         </span>
                         <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                            <ChevronUpDownIcon className="h-5 w-5 text-[var(--gray-400)]" aria-hidden="true" />
+                            <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                         </span>
                     </button>
                     {isMenuOpen && (
                         <ul
-                            className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-[var(--gray-700)] py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                            className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
                             id="settings-menu"
                         >
                             {settings.map((tab) => (
                                 <li
                                     key={tab.name}
-                                    className={`relative cursor-default select-none py-2 pl-3 pr-9 text-white ${tab === currentTab ? 'bg-[var(--gray-600)]' : ''}`}
+                                    className={`relative cursor-default select-none py-2 pl-3 pr-9 text-white ${tab === currentTab ? 'bg-gray-600' : ''}`}
                                     onClick={() => {
                                         navigate(tab.href);
                                         setIsMenuOpen(false);
                                     }}
                                 >
                                     <div className="flex items-center">
-                                        <tab.icon className="h-5 w-5 text-[var(--gray-400)] mr-3" aria-hidden="true" />
+                                        <tab.icon className="h-5 w-5 text-gray-400 mr-3" aria-hidden="true" />
                                         <span className={`block truncate ${tab === currentTab ? 'font-semibold' : 'font-normal'}`}>
                                             {tab.name}
                                         </span>
                                     </div>
                                     {tab === currentTab && (
-                                        <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-[var(--purple-clear)]">
+                                        <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-[vezmir-clear]">
                                             <CheckIcon className="h-5 w-5" aria-hidden="true" />
                                         </span>
                                     )}
@@ -90,8 +90,8 @@ const DashboardHeader: React.FC = () => {
                     )}
                 </div>
                 <Link to="/" className="mr-2">
-                    <div className="p-2 m-1 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] transition-colors duration-200">
-                        <PencilSquareIcon className="w-6 h-6 text-[var(--purple-clear)]" />
+                    <div className="p-2 m-1 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors duration-200">
+                        <PencilSquareIcon className="w-6 h-6 text-[vezmir-clear]" />
                     </div>
                 </Link>
             </div>
@@ -105,14 +105,14 @@ const DashboardHeader: React.FC = () => {
                                 aria-current={tab === currentTab ? 'page' : undefined}
                                 className={classNames(
                                     tab === currentTab
-                                        ? 'border-[var(--purple-clear)] text-[var(--purple-clear)] text-xl font-bold relative'
+                                        ? 'border-[vezmir-clear] text-[vezmir-clear] text-xl font-bold relative'
                                         : 'border-transparent text-gray-500 text-base hover:border-gray-300 hover:text-gray-700 font-medium',
                                     'flex-1 px-1 py-4 text-center',
                                 )}
                             >
                                 {tab.name}
                                 {tab === currentTab && (
-                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--purple-clear)]" />
+                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-[vezmir-clear]" />
                                 )}
                             </Link>
                         ))}

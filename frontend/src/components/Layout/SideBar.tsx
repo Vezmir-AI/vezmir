@@ -53,9 +53,9 @@ export default function SideBar() {
           <div className="fixed inset-0 flex h-full">
             <DialogPanel
               transition
-              className="relative flex w-64 max-w-sm flex-1 flex-col bg-[var(--gray-900)] pb-4 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full"
+              className="relative flex w-64 max-w-sm flex-1 flex-col bg-gray-900 pb-4 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full"
             >
-              <div className="flex h-full flex-col overflow-y-scroll bg-[var(--gray-900)] ">
+              <div className="flex h-full flex-col overflow-y-scroll bg-gray-900 ">
                 <div className="px-4 sm:px-6">
                   <div className="flex items-center justify-between py-4">
                     <Link to="/">
@@ -65,7 +65,7 @@ export default function SideBar() {
                         className="h-12 w-auto cursor-pointer"
                       />
                     </Link>
-                    <button type="button" onClick={() => setSidebarOpen(false)} className="p-2 rounded-md bg-[var(--gray-700)] hover:bg-[var(--gray-600)] text-gray-400 hover:text-white">
+                    <button type="button" onClick={() => setSidebarOpen(false)} className="p-2 rounded-md bg-gray-700 hover:bg-gray-600 text-gray-400 hover:text-white">
                       <span className="sr-only">{locale("sidebar_close")}</span>
                       <ChevronLeftIcon className="h-6 w-6" aria-hidden="true" />
                     </button>
@@ -80,7 +80,7 @@ export default function SideBar() {
                 <div className="mt-auto px-4 sm:px-6">
                   <div
                     ref={profileRef}
-                    className="rounded-lg shadow-md bg-[var(--gray-800)] hover:bg-[var(--gray-700)] transition-colors duration-200 cursor-pointer"
+                    className="rounded-lg shadow-md bg-gray-800 hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
                   >
                     <div className="flex items-center px-3 py-2">
                       <div onClick={() => navigate('/dashboard/profile')} className="flex items-center flex-grow">
@@ -89,7 +89,7 @@ export default function SideBar() {
                         <span className="sr-only">{locale("sidebar_profile")}</span>
                       </div>
                       <button
-                        className="p-1 rounded-full bg-[var(--gray-700)] hover:bg-[var(--gray-600)] text-gray-400 hover:text-white"
+                        className="p-1 rounded-full bg-gray-700 hover:bg-gray-600 text-gray-400 hover:text-white"
                         onClick={(e) => {
                           e.stopPropagation();
                           logout();
@@ -111,13 +111,13 @@ export default function SideBar() {
             <div className="flex h-16 shrink-0 items-center justify-center mt-2 ml-3">
               <button
                 onClick={() => setIsCollapsed(false)}
-                className="p-2 rounded-md text-gray-400 bg-[var(--gray-700)] hover:bg-[var(--gray-600)]"
+                className="p-2 rounded-md text-gray-400 bg-gray-700 hover:bg-gray-600"
               >
                 <Bars3Icon className="h-6 w-6" />
               </button>
             </div>
           ) : (
-            <div className="flex flex-col h-full bg-[var(--gray-900)] px-3">
+            <div className="flex flex-col h-full bg-gray-900 px-3">
               <div className="flex-shrink-0">
                 <div className="flex h-16 items-center justify-between mt-1 px-2">
                   <Link to="/">
@@ -130,7 +130,7 @@ export default function SideBar() {
                   {!isDashboard && (
                     <button
                       onClick={() => setIsCollapsed(true)}
-                      className="p-2 rounded-md text-gray-400 bg-[var(--gray-700)] hover:bg-[var(--gray-600)] mt-2"
+                      className="p-2 rounded-md text-gray-400 bg-gray-700 hover:bg-gray-600 mt-2"
                     >
                       <ChevronLeftIcon className="h-6 w-6" />
                     </button>
@@ -146,9 +146,9 @@ export default function SideBar() {
               <div className="flex-shrink-0 mt-auto pr-2">
                 <div
                   ref={profileRef}
-                  className="relative rounded-lg shadow-md bg-[var(--gray-800)] transition-colors duration-200"
+                  className="relative rounded-lg shadow-md bg-gray-800 transition-colors duration-200"
                 >
-                  <div className="flex items-center gap-x-4 px-2 py-1 hover:bg-[var(--gray-700)] rounded-lg">
+                  <div className="flex items-center gap-x-4 px-2 py-1 hover:bg-gray-700 rounded-lg">
                     <div
                       onClick={() => navigate('/dashboard/profile')}
                       className="flex items-center flex-grow cursor-pointer overflow-hidden"
@@ -158,7 +158,7 @@ export default function SideBar() {
                       <span className="sr-only">{locale("sidebar_profile")}</span>
                     </div>
                     <div
-                      className="pr-2 rounded-lg hover:bg-[var(--gray-800)] flex-shrink-0"
+                      className="pr-2 rounded-lg hover:bg-gray-800 flex-shrink-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         logout();
@@ -176,15 +176,15 @@ export default function SideBar() {
         </div>
 
         {/* Mobile toggle button */}
-        <div className="sticky top-0 z-50 flex items-center gap-x-6 bg-[var(--gray-800)] px-4 py-4 shadow-sm sm:px-6 lg:hidden">
-          <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400 lg:hidden bg-[var(--gray-700)] hover:bg-[var(--gray-600)]">
+        <div className="sticky top-0 z-50 flex items-center gap-x-6 bg-gray-800 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+          <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400 lg:hidden bg-gray-700 hover:bg-gray-600">
             <span className="sr-only">{locale("sidebar_open")}</span>
             <Bars3Icon aria-hidden="true" className="h-6 w-6" />
           </button>
         </div>
 
         {/* Desktop sidebar buffer for layout, do not remove */}
-        <div className={`py-10 ${isCollapsed ? 'lg:pl-4' : 'lg:pl-60'} bg-[var(--gray-800)] hidden sm:block sm:h-full transition-all duration-0`}>
+        <div className={`py-10 ${isCollapsed ? 'lg:pl-4' : 'lg:pl-60'} bg-gray-800 hidden sm:block sm:h-full transition-all duration-0`}>
           <div className="px-4 sm:px-6 lg:px-8"></div>
         </div>
       </div >
