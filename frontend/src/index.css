@@ -134,7 +134,7 @@ button {
 
 
 button:hover {
-  @apply bg-vezmir-hover
+  @apply bg-vezmir-clear
 }
 
 /* Override global button styles for usage switches */
