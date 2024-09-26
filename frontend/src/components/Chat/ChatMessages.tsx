@@ -33,6 +33,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
   const [editingMessageId, setEditingMessageId] = useState<string>(""); // if null then will show eveytime new messages are added
   const [editedContent, setEditedContent] = useState<string>('');
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const editMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -73,6 +74,34 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
       editTextareaRef.current.style.height = `${editTextareaRef.current.scrollHeight}px`;
 
     }
+  }, [editingMessageId]);
+
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && editingMessageId) {
+        handleEditCancel();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [editingMessageId]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (editingMessageId && editMenuRef.current && !editMenuRef.current.contains(event.target as Node)) {
+        handleEditCancel();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [editingMessageId]);
 
   const handleCopy = (content: string) => {
@@ -162,7 +191,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                 </>
               )}
               {editingMessageId === msg.id ? (
-                <div className="w-full">
+                <div ref={editMenuRef} className="w-full">
                   <textarea
                     ref={editTextareaRef}
                     value={editedContent}
@@ -170,7 +199,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                       setEditedContent(e.target.value);
                       adjustTextareaHeight(e.target);
                     }}
-                    className="w-full bg-[var(--gray-700)] text-white rounded-2xl rounded-br-sm px-3 py-2 text-base resize-none outline-none overflow-hidden"
+                    className="w-full bg-[var(--gray-700)] text-white rounded-2xl rounded-br-sm px-3 py-2 text-base resize-none outline-none break-words overflow-hidden"
                     style={{ height: 'auto', minHeight: '56px' }}
                   />
                   <div className="flex justify-end mt-2 space-x-2">
