@@ -138,7 +138,7 @@ const InputMessage: React.FC<InputMessageProps> = ({ selectedModel, selectedAIMo
           <button
             type="button"
             onClick={onAbortStream}
-            className="absolute right-3 bottom-3 p-2 rounded-full text-lg flex items-center justify-center bg-gray-500 hover:bg-gray-400 transition-colors duration-200"
+            className="absolute right-3 bottom-3 p-2 rounded-full text-lg flex items-center justify-center bg-[var(--gray-500)] hover:bg-[var(--gray-400)] transition-colors duration-200"
           >
             <StopIcon className="w-5 h-5" />
           </button>
