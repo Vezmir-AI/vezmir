@@ -15,6 +15,7 @@ interface AIModel {
     provider: string;
     display_name: string;
     hint: string;
+    model_type: string;
 }
 
 interface File {

@@ -6,7 +6,7 @@ import { useConversation } from '../../context/ConversationContext';
 import { useParams } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 
-const ModelSelector: React.FC = () => {
+const ModelSelector: React.FC<{ isImageMode: boolean }> = ({ isImageMode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { locale } = useTheme();
   const [hoveredHint, setHoveredHint] = useState<string | null>(null);
@@ -34,6 +34,9 @@ const ModelSelector: React.FC = () => {
     setIsOpen(false);
   };
 
+  console.log(aiModels);
+  const filteredAIModels = aiModels.filter(model => model.model_type === (isImageMode ? 'image' : 'text'));
+
   return (
     <div className="relative inline-block text-left w-full sm:w-56 z-50" ref={dropdownRef}>
       <div>
@@ -52,7 +55,7 @@ const ModelSelector: React.FC = () => {
       {isOpen && (
         <div className="origin-top-left left-[50%] translate-x-[-50%] absolute w-fit sm:w-56 rounded-md shadow-lg bg-[var(--gray-700)] z-50">
           <div role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-            {aiModels.map((model) => (
+            {filteredAIModels.map((model) => (
               <button
                 key={model.display_name}
                 className="flex items-center w-full text-left px-4 text-sm text-gray-300 bg-[var(--gray-700)] hover:bg-[var(--gray-800)] hover:text-gray-100"

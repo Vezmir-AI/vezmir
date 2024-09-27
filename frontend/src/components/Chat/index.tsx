@@ -11,7 +11,7 @@ import InputMessage from './InputMessage';
 import VezmirLogo from '@/assets/vezmir.svg';
 import FeedbackForm from './FeedbackForm';
 import { useTheme } from '@/context/ThemeContext';
-import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, ChatBubbleLeftRightIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 
 const ChatComponent: React.FC = () => {
@@ -31,6 +31,19 @@ const ChatComponent: React.FC = () => {
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
   const [pendingContent, setPendingContent] = useState('');
+  const [isImageMode, setIsImageMode] = useState(() => {
+    const saved = localStorage.getItem('isImageMode');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  const handleModeChange = (newMode: boolean) => {
+    setIsImageMode(newMode);
+    localStorage.setItem('isImageMode', JSON.stringify(newMode));
+    if (newMode) {
+      setIsVezmirIntelligence(false);
+      localStorage.setItem('isVezmirIntelligence', JSON.stringify(false));
+    }
+  };
 
   useEffect(() => {
     if (!chatId) {
@@ -472,36 +485,59 @@ const ChatComponent: React.FC = () => {
         <div className="sticky top-0 z-10 bg-[var(--gray-800)] shadow-sm w-full pl-12 md:pl-0">
           <div className="flex items-center p-4 h-20"> {/* Set a fixed height */}
             {/* Model Selector */}
-            <div className="flex-grow flex items-center h-full"> {/* Add h-full */}
-              <div className="flex items-center h-full"> {/* Add h-full */}
-                <label className="inline-flex items-center cursor-pointer">
+            <div className="flex-grow flex items-center h-full">
+              <div className="flex items-center h-full">
+                {/* Text/Image mode toggle */}
+                <label className="inline-flex items-center cursor-pointer mr-5">
                   <input
                     type="checkbox"
                     className="sr-only peer"
-                    checked={isVezmirIntelligence}
-                    onChange={() => {
-                      setIsVezmirIntelligence(!isVezmirIntelligence);
-                      localStorage.setItem('isVezmirIntelligence', JSON.stringify(!isVezmirIntelligence));
-                    }}
+                    checked={isImageMode}
+                    onChange={() => handleModeChange(!isImageMode)}
                   />
                   <div className="relative w-11 h-6 bg-gray-200 rounded-full peer bg-gray-700 peer-focus:ring-2 peer-focus:ring-[var(--purple-clear)] peer-focus:ring-[var(--purple)] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-[var(--purple)]"></div>
+                  <span className="ml-2">
+                    {isImageMode ? (
+                      <PhotoIcon className="h-8 w-8 text-gray-300" />
+                    ) : (
+                      <ChatBubbleLeftRightIcon className="h-8 w-8 text-gray-300" />
+                    )}
+                  </span>
                 </label>
-                <div className="flex items-center ml-4 mr-4 h-10 relative group">
-                  <img
-                    src={VezmirLogo}
-                    alt="Vezmir Logo"
-                    className="w-8 h-8 mr-2 invert"
-                  />
-                  <div className="absolute bottom-0 left-0 mb-[-76px] hidden group-hover:block">
-                    <div className="bg-[var(--purple)] text-white px-4 py-2 rounded-lg shadow-lg whitespace-nowrap ">
-                      <p className="font-bold mb-1">{locale('chat_vezmir_intelligence')}</p>
-                      <p className="text-sm">{locale('chat_vezmir_intelligence_description')}</p>
+
+                {/* Vezmir Intelligence toggle (only shown in text mode) */}
+                {!isImageMode && (
+                  <>
+                    <label className="inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={isVezmirIntelligence}
+                        onChange={() => {
+                          setIsVezmirIntelligence(!isVezmirIntelligence);
+                          localStorage.setItem('isVezmirIntelligence', JSON.stringify(!isVezmirIntelligence));
+                        }}
+                      />
+                      <div className="relative w-11 h-6 bg-gray-200 rounded-full peer bg-gray-700 peer-focus:ring-2 peer-focus:ring-[var(--purple-clear)] peer-focus:ring-[var(--purple)] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-[var(--purple)]"></div>
+                    </label>
+                    <div className="flex items-center ml-4 mr-4 h-10 relative group">
+                      <img
+                        src={VezmirLogo}
+                        alt="Vezmir Logo"
+                        className="w-8 h-8 mr-2 invert"
+                      />
+                      <div className="absolute bottom-0 left-0 mb-[-76px] hidden group-hover:block">
+                        <div className="bg-[var(--purple)] text-white px-4 py-2 rounded-lg shadow-lg whitespace-nowrap ">
+                          <p className="font-bold mb-1">{locale('chat_vezmir_intelligence')}</p>
+                          <p className="text-sm">{locale('chat_vezmir_intelligence_description')}</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </>
+                )}
               </div>
               <div className="flex-grow">
-                {!isVezmirIntelligence && <ModelSelector />}
+                {!isVezmirIntelligence && <ModelSelector isImageMode={isImageMode} />}
               </div>
             </div>
 

@@ -13,6 +13,7 @@ class AIModelSerializer(serializers.ModelSerializer):
             "provider",
             "is_active",
             "hint",
+            "model_type",
         )
 
 
