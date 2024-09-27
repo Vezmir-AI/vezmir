@@ -507,7 +507,7 @@ const ChatComponent: React.FC = () => {
                     checked={isImageMode}
                     onChange={() => handleModeChange(!isImageMode)}
                   />
-                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer bg-gray-700 peer-focus:ring-2 peer-focus:ring-[var(--purple-clear)] peer-focus:ring-[var(--purple)] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-[var(--purple)]"></div>
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-[var(--purple)]"></div>
                   <span className="ml-2">
                     {isImageMode ? (
                       <PhotoIcon className="h-8 w-8 text-gray-300" />
@@ -530,9 +530,8 @@ const ChatComponent: React.FC = () => {
                           localStorage.setItem('isVezmirIntelligence', JSON.stringify(!isVezmirIntelligence));
                         }}
                       />
-                      <div className="relative w-11 h-6 bg-gray-200 rounded-full peer bg-gray-700 peer-focus:ring-2 peer-focus:ring-[var(--purple-clear)] peer-focus:ring-[var(--purple)] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-[var(--purple)]"></div>
-                    </label>
-                    <div className="flex items-center ml-4 mr-4 h-10 relative group">
+                      <div className="relative w-11 h-6 bg-gray-200 rounded-full peer bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-[var(--purple)]"></div>
+                      <div className="flex items-center ml-4 mr-4 h-10 relative group">
                       <img
                         src={VezmirLogo}
                         alt="Vezmir Logo"
@@ -545,6 +544,7 @@ const ChatComponent: React.FC = () => {
                         </div>
                       </div>
                     </div>
+                    </label>
                   </>
                 )}
               </div>
