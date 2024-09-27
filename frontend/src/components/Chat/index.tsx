@@ -520,7 +520,7 @@ const ChatComponent: React.FC = () => {
           className="flex-grow overflow-y-auto w-screen sm:w-full"
           onScroll={handleScroll}
         >
-          {!chatId && messages.length === 0 ? (
+          {!chatId && discussion.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full space-y-4 px-4">
               {selectedAIModel && (
                 <div className="bg-white rounded-full p-2 mx-auto">
