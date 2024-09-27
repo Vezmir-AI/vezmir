@@ -17,12 +17,12 @@ done
 # Remove containers and networks, but not volumes by default
 docker compose down
 
-# Confirm and remove the vesmir_postgres_data volume if -r flag is present
+# Confirm and remove the vezmir_postgres_data volume if -r flag is present
 if $remove_volume; then
-    read -p "Are you sure you want to remove the vesmir_postgres_data volume? (y/N) " confirm
+    read -p "Are you sure you want to remove the vezmir_postgres_data volume? (y/N) " confirm
     if [[ $confirm =~ ^[Yy]$ ]]; then
-        docker volume rm vesmir_postgres_data
-        echo "Volume vesmir_postgres_data removed."
+        docker volume rm vezmir_postgres_data
+        echo "Volume vezmir_postgres_data removed."
     else
         echo "Volume removal cancelled."
     fi

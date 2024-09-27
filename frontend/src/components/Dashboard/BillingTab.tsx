@@ -56,7 +56,7 @@ const BillingTab: React.FC = () => {
   };
 
   return (
-    <div className="xl:px-16 bg-[var(--gray-800)] h-screen">
+    <div className="xl:px-16 bg-gray-800 h-screen">
       <div className="max-w-7xl px-4 mt-12 sm:px-6 lg:px-8">
       <h2 className="text-2xl px-2 font-semibold leading-7 text-white mb-4">{locale('dashboard_billing_information')}</h2>
 
@@ -65,7 +65,7 @@ const BillingTab: React.FC = () => {
           <h3 className="text-lg font-semibold leading-6 text-[var(--white)] mb-4">{locale('dashboard_your_balance')}</h3>
           <p className="text-sm text-gray-400 my-2">
             {locale("dashboard_balance_beta")} <br />
-            <span className="font-bold text-xs text-[var(--purple-clear)]">{locale("dashboard_balance_request")} <a href="mailto:beta@vezmir.com" className="text-[var(--purple-clear)] underline">beta@vezmir.com</a>.</span>
+            <span className="font-bold text-xs text-[vezmir-clear]">{locale("dashboard_balance_request")} <a href="mailto:beta@vezmir.com" className="text-[vezmir-clear] underline">beta@vezmir.com</a>.</span>
           </p>
 
           {loading ? (
@@ -80,14 +80,14 @@ const BillingTab: React.FC = () => {
           <h3 className="px-2 text-lg font-semibold leading-6 text-[var(--white)]">{locale("dashboard_your_payment_methods")}</h3>
           <Link
             to="/setup-payment"
-            className="inline-flex items-center rounded-md px-3 py-2 bg-[var(--purple)] text-sm font-semibold text-[var(--white)] shadow-sm hover:bg-[var(--purple-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--purple-clear)] focus:ring-offset-2 focus:ring-offset-[var(--gray-800)]"
+            className="inline-flex items-center rounded-md px-3 py-2 bg-vezmir text-sm font-semibold text-[var(--white)] shadow-sm hover:bg-vezmir-hover focus:outline-none focus:ring-2 focus:ring-[vezmir-clear] focus:ring-offset-2 focus:ring-offset-gray-800"
           >
             {locale("dashboard_add_payment_method")}
           </Link>
         </div>
         <div id="payment-methods" className="mt-5 space-y-4">
           {loading ? (
-            <div className="rounded-md bg-gradient-to-r from-[var(--gray-800)] via-[var(--gray-600)] to-[var(--gray-800)] animate-gradient-loading px-6 py-5 sm:flex sm:items-start sm:justify-between">
+            <div className="rounded-md bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 animate-gradient-loading px-6 py-5 sm:flex sm:items-start sm:justify-between">
               <div className="sm:flex sm:items-start">
                 <div className="bg-gray-800 p-1 rounded w-10 h-10"></div>
                 <div className="mt-3 sm:ml-4 sm:mt-0">
