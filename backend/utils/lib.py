@@ -7,6 +7,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
+from openai import OpenAI
 
 
 class AbstractAPI(ABC):
@@ -23,10 +24,23 @@ class AbstractAPI(ABC):
 
 
 class OpenAIAPI(AbstractAPI):
+    API_KEY = settings.OPENAI_API_KEY
+    CLIENT = OpenAI(api_key=API_KEY)
+
     @classmethod
-    def get_chat_model(self, model_name: str) -> BaseChatModel:
-        API_KEY = settings.OPENAI_API_KEY
-        return ChatOpenAI(api_key=API_KEY, model=model_name)
+    def get_chat_model(cls, model_name: str) -> BaseChatModel:
+        return ChatOpenAI(api_key=cls.API_KEY, model=model_name)
+
+    @classmethod
+    def generate_image(cls, prompt: str) -> str:
+        response = cls.CLIENT.images.generate(
+            model="dall-e-3",
+            prompt=prompt,
+            size="1024x1024",
+            quality="standard",
+            n=1,
+        )
+        return response.data[0].url
 
 
 class AnthropicAPI(AbstractAPI):

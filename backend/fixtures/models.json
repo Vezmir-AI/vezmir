@@ -37,7 +37,8 @@
             "hint": "model_hint_gpt4o",
             "is_active": true,
             "price_per_1K_token_input": 0.00250,
-            "price_per_1K_token_output": 0.01000
+            "price_per_1K_token_output": 0.01000,
+            "model_type": "text"
         }
     },
     {
@@ -50,7 +51,8 @@
             "hint": "model_hint_gpt4o_mini",
             "is_active": true,
             "price_per_1K_token_input": 0.000150,
-            "price_per_1K_token_output": 0.000600
+            "price_per_1K_token_output": 0.000600,
+            "model_type": "text"
         }
     },
     {
@@ -63,7 +65,8 @@
             "hint": "model_hint_claude_sonnet",
             "is_active": true,
             "price_per_1K_token_input": 0.003,
-            "price_per_1K_token_output": 0.015
+            "price_per_1K_token_output": 0.015,
+            "model_type": "text"
         }
     },
     {
@@ -76,7 +79,8 @@
             "hint": "model_hint_claude_haiku",
             "is_active": true,
             "price_per_1K_token_input": 0.00025,
-            "price_per_1K_token_output": 0.00125
+            "price_per_1K_token_output": 0.00125,
+            "model_type": "text"
         }
     },
     {
@@ -89,7 +93,8 @@
             "hint": "model_hint_gemini_pro",
             "is_active": true,
             "price_per_1K_token_input": 0.0035,
-            "price_per_1K_token_output": 0.0105
+            "price_per_1K_token_output": 0.0105,
+            "model_type": "text"
         }
     },
     {
@@ -102,7 +107,8 @@
             "hint": "model_hint_gemini_flash",
             "is_active": true,
             "price_per_1K_token_input": 0.000075,
-            "price_per_1K_token_output": 0.00030
+            "price_per_1K_token_output": 0.00030,
+            "model_type": "text"
         }
     },
     {
@@ -115,7 +121,22 @@
             "hint": "model_hint_perplexity_3_1",
             "is_active": true,
             "price_per_1K_token_input": 0.001,
-            "price_per_1K_token_output": 0.001
+            "price_per_1K_token_output": 0.001,
+            "model_type": "text"
+        }
+    },
+    {
+        "model": "chat.aimodel",
+        "pk": 8,
+        "fields": {
+            "name": "dall-e-3",
+            "display_name": "DALL-E 3",
+            "provider": "OpenAI",
+            "hint": "model_hint_dalle_3",
+            "is_active": true,
+            "price_per_1K_token_input": 0.002,
+            "price_per_1K_token_output": 0.008,
+            "model_type": "image"
         }
     }
 ]

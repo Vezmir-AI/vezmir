@@ -1,5 +1,7 @@
 import os
 
+import requests
+from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.db.models import F, Q
 from django.http import FileResponse, StreamingHttpResponse
@@ -17,6 +19,7 @@ from chat.serializers import (
     FormattedMessageSerializer,
 )
 from utils.chatbots import choose_model, generate_title, get_api_response
+from utils.diffusions import generate_image  # Import the utility function
 from utils.json import serialize_to_json
 from utils.mail import send_feedback_email
 from utils.permissions import HasPositiveBalance, IsOwner
@@ -39,6 +42,62 @@ class AIModelProviderView(APIView):
     def get(self, request):
         serializer = AIModelProviderSerializer(AIModelProvider.objects.all(), many=True)
         return Response({"data": serializer.data})
+
+
+class ImageGenerationView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, conv_id):
+        model_name = request.data.get("model_name")
+        prompt = request.data.get("prompt")
+
+        try:
+            model = AIModel.objects.select_related("provider").get(name=model_name)
+            if model.model_type != "image":
+                return Response(
+                    {"message": "invalid_model_type", "status": "error"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            image_url = generate_image(model.provider.name, prompt)
+
+            # Download the image
+            response = requests.get(image_url)
+            if response.status_code == 200:
+                # Extract the filename from the URL
+                filename = os.path.basename(image_url)
+                path = default_storage.save(filename, ContentFile(response.content))
+
+                # Create a ChatMessage for the generated image
+                conversation = ChatConversation.objects.get(id=conv_id)
+                chat_message = ChatMessage.objects.create(
+                    user=request.user,
+                    chat_conversation=conversation,
+                    role="assistant",
+                    content=prompt,
+                    ai_model=model,
+                    files=[{"name": filename, "path": path}],
+                )
+
+                return Response(
+                    {"data": {"model": model.display_name, "image_url": image_url, "message_id": str(chat_message.id)}},
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {"message": "failed_to_download_image", "status": "error"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+        except AIModel.DoesNotExist:
+            return Response(
+                {"message": "model_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except ChatConversation.DoesNotExist:
+            return Response(
+                {"message": "conversation_not_found", "status": "error"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
 
 class UserConversationView(generics.ListCreateAPIView):
@@ -145,6 +204,13 @@ class ChatMessageView(APIView):
 
                 file_url = request.build_absolute_uri(f"/api/chat/file/{conv_id}/{file_name}")
                 file_info.append({"name": file_name, "url": file_url, "path": file_path, "type": file.content_type})
+
+        if model.model_type == "image":
+            image_url = generate_image(model.name, message)
+            return Response(
+                {"data": {"model": model_data, "image_url": image_url}},
+                status=status.HTTP_201_CREATED,
+            )
 
         # Create and save the user message with file information
         user_message_serializer = ChatMessageSerializer(

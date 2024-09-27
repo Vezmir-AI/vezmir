@@ -18,6 +18,7 @@ class AIModel(models.Model):
     is_active = models.BooleanField(default=True)
     price_per_1K_token_input = models.FloatField(default=0.0)
     price_per_1K_token_output = models.FloatField(default=0.0)
+    model_type = models.CharField(max_length=10, choices=[("text", "Text"), ("image", "Image")], default="text")
 
 
 class ChatConversation(models.Model):
