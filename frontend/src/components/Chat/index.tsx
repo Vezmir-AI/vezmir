@@ -21,7 +21,7 @@ const ChatComponent: React.FC = () => {
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const { chatId } = useParams<{ chatId: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { currentAIModel, addConversation, selectedAIModel, setSelectedAIModel, setCurrentAIModel, resetSelectedAIModel, conversations, fetchConversation } = useConversation();
+  const { currentAIModel, addConversation, selectedAIModel, setSelectedAIModel, setCurrentAIModel, resetSelectedAIModel, conversations, fetchConversation, aiModels } = useConversation();
   const [isVezmirIntelligence, setIsVezmirIntelligence] = useState(() => {
     const saved = localStorage.getItem('isVezmirIntelligence');
     return saved ? JSON.parse(saved) : false;
@@ -42,6 +42,18 @@ const ChatComponent: React.FC = () => {
     if (newMode) {
       setIsVezmirIntelligence(false);
       localStorage.setItem('isVezmirIntelligence', JSON.stringify(false));
+
+      // Find the first available image model
+      const firstImageModel = aiModels.find(model => model.model_type === 'image');
+      if (firstImageModel) {
+        setSelectedAIModel(firstImageModel);
+      }
+    } else {
+      // When switching back to text mode, select the first text model
+      const firstTextModel = aiModels.find(model => model.model_type === 'text');
+      if (firstTextModel) {
+        setSelectedAIModel(firstTextModel);
+      }
     }
   };
 
