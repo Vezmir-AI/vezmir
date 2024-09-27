@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { DiscussionMessage } from '@/types';
-import renderContent from './renderContent/renderContent';
+import renderContent from './renderContent';
 import { getProviderLogo, getProviderColor } from '@/utils/providerUtils';
 import { ClipboardDocumentIcon, CheckIcon, PaperClipIcon, ArrowPathIcon, ChevronLeftIcon, ChevronRightIcon, PencilIcon } from '@heroicons/react/24/outline';
 import api from '@/api';
