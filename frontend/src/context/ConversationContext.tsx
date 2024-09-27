@@ -57,14 +57,20 @@ export const ConversationProvider: React.FC<{ children: ReactNode }> = ({ childr
     };
 
     const resetSelectedAIModel = (chatId: string = "", selectedAIModel: AIModel | null = null) => {
+        const isImageMode = localStorage.getItem('isImageMode') === 'true';
+        const modelType = isImageMode ? 'image' : 'text';
+
         if (chatId) {
             const chat = conversations.find(conversation => conversation.id === chatId);
             if (chat) {
-                const defaultModel = selectedAIModel || aiModels.find(model => model.id === chat.ai_model) || aiModels.find(model => model.id === user?.preferred_model) || aiModels[0];
+                const defaultModel = selectedAIModel ||
+                    aiModels.find(model => model.id === chat.ai_model && model.model_type === modelType) ||
+                    aiModels.find(model => model.model_type === modelType) ||
+                    aiModels[0];
                 setSelectedAIModel(defaultModel);
             }
         } else {
-            const defaultModel = aiModels.find(model => model.id === user?.preferred_model) || aiModels[0];
+            const defaultModel = aiModels.find(model => model.model_type === modelType) || aiModels[0];
             setSelectedAIModel(defaultModel);
         }
     }

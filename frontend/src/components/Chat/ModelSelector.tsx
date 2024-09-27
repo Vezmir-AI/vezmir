@@ -34,7 +34,6 @@ const ModelSelector: React.FC<{ isImageMode: boolean }> = ({ isImageMode }) => {
     setIsOpen(false);
   };
 
-  console.log(aiModels);
   const filteredAIModels = aiModels.filter(model => model.model_type === (isImageMode ? 'image' : 'text'));
 
   return (
