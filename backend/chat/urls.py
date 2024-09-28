@@ -8,7 +8,7 @@ urlpatterns = [
     path("ai_models/providers/", views.AIModelProviderView.as_view()),
     path("feedback/", views.FeedbackView.as_view()),
     path("chat/conversations/", views.UserConversationView.as_view()),
-    path("chat/conversations/<uuid:conv_id>/", views.ChatMessageView.as_view()),
+    path("chat/conversations/<uuid:conv_id>/", views.UnifiedChatView.as_view()),
     path("chat/conversations/title/", views.ChatConversationTitleView.as_view()),
     path("chat/conversations/stream/", views.ChatStreamView.as_view()),
     path("chat/file/<str:conv_id>/<str:filename>/", views.FileAccessView.as_view()),

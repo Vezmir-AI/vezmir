@@ -1,7 +1,6 @@
 import os
 
 import requests
-from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.db.models import F, Q
 from django.http import FileResponse, StreamingHttpResponse
@@ -49,40 +48,51 @@ class ImageGenerationView(APIView):
 
     def post(self, request, conv_id):
         model_name = request.data.get("model_name")
-        prompt = request.data.get("prompt")
+        prompt = request.data.get("content")
 
         try:
             model = AIModel.objects.select_related("provider").get(name=model_name)
+            model_data = AIModelSerializer(model).data
             if model.model_type != "image":
                 return Response(
                     {"message": "invalid_model_type", "status": "error"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            image_url = generate_image(model.provider.name, prompt)
+            image_url, title = generate_image(model.provider.name, prompt)
 
             # Download the image
             response = requests.get(image_url)
             if response.status_code == 200:
-                # Extract the filename from the URL
-                filename = os.path.basename(image_url)
-                path = default_storage.save(filename, ContentFile(response.content))
+                # Create the directory structure
+                upload_dir = os.path.join("chat_uploads", str(conv_id))
+                os.makedirs(upload_dir, exist_ok=True)
 
-                # Create a ChatMessage for the generated image
-                conversation = ChatConversation.objects.get(id=conv_id)
-                chat_message = ChatMessage.objects.create(
-                    user=request.user,
-                    chat_conversation=conversation,
-                    role="assistant",
-                    content=prompt,
-                    ai_model=model,
-                    files=[{"name": filename, "path": path}],
+                # Extract the filename and save the image as PNG
+                filename = f"{title}.png"
+                file_path = os.path.join(upload_dir, filename)
+                with open(file_path, "wb") as f:
+                    f.write(response.content)
+
+                user_message_serializer = ChatMessageSerializer(
+                    data={
+                        "user": request.user.id,
+                        "chat_conversation": conv_id,
+                        "content": "",
+                        "role": "user",
+                        "ai_model": model.id,
+                        "files": [{"name": filename, "url": file_path, "path": file_path, "type": "image"}],
+                        "parent": request.data.get("parent"),
+                        "type": "image",
+                    }
                 )
 
-                return Response(
-                    {"data": {"model": model.display_name, "image_url": image_url, "message_id": str(chat_message.id)}},
-                    status=status.HTTP_201_CREATED,
-                )
+                if user_message_serializer.is_valid():
+                    user_message_serializer.save()
+                    return Response(
+                        {"data": {"model": model_data, "user_message": user_message_serializer.data}},
+                        status=status.HTTP_201_CREATED,
+                    )
             else:
                 return Response(
                     {"message": "failed_to_download_image", "status": "error"},
@@ -205,13 +215,6 @@ class ChatMessageView(APIView):
                 file_url = request.build_absolute_uri(f"/api/chat/file/{conv_id}/{file_name}")
                 file_info.append({"name": file_name, "url": file_url, "path": file_path, "type": file.content_type})
 
-        if model.model_type == "image":
-            image_url = generate_image(model.name, message)
-            return Response(
-                {"data": {"model": model_data, "image_url": image_url}},
-                status=status.HTTP_201_CREATED,
-            )
-
         # Create and save the user message with file information
         user_message_serializer = ChatMessageSerializer(
             data={
@@ -222,6 +225,7 @@ class ChatMessageView(APIView):
                 "ai_model": model.id,
                 "files": file_info,
                 "parent": request.data.get("parent"),
+                "type": "text",
             }
         )
         if user_message_serializer.is_valid():
@@ -313,6 +317,7 @@ class ChatStreamView(APIView):
                     "role": "assistant",
                     "ai_model": model.id,
                     "parent": user_message.id,
+                    "type": "text",
                 }
             )
             ai_message_serializer.is_valid(
@@ -422,3 +427,17 @@ class FileAccessView(APIView):
                 {"message": "file_not_found", "status": "error"},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+
+class UnifiedChatView(APIView):
+    permission_classes = (IsAuthenticated, IsOwner)
+
+    def post(self, request, conv_id):
+        request_type = request.data.get("type", "text")  # Default to 'text' if not specified
+
+        if request_type == "text":
+            return ChatMessageView.as_view()(request._request, conv_id=conv_id)
+        elif request_type == "image":
+            return ImageGenerationView.as_view()(request._request, conv_id=conv_id)
+        else:
+            return Response({"message": "invalid_request_type", "status": "error"}, status=status.HTTP_400_BAD_REQUEST)

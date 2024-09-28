@@ -32,6 +32,7 @@ interface Message {
     files?: File[];
     parent: string | null;
     children?: string[];
+    type: 'text' | 'image';
 }
 
 interface DiscussionMessage extends Message {

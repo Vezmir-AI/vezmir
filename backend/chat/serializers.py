@@ -39,6 +39,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
     files = serializers.JSONField(required=False)
     parent = serializers.PrimaryKeyRelatedField(queryset=ChatMessage.objects.all(), allow_null=True)
     children = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+    type = serializers.CharField(max_length=100, required=True, allow_null=True)
 
     class Meta:
         model = ChatMessage
@@ -56,6 +57,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             "files",
             "parent",
             "children",
+            "type",
         )
 
 

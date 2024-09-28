@@ -241,13 +241,16 @@ const ChatComponent: React.FC = () => {
         ai_model_details: selectedAIModel,
         isStreaming: false,
         parent: null,
+        type: 'text',
+        children: [],
       }, {
         id: null,
         role: 'assistant',
         content: '',
         ai_model_details: selectedAIModel,
         isStreaming: true,
-        parent: null
+        parent: null,
+        type: 'text',
       }]);
 
       // I. Initialize the process
@@ -291,11 +294,16 @@ const ChatComponent: React.FC = () => {
           content: '',
           ai_model_details: selectedAIModel,
           isStreaming: true,
-          parent: userMessage.id
+          parent: userMessage.id,
+          type: isImageMode ? 'image' : 'text',
         },
       ]);
 
-      await streamResponse(userMessage.id, controller.signal);
+      if (!isImageMode) {
+        await streamResponse(userMessage.id, controller.signal);
+      } else {
+        setIsStreaming(false);
+      }
 
     } catch (error) {
       console.error('Error sending message:', error);
@@ -334,7 +342,8 @@ const ChatComponent: React.FC = () => {
           content: '',
           ai_model_details: selectedModel,
           isStreaming: true,
-          parent: null
+          parent: null,
+          type: isImageMode ? 'image' : 'text',
         }
       ]);
       if (discussion[index].role !== 'user') throw "Message Rewrite is not a user message";
@@ -397,6 +406,7 @@ const ChatComponent: React.FC = () => {
     formData.append('model_name', selectedAIModel.name);
     formData.append('is_vezmir_intelligence', isVezmirIntelligence.toString());
     formData.append('parent', previousMessageId);
+    formData.append('type', isImageMode ? 'image' : 'text');
 
     if (files && files.length > 0) {
       files.forEach((file) => {
@@ -405,9 +415,9 @@ const ChatComponent: React.FC = () => {
     }
 
     return api.post(url, formData, false, true)
-      .then(({ user_message, model }) => {
-        return { userMessage: user_message, model };
-      })
+    .then(({ user_message, model }) => {
+      return { userMessage: user_message, model };
+    })
       .catch((error) => {
         setIsStreaming(false);
         console.error('Error sending message:', error);

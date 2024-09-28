@@ -43,3 +43,4 @@ class ChatMessage(models.Model):
     num_tokens = models.IntegerField(default=0)
     files = models.JSONField(null=True, blank=True)
     parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, related_name="children")
+    type = models.CharField(max_length=100, null=True)

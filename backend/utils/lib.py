@@ -40,7 +40,14 @@ class OpenAIAPI(AbstractAPI):
             quality="standard",
             n=1,
         )
-        return response.data[0].url
+        title_prompt = (
+            "Generate a one-word description just one word for this image description: "
+            f"{response.data[0].revised_prompt}"
+        )
+        title_response = GroqAPI.get_response([{"role": "user", "content": title_prompt}], "llama3-8b-8192")
+        title = title_response.content.strip('"')
+
+        return response.data[0].url, title
 
 
 class AnthropicAPI(AbstractAPI):

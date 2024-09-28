@@ -139,8 +139,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                       <div key={fileIndex} className="flex flex-col items-center bg-[var(--gray-600)] text-white rounded-lg p-2">
                         {file.type.startsWith('image/') ? (
                           <img
-                            src={imageUrls[file.url] || file.url}
-                            alt={file.name}
+                          src={imageUrls[file.url] || file.url}                            alt={file.name}
                             className="w-40 h-40 object-cover rounded-md mb-1"
                           />
                         ) : (
@@ -180,8 +179,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, handleRewrite, ha
                     </button>
                   </div>
                 </div>
-              ) : (
-                renderContent(msg.content, index, copiedStates, setCopiedStates)
+                ) : (
+                  renderContent(msg.content, index, copiedStates, setCopiedStates)
               )}
               {msg.isStreaming && (
                 <div className="inline-block w-12 h-12">
