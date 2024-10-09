@@ -24,7 +24,7 @@ services:
     depends_on:
       - django
   db:
-    image: postgres:latest
+    image: postgres:16
     container_name: dev-db
     ports:
       - 5432:5432
