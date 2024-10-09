@@ -225,10 +225,10 @@ class ChatStreamView(APIView):
             )
 
         # TODO: implement versionning of the conversation
-        parent_ids = [user_message.id]
+        parent_ids = []
         current_message = user_message
         while current_message.parent_id:
-            parent_ids.append(current_message.parent_id)
+            parent_ids.append(current_message.id)
             current_message = ChatMessage.objects.get(id=current_message.parent_id)
 
         conversation_messages = FormattedMessageSerializer(
