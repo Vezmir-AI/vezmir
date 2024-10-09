@@ -83,32 +83,6 @@
         "model": "chat.aimodel",
         "pk": 3,
         "fields": {
-            "name": "gemini-1.5-pro",
-            "display_name": "Gemini Pro",
-            "provider": "Google",
-            "hint": "model_hint_gemini_pro",
-            "is_active": true,
-            "price_per_1K_token_input": 0.0035,
-            "price_per_1K_token_output": 0.0105
-        }
-    },
-    {
-        "model": "chat.aimodel",
-        "pk": 6,
-        "fields": {
-            "name": "gemini-1.5-flash",
-            "display_name": "Gemini Flash",
-            "provider": "Google",
-            "hint": "model_hint_gemini_flash",
-            "is_active": true,
-            "price_per_1K_token_input": 0.000075,
-            "price_per_1K_token_output": 0.00030
-        }
-    },
-    {
-        "model": "chat.aimodel",
-        "pk": 7,
-        "fields": {
             "name": "llama-3.1-sonar-large-128k-online",
             "display_name": "Perplexity 3.1",
             "provider": "Perplexity",
