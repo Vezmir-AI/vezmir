@@ -31,7 +31,7 @@
         "model": "chat.aimodel",
         "pk": 1,
         "fields": {
-            "name": "gpt-4o-2024-08-06",
+            "name": "gpt-4o-2024-11-20",
             "display_name": "GPT-4o",
             "provider": "OpenAI",
             "hint": "model_hint_gpt4o",
@@ -44,7 +44,7 @@
         "model": "chat.aimodel",
         "pk": 4,
         "fields": {
-            "name": "gpt-4o-mini-2024-07-18",
+            "name": "gpt-4o-mini",
             "display_name": "GPT-4o Mini",
             "provider": "OpenAI",
             "hint": "model_hint_gpt4o_mini",
@@ -57,8 +57,8 @@
         "model": "chat.aimodel",
         "pk": 2,
         "fields": {
-            "name": "claude-3-5-sonnet-20240620",
-            "display_name": "Claude Sonnet",
+            "name": "claude-3-5-sonnet-latest",
+            "display_name": "Claude Sonnet 3.5",
             "provider": "Anthropic",
             "hint": "model_hint_claude_sonnet",
             "is_active": true,
@@ -70,8 +70,8 @@
         "model": "chat.aimodel",
         "pk": 5,
         "fields": {
-            "name": "claude-3-haiku-20240307",
-            "display_name": "Claude Haiku",
+            "name": "claude-3-5-haiku-latest",
+            "display_name": "Claude Haiku 3.5",
             "provider": "Anthropic",
             "hint": "model_hint_claude_haiku",
             "is_active": true,
