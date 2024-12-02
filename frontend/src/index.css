@@ -174,7 +174,7 @@ button:hover {
   transition: background-color 5000s ease-in-out 0s;
 }
 .floating-label {
-  @apply absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-[var(--black)] px-3 text-sm text-gray-500 duration-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-3 peer-focus:text-vezmir-clear text-gray-400 peer-focus:text-vezmir-clear rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4;
+  @apply absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-black px-3 text-sm text-gray-500 duration-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-3 peer-focus:text-vezmir-clear text-gray-400 peer-focus:text-vezmir-clear rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4;
 }
 
 
