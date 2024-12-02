@@ -33,13 +33,17 @@ const ChatComponent: React.FC = () => {
   const [pendingContent, setPendingContent] = useState('');
 
   useEffect(() => {
-    if (!chatId) {
+    if (chatId) {
+      setMessages([]);
+      setDiscussion([]);
+      setIsStreaming(false);
+      setPendingContent('');
+      fetchMessages(chatId);
+    } else {
       resetDiscussion();
       resetSelectedAIModel();
-    } else {
-      resetSelectedAIModel(chatId, selectedAIModel);
     }
-  }, [chatId, conversations]);
+  }, [chatId]);
 
   useEffect(() => {
     if (!isStreaming) {

@@ -30,18 +30,18 @@ def generate_title(user_message):
         }
     ]
 
-    response = GroqAPI.get_response(message, "llama3-8b-8192")
+    response = GroqAPI.get_response(message, "llama-3.2-11b-vision-preview")
     return response.content.strip('"')
 
 
 def choose_model(user_message):
     mapping = {
-        "Programming code": "claude-3-5-sonnet-20240620",
-        "General knowledge": "gpt-4o-mini-2024-07-18",
-        "Mailing": "gpt-4o-2024-08-06",
-        "Translation": "gpt-4o-mini-2024-07-18",
-        "Writing": "gpt-4o-2024-08-06",
-        "Mathematics": "gpt-4o-2024-08-06",
+        "Programming code": "claude-3-5-sonnet-latest",
+        "General knowledge": "gpt-4o-mini",
+        "Mailing": "gpt-4o-2024-11-20",
+        "Translation": "gpt-4o-mini",
+        "Writing": "gpt-4o-2024-11-20",
+        "Mathematics": "gpt-4o-2024-11-20",
     }
 
     # First question to check if the prompt is searchable on the internet
@@ -56,7 +56,7 @@ def choose_model(user_message):
         }
     ]
 
-    internet_search_response = GroqAPI.get_response(internet_search_message, "llama3-8b-8192")
+    internet_search_response = GroqAPI.get_response(internet_search_message, "llama-3.2-11b-vision-preview")
     is_searchable = internet_search_response.content.strip('"').lower()
 
     if is_searchable == "yes":
@@ -73,12 +73,12 @@ def choose_model(user_message):
         }
     ]
 
-    response = GroqAPI.get_response(message, "llama3-8b-8192")
+    response = GroqAPI.get_response(message, "llama-3.2-11b-vision-preview")
     category = response.content.strip('"')
     try:
         chosen_model = mapping[category]
     except KeyError:
-        chosen_model = "gpt-4o-mini-2024-07-18"
+        chosen_model = "gpt-4o-mini"
 
     return chosen_model
 
